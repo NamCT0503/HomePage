@@ -6,26 +6,52 @@ const Header: React.FC = () => {
     const [opacityHeader, setOpacityHeader] = useState(1);
 
     useEffect(() => {
-        const handleScroll = () => {
-          const scrollY = window.scrollY;
-          console.log('Scroll position: ', scrollY);
-          if(scrollY === 0){
-            setPaddingHeader('20px');
-            setPositionHeader('unset');
-            setOpacityHeader(1);
-          } else {
-            setPaddingHeader('5px');
-            setPositionHeader('sticky');
-            setOpacityHeader(0.3);
-          }
+      const handleScroll = () => {
+        const scrollY = window.scrollY;
+        console.log('Scroll position: ', scrollY);
+        if(scrollY === 0){
+          setPaddingHeader('20px');
+          setPositionHeader('unset');
+          setOpacityHeader(1);
+          handleClick('null')
+        } else {
+          setPaddingHeader('5px');
+          setPositionHeader('sticky');
+          setOpacityHeader(0.3);
+          if(scrollY > 82 && scrollY <= 1030) handleClick('intro'); //1268
+          if(scrollY > 1031 && scrollY <= 1970) handleClick('about'); //2511
+          if(scrollY > 1971 && scrollY <= 2430) handleClick('services'); //3736
+          if(scrollY >= 2431) handleClick('contact'); //3736
         }
-    
-        window.addEventListener('scroll', handleScroll);
-    
-        return () => {
-          window.removeEventListener('scroll', handleScroll)
+      }
+  
+      window.addEventListener('scroll', handleScroll);
+  
+      return () => {
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }, []);
+
+    const handleClick = (id: string) => {
+      const liTag = document.getElementsByTagName('li');
+      const liTagCurrent = document.getElementById(id);
+
+      for(let i=0; i<liTag.length; i++){
+        liTag[i].style.borderBottom = 'none';
+        liTag[i].style.paddingBottom = '0%';
+      }
+
+      if(liTagCurrent === null){
+        for(let i=0; i<liTag.length; i++){
+          liTag[i].style.borderBottom = 'none';
+          liTag[i].style.paddingBottom = '0%';
         }
-      }, []);
+        return;
+      }
+
+      liTagCurrent!.style.borderBottom = '3px solid white';
+      liTagCurrent!.style.paddingBottom = '5%';
+    }    
 
     return (
         <header 
@@ -41,10 +67,10 @@ const Header: React.FC = () => {
         </div>
         <nav className='menubar'>
             <ul>
-            <li><a href="#section-intro">Home</a></li>
-            <li><a href="#section-about">About</a></li>
-            <li><a href="#section-services">Services</a></li>
-            <li><a href="#section-contact">Contact</a></li>
+            <li id='intro' onClick={() => handleClick('intro')}><a href="#section-intro">Home</a></li>
+            <li id='about' onClick={() => handleClick('about')}><a href="#section-about">About</a></li>
+            <li id='services' onClick={() => handleClick('services')}><a href="#section-services">Services</a></li>
+            <li id='contact' onClick={() => handleClick('contact')}><a href="#section-contact">Contact</a></li>
             </ul>
         </nav>
         </header>
