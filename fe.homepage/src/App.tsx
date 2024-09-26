@@ -8,28 +8,14 @@ import SectionIntro from './components/section.intro';
 import SectionAbout from './components/section.about';
 import SectionServices from './components/section.services';
 import SectionContact from './components/section.contact';
+import { Helmet } from 'react-helmet';
 
 function App() {
-  let lastScrollY = 0;
-  
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const scrollY = window.scrollY;
-  //     console.log('Scroll position: ', scrollY);
-  //     if(scrollY !== 0){
-        
-  //     }
-  //   }
-
-  //   window.addEventListener('scroll', handleScroll);
-
-  //   return () => {
-  //     window.removeEventListener('scroll', handleScroll)
-  //   }
-  // }, []);
-
   return (
     <div className="home-page">
+      <Helmet>
+        <script src="https://kit.fontawesome.com/1c03073856.js" crossOrigin="anonymous"></script>
+      </Helmet>
       <Header></Header>
       <SectionIntro></SectionIntro>
       <SectionAbout></SectionAbout>
