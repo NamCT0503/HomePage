@@ -25,8 +25,8 @@ const Header: React.FC = () => {
             setOpacityHeader(0.3);
             if(scrollY > 82 && scrollY <= 1030) handleClick('intro'); //1268
             if(scrollY > 1031 && scrollY <= 1970) handleClick('about'); //2511
-            if(scrollY > 1971 && scrollY <= 2430) handleClick('services'); //3736
-            if(scrollY >= 2431) handleClick('contact'); //3736
+            if(scrollY > 1971 && scrollY <= 4430) handleClick('services'); //3736
+            if(scrollY >= 4430) handleClick('contact'); //3736
           }
         } else {
           setHiddenHeader(true);

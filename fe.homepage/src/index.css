@@ -93,7 +93,7 @@ body, html {
   border-bottom: 1px solid #ddd;
 }
 
-.section:nth-child(odd) {
+.section:nth-child(even) {
   background-color: #fff;
 }
 
@@ -151,12 +151,12 @@ body, html {
   font-size: 26px;
 }
 
-.heading-section-service p {
+.heading-section p {
   font-size: 35px;
   font-weight: 600;
 }
 
-.heading-section-service{
+.heading-section{
   width: fit-content;
   border-bottom: 10px solid red;
   margin-bottom: 5%;
@@ -185,7 +185,7 @@ body, html {
 .wrap-container-service-package{
   /* border: 1px solid green; */
   margin: 0 2%;
-  background-color: white;
+  background-color: #d4d4d4;
   height: 100%;
   padding-bottom: 5%;
   /* position: relative; */
@@ -207,6 +207,10 @@ body, html {
   z-index: 2; */
 }
 
+.content-package-web-service p {
+  margin-bottom: 5%;
+}
+
 .wrap-packages-web{
   /* border: 1px solid purple; */
   display: flex;
@@ -221,7 +225,7 @@ body, html {
   width: 22%;
   height: 100%;
   position: relative;
-  background-color: #e8e8e8;
+  background-color: white;
 }
 
 .package-web .prices-web, .package-web .types-web {
@@ -235,7 +239,7 @@ body, html {
 
 .package-web .types-web{
   font-size: 20px;
-  margin-top: -15%;
+  /* margin-top: -15%; */
 }
 
 .package-web .type-package-web{
@@ -248,6 +252,7 @@ body, html {
   /* border: 1px solid brown; */
   height: 70%;
   overflow: scroll;
+  margin-top: -3%;
 }
 
 .content-in-package-web{
@@ -314,6 +319,30 @@ body, html {
   transition: all 0.3s ease-in-out;
 }
 
+.package-web.sup-sale{
+  position: relative;
+}
+
+.recommend-web{
+  width: 0;
+  height: 0;
+  border-top: 100px solid red;
+  border-right: 100px solid transparent;
+  position: absolute;
+}
+
+.recommend-web ~ span {
+  /* border: 1px solid black; */
+  transform: rotateZ(-45deg);
+  color: white;
+  position: absolute;
+  font-weight: bold;
+  font-size: 20px;
+  width: 100px;
+  margin-left: -54%;
+  margin-top: 8%;
+}
+
 .package-web.basic:hover{
   box-shadow: 10px 4px 20px #EEAD0E;
   transform: scale(105%);
@@ -352,6 +381,177 @@ body, html {
 .package-web.pro input[type=button]:hover{
   background-color: #0000CD;
   border-radius: 20px;
+}
+
+.wrap-container-service-package ~ img {
+  width: 95%;
+}
+
+.wrap-container-service-package.app{
+  background-color: #0099FF;
+  margin-top: 5%;
+  color: white;
+  overflow: hidden;
+}
+
+.content-package-app-services{
+  margin-top: 1%;
+}
+
+.wrap-container-packages-app-service span {
+  font-weight: 600;
+  /* border: 1px solid red; */
+  padding: 3% 0;
+}
+
+.wrap-container-packages-app-service{
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container-packages-app-services{
+  border: 1px solid white;
+  width: 33%;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  margin: 0 0.3%;
+  position: relative;
+  transition: all 0.5s ease-in-out;
+  
+}
+
+.container-packages-app-services{
+  cursor: pointer;
+}
+
+.wrap-container-packages-app-service:hover > :not(:hover){
+  transform: translateY(100%);
+}
+
+.contact-services-app h1, .contact-services-app h3{
+  font-size: 40px;
+}
+
+.contact-services-app h1 {
+  margin-bottom: -10%;
+}
+
+.content-package-app{
+  background-color: white;
+  padding-top: 1%;
+}
+
+/* .content-package-app:hover{
+  cursor: pointer;
+} */
+
+.content-package-app:hover + button{
+  bottom: -3%;
+}
+
+.content-line {
+  color: black;
+  margin: 0 5%;
+  border-bottom: 1px solid #d8d8d8;
+}
+
+.content-line {
+  display: flex;
+  align-items: center;
+}
+
+.content-line i {
+  padding-right: 8%;
+  /* border: 1px solid black; */
+  width: 2%;
+}
+
+.content-package-app ~ button {
+  position: absolute;
+  padding: 2%;
+  bottom: -15%;
+  left: 37%;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+.content-package-app ~ button:hover{
+  bottom: -3%;
+}
+
+.personal span {
+  background-color: #009ACD;
+}
+
+.personal .contact-services-app{
+  background-color: #00BFFF;
+}
+
+.personal .content-package-app .content-line i{
+  color: #1C86EE;
+}
+
+.personal button {
+  border: 2px solid #1C86EE;
+  background-color: white;
+  color: #1C86EE;
+}
+
+.personal button:hover{
+  border: 2px solid white;
+  background-color: #1C86EE;
+  color: white;
+}
+
+.professional span {
+  background-color: #008B00;
+}
+
+.professional .contact-services-app{
+  background-color: #00CD00;
+}
+
+.professional .content-package-app .content-line i{
+  color: darkgreen;
+}
+
+.professional button {
+  border: 2px solid darkgreen;
+  background-color: white;
+  color: darkgreen;
+}
+
+.professional button:hover{
+  border: 2px solid white;
+  background-color: darkgreen;
+  color: white;
+}
+
+.business span {
+  background-color: #CD8500;
+}
+
+.business .contact-services-app{
+  background-color: #FFA500;
+}
+
+.business .content-package-app .content-line i{
+  color: darkorange;
+}
+
+.business button {
+  border: 2px solid darkorange;
+  background-color: white;
+  color: darkorange;
+}
+
+.business button:hover{
+  border: 2px solid white;
+  background-color: darkorange;
+  color: white;
 }
 /**/
 
