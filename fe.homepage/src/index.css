@@ -114,14 +114,13 @@ body, html {
   padding: 20px;
 }
 
-/* Khối section-services */
+/* ======================= Bắt đâì phần section-services ======================= */
 #section-services{
   height: fit-content;
 }
 
 .wrap-container-overview-content{
   display: flex;
-  /* border: 1px solid black; */
   margin-bottom: 5%;
 }
 
@@ -139,7 +138,6 @@ body, html {
 }
 
 .wrap-container-content-service-overview{
-  /* border: 1px solid blue; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -161,6 +159,7 @@ body, html {
   border-bottom: 10px solid red;
   margin-bottom: 5%;
   margin-top: -5%;
+  margin-left: 1%;
 }
 
 .list-overview, .sub-list-overview{
@@ -183,28 +182,14 @@ body, html {
 }
 
 .wrap-container-service-package{
-  /* border: 1px solid green; */
   margin: 0 2%;
   background-color: #d4d4d4;
   height: 100%;
   padding-bottom: 5%;
-  /* position: relative; */
 }
 
-/* .wrap-container-service-package img {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-} */
-
 .content-package-web-service{
-  /* color: white; */
   padding: 1% 0;
-  /* position: relative;
-  z-index: 2; */
 }
 
 .content-package-web-service p {
@@ -212,7 +197,6 @@ body, html {
 }
 
 .wrap-packages-web{
-  /* border: 1px solid purple; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -221,7 +205,6 @@ body, html {
 
 .package-web{
   margin: 2% 1%;
-  /* border: 2px solid black; */
   width: 22%;
   height: 100%;
   position: relative;
@@ -239,7 +222,6 @@ body, html {
 
 .package-web .types-web{
   font-size: 20px;
-  /* margin-top: -15%; */
 }
 
 .package-web .type-package-web{
@@ -249,7 +231,6 @@ body, html {
 }
 
 .content-package-web{
-  /* border: 1px solid brown; */
   height: 70%;
   overflow: scroll;
   margin-top: -3%;
@@ -259,9 +240,6 @@ body, html {
   border: 1px solid #d1d1d1;
   margin: 3%;
   padding: 1%;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 }
 
 .package-web input[type=button]{
@@ -332,7 +310,6 @@ body, html {
 }
 
 .recommend-web ~ span {
-  /* border: 1px solid black; */
   transform: rotateZ(-45deg);
   color: white;
   position: absolute;
@@ -400,19 +377,18 @@ body, html {
 
 .wrap-container-packages-app-service span {
   font-weight: 600;
-  /* border: 1px solid red; */
   padding: 3% 0;
 }
 
 .wrap-container-packages-app-service{
-  border: 1px solid black;
+  /* border: 1px solid black; */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .container-packages-app-services{
-  border: 1px solid white;
+  /* border: 1px solid white; */
   width: 33%;
   color: black;
   display: flex;
@@ -444,10 +420,6 @@ body, html {
   padding-top: 1%;
 }
 
-/* .content-package-app:hover{
-  cursor: pointer;
-} */
-
 .content-package-app:hover + button{
   bottom: -3%;
 }
@@ -465,7 +437,6 @@ body, html {
 
 .content-line i {
   padding-right: 8%;
-  /* border: 1px solid black; */
   width: 2%;
 }
 
@@ -553,7 +524,193 @@ body, html {
   background-color: darkorange;
   color: white;
 }
-/**/
+/* ======================= Kết thúc phần section-services ======================= */
+
+
+/* ======================= Bắt đầu phần section-contact ======================= */
+.wrap-container-contact{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.wrap-container-form-contact{
+  background-color: black;
+  color: black;
+  width: 80%;
+  height: 100%;
+  padding: 1%;
+  display: flex;
+}
+
+.wrap-form-contact{
+  width: 78%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+}
+
+.input-content-contact{
+  position: relative;
+  margin: 5% 0;
+  width: 80vh;
+}
+
+.input-content-contact input{
+  /* position: relative; */
+  height: 40px;
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+  /* transition: all 0.2s ease-in-out; */
+}
+
+.input-content-contact textarea{
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+  padding-top: 2%;
+}
+
+.input-content-contact label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: 0px 5px;
+  pointer-events: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.input-content-contact input:focus + label,
+.input-content-contact input:valid + label,
+.input-content-contact textarea:focus + label,
+.input-content-contact textarea:valid + label {
+  top: 0px;
+  font-size: 14px;
+  font-weight: 600;
+  color: green;
+}
+
+.input-content-contact input:focus,
+.input-content-contact textarea:focus{
+  border: 2px solid green;
+  border-radius: 10px;
+}
+
+.img-contact-form{
+  width: 20%;
+  height: 200%;
+  border: 5px solid white;
+  margin-left: 2%;
+}
+
+.img-contact-form img{
+  width: 100%;
+  height: 260px;
+  opacity: 0.5;
+}
+
+.btn-contact{
+  padding: 2% 6%;
+  font-size: 16px;
+  margin-bottom: 1%;
+  font-weight: 600;
+  border-radius: 5px;
+  border: 2px solid green;
+  color: green;
+  background-color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.btn-contact:hover{
+  border: 2px solid white;
+  color: white;
+  background-color: green;
+}
+
+.wrap-orther-contact{
+  /* border: 1px solid blue; */
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 2%;
+  height: fit-content;
+}
+
+.text-orther-contact {
+  /* border: 1px solid black; */
+  margin-top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.text-orther-contact::before,
+.text-orther-contact::after{
+  content: "";
+  width: 40%;
+  height: 3px;
+  background-color: #d4d4d4;
+  /* position: relative; */
+}
+
+.text-orther-contact::before{
+  margin-right: 1%;
+}
+
+.text-orther-contact::after{
+  margin-left: 1%;
+}
+
+.orther-contact-group{
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-top: 5%;
+}
+
+.orther-contact{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.fb:hover{
+  color: #3b5998;
+}
+
+.linkedin:hover{
+  color: #0077B5;
+}
+
+.telegram:hover{
+  color: #00405d;
+}
+
+.orther-contact i{
+  font-size: 100px;
+  z-index: 1;
+  background-color: #f4f4f4;
+  position: relative;
+}
+
+.orther-contact span{
+  margin-top: 5%;
+  font-weight: 600;
+  transition: all 0.3s ease-in-out;
+  transform: translateY(-150%);
+}
+
+.orther-contact i:hover + span{
+  transform: translateY(0);
+}
+/* ======================= Kết thúc phần section-contact ======================= */
 
 @media (max-width: 739px){
   .title-header{
