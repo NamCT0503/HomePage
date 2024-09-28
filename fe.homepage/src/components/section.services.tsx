@@ -39,7 +39,7 @@ const SectionServices: React.FC = () => {
             </div>
         </div>
       </div>
-      <div className="wrap-container-service-package">
+      <div className="wrap-container-service-package" id='price-web'>
         {/* <img src="/service-package-theme.jpg" alt="" /> */}
         <div className="content-package-web-service">
           <h2>GÓI DỊCH VỤ WEBSITE</h2>
@@ -212,7 +212,7 @@ const SectionServices: React.FC = () => {
         </div>
       </div>
       <img src="/services-separate-page.png" alt="" />
-      <div className="wrap-container-service-package app">
+      <div className="wrap-container-service-package app" id='price-app'>
         <div className="content-package-app-services">
           <h2>GÓI DỊCH VỤ APP</h2>
           <p>Giá thành ưu đãi - Chất lượng ưu việt</p>

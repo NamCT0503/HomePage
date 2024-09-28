@@ -69,17 +69,16 @@ const Header: React.FC = () => {
                   position: positionHeader as any,
                   opacity: opacityHeader
               }}
-              // hidden={true}
           >
             <div className="title-header">
                 <h1>My Website</h1>
             </div>
             <nav className='menubar'>
                 <ul>
-                <li id='intro' onClick={() => handleClick('intro')}><a href="#section-intro">Home</a></li>
-                <li id='about' onClick={() => handleClick('about')}><a href="#section-about">About</a></li>
-                <li id='services' onClick={() => handleClick('services')}><a href="#section-services">Services</a></li>
-                <li id='contact' onClick={() => handleClick('contact')}><a href="#section-contact">Contact</a></li>
+                  <li id='intro' onClick={() => handleClick('intro')}><a href="#section-intro">Home</a></li>
+                  <li id='about' onClick={() => handleClick('about')}><a href="#section-about">About</a></li>
+                  <li id='services' onClick={() => handleClick('services')}><a href="#section-services">Services</a></li>
+                  <li id='contact' onClick={() => handleClick('contact')}><a href="#section-contact">Contact</a></li>
                 </ul>
             </nav>
           </header>
@@ -87,10 +86,3 @@ const Header: React.FC = () => {
 };
 
 export default Header;
-// <div className='wrap-header'>
-          {/* <label htmlFor="set-show-hide" className='btn-menubar-mobile'>
-            <i className="fa-solid fa-bars"></i>
-          </label>
-          <input type="checkbox" id="set-show-hide" hidden/> */}
-          
-        {/* </div> */}

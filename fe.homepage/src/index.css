@@ -32,14 +32,6 @@ body, html {
   padding: 10px 0px 0px 10px;
 }
 
-/* .fa-solid.fa-bars{
-  display: none;
-} */
-
-/* #set-show-hide:checked ~ .header {
-  background-color: aqua;
-} */
-
 .header {
   width: 100%;
   background-color: #333;
@@ -50,7 +42,7 @@ body, html {
   top: 0;
   transition: all 0.3s ease-in-out;
   position: relative;
-  z-index: 1;
+  z-index: 100;
 }
 
 .header nav ul {
@@ -114,7 +106,215 @@ body, html {
   padding: 20px;
 }
 
-/* ======================= Bắt đâì phần section-services ======================= */
+/* ======================= Bắt đầu phần section-intro ======================= */
+#section-intro{
+  background-image: url(img/intro-bg.jpg);
+  background-color: black;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  position: relative;
+}
+#section-intro::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+#section-intro > *{
+  position: relative;
+  z-index: 2;
+  color: white;
+}
+
+.wrap-typing{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid white; */
+}
+
+.wrap-typing, .typing p{
+  font-weight: 600;
+  font-size: 35px;
+}
+
+.typing{
+  /* border: 1px solid black; */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.typing div{
+  margin-left: 1%;
+}
+
+.typing div p{
+  color: #EA4335;
+}
+
+.intro-typing{
+  z-index: 2;
+  overflow: hidden;
+  border-right: 0.15rem solid #EA4335;
+  white-space: nowrap;
+  animation: typing 2s steps(20, end) infinite, 
+             blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  0% {
+    width: 0;
+  }
+  50% {
+    width: 100%;
+  }
+  90%{
+    width: 100%;
+  }
+  100%{
+    width: 0;
+  }
+}
+
+@keyframes hidding {
+  from{
+    display: none;
+  }
+  to{
+    display: none;
+  }
+}
+
+@keyframes blink {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #EA4335;
+  }
+}
+
+.banner-intro{
+  width: 95%;
+  height: 80%;
+  margin-top: 5%;
+  margin-left: 2.5%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.banner{
+  border: 1px solid yellow;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.web-intro{
+  background-image: url(img/intro-banner-web.avif);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  transition: all 0.3s ease-in-out;
+  z-index: 1;
+}
+
+.banner img{
+  width: 60%;
+  height: 80%;
+  filter: drop-shadow(0 10px 10px white);
+  transition: all 0.5s ease-in-out;
+  transition-delay: 0.2s;
+}
+
+.app-intro{
+  background-image: url(img/intro-banner-appjpg.jpg);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  transition: all 0.3s ease-in-out;
+  color: black;
+}
+
+.app-intro img{
+  filter: drop-shadow(0 10px 10px black);
+}
+
+.content-banner{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  width: 35%;
+  height: fit-content;
+  overflow: hidden;
+}
+
+.content-banner > *{
+  font-weight: 600;
+  margin: 5% 0;
+  transition: all 0.5s ease-in-out;
+}
+
+.title-banner{
+  font-size: 45px;
+  margin-left: 15%;
+  transition-delay: 0.4s;
+}
+
+.title-banner ~ span{
+  font-size: 30px;
+  margin-left: 15%;
+  transition-delay: 0.2s;
+}
+
+.content-banner button{
+  border: 2px solid #C60000;
+  background-color: white;
+  color: #C60000;
+  padding: 3% 5%;
+  font-size: 20px;
+  margin-left: 15%;
+  animation-delay: 0.2s;
+}
+
+.content-banner button:hover{
+  border: 2px solid white;
+  background-color: #C60000;
+  color: white;
+}
+
+.choose-banner{
+  position: absolute;
+  top: -10%;
+  left: -40%;
+}
+
+.choose-banner i{
+  padding: 0 1%;
+  font-size: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.choose-banner i:hover{
+  cursor: pointer;
+}
+/* ======================= Bắt đầu phần section-intro ======================= */
+
+/* ======================= Bắt đầu phần section-services ======================= */
 #section-services{
   height: fit-content;
 }
@@ -685,19 +885,36 @@ body, html {
   color: #3b5998;
 }
 
+.fb i:hover{
+ box-shadow: 0 10px 10px #3b5998;
+ border-radius: 50%;
+}
+
 .linkedin:hover{
   color: #0077B5;
 }
 
+.linkedin i:hover{
+  box-shadow: 0 10px 10px #0077B5;
+  border-radius: 6px;
+ }
+
 .telegram:hover{
   color: #00405d;
 }
+
+.telegram i:hover{
+  box-shadow: 0 10px 10px #00405d;
+  border-radius: 50%;
+ }
 
 .orther-contact i{
   font-size: 100px;
   z-index: 1;
   background-color: #f4f4f4;
   position: relative;
+  cursor: pointer;
+  /* border-radius: 50%; */
 }
 
 .orther-contact span{
