@@ -5,7 +5,7 @@ const Header: React.FC = () => {
     const [paddingHeader, setPaddingHeader] = useState('20px');
     const [opacityHeader, setOpacityHeader] = useState(1);
     const [hiddenHeader, setHiddenHeader] = useState(false);
-    // const [widthScreen, setWidthScreen] = useState<number>();
+    const [hiddenUptoTop, setHiddenUptoTop] = useState('none');
 
     useEffect(() => {
       const widthScreen = window.innerWidth;
@@ -18,15 +18,17 @@ const Header: React.FC = () => {
             setPaddingHeader('20px');
             setPositionHeader('unset');
             setOpacityHeader(1);
+            setHiddenUptoTop('none');
             handleClick('null')
           } else {
             setPaddingHeader('5px');
             setPositionHeader('sticky');
             setOpacityHeader(0.3);
+            setHiddenUptoTop('block');
             if(scrollY > 82 && scrollY <= 1030) handleClick('intro'); //1268
             if(scrollY > 1031 && scrollY <= 1970) handleClick('about'); //2511
-            if(scrollY > 1971 && scrollY <= 4430) handleClick('services'); //3736
-            if(scrollY >= 4430) handleClick('contact'); //3736
+            if(scrollY > 1971 && scrollY <= 5600) handleClick('services'); //3736
+            if(scrollY > 5600) handleClick('contact'); //3736
           }
         } else {
           setHiddenHeader(true);
@@ -61,27 +63,68 @@ const Header: React.FC = () => {
       liTagCurrent!.style.paddingBottom = '5%';
     }
 
+    const handleClickHiddenMenuBar = () => {
+
+    }
+
     return (
         <header 
-              className="header" 
-              style={{
-                  padding: paddingHeader,
-                  position: positionHeader as any,
-                  opacity: opacityHeader
-              }}
+            className="header" 
+            id='header'
+            style={{
+                padding: paddingHeader,
+                position: positionHeader as any
+            }}
+        >
+          <div 
+            className="title-header" 
+            style={{opacity: opacityHeader}}
           >
-            <div className="title-header">
-                <h1>My Website</h1>
-            </div>
-            <nav className='menubar'>
-                <ul>
-                  <li id='intro' onClick={() => handleClick('intro')}><a href="#section-intro">Home</a></li>
-                  <li id='about' onClick={() => handleClick('about')}><a href="#section-about">About</a></li>
-                  <li id='services' onClick={() => handleClick('services')}><a href="#section-services">Services</a></li>
-                  <li id='contact' onClick={() => handleClick('contact')}><a href="#section-contact">Contact</a></li>
-                </ul>
-            </nav>
-          </header>
+            <h1>My Website</h1>
+          </div>
+          <nav className='menubar'>
+              <ul>
+                <li 
+                  id='intro' 
+                  style={{opacity: opacityHeader}} 
+                  onClick={() => handleClick('intro')}
+                >
+                  <a href="#section-intro">Home</a>
+                </li>
+                <li 
+                  id='about' 
+                  style={{opacity: opacityHeader}} 
+                  onClick={() => handleClick('about')}
+                >
+                  <a href="#section-about">About</a>
+                </li>
+                <li 
+                  id='services' 
+                  style={{opacity: opacityHeader}} 
+                  onClick={() => handleClick('services')}
+                >
+                  <a href="#section-services">Services</a>
+                </li>
+                <li 
+                  id='contact' 
+                  style={{opacity: opacityHeader}} 
+                  onClick={() => handleClick('contact')}
+                >
+                  <a href="#section-contact">Contact</a>
+                </li>
+              </ul>
+          </nav>
+          <i 
+            className="fa-solid fa-angles-up" 
+            id='upto-top' 
+            style={{display: hiddenUptoTop}}
+            onClick={() => {
+              setHiddenUptoTop('none');
+              document.getElementById('section-intro')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
+          </i>
+        </header>
     );
 };
 
