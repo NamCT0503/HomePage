@@ -4,6 +4,7 @@ body, html {
   font-family: Arial, sans-serif;
   scroll-behavior: smooth;
   height: 100%;
+  width: 100%;
 }
 
 ::-webkit-scrollbar {
@@ -148,7 +149,6 @@ body, html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid white; */
 }
 
 .wrap-typing, .typing p{
@@ -157,7 +157,6 @@ body, html {
 }
 
 .typing{
-  /* border: 1px solid black; */
   width: 100%;
   display: flex;
   justify-content: center;
@@ -218,7 +217,6 @@ body, html {
 }
 
 .banner{
-  border: 1px solid yellow;
   position: absolute;
   width: 100%;
   height: 100%;
@@ -382,7 +380,6 @@ body, html {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* border: 1px solid seagreen; */
 }
 
 .container-about-founder{
@@ -815,14 +812,12 @@ body, html {
 }
 
 .wrap-container-packages-app-service{
-  /* border: 1px solid black; */
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .container-packages-app-services{
-  /* border: 1px solid white; */
   width: 33%;
   color: black;
   display: flex;
@@ -989,16 +984,15 @@ body, html {
 .input-content-contact{
   position: relative;
   margin: 5% 0;
-  width: 80vh;
+  width: 100%;
+  max-width: 80vh;
 }
 
 .input-content-contact input{
-  /* position: relative; */
   height: 40px;
   width: 100%;
   font-size: 16px;
   outline: none;
-  /* transition: all 0.2s ease-in-out; */
 }
 
 .input-content-contact textarea{
@@ -1067,7 +1061,6 @@ body, html {
 }
 
 .wrap-orther-contact{
-  /* border: 1px solid blue; */
   width: 90%;
   display: flex;
   flex-direction: column;
@@ -1076,7 +1069,6 @@ body, html {
 }
 
 .text-orther-contact {
-  /* border: 1px solid black; */
   margin-top: 0;
   display: flex;
   justify-content: center;
@@ -1090,7 +1082,6 @@ body, html {
   width: 40%;
   height: 3px;
   background-color: #d4d4d4;
-  /* position: relative; */
 }
 
 .text-orther-contact::before{
@@ -1148,7 +1139,6 @@ body, html {
   background-color: #f4f4f4;
   position: relative;
   cursor: pointer;
-  /* border-radius: 50%; */
 }
 
 .orther-contact span{
@@ -1163,25 +1153,248 @@ body, html {
 }
 /* ======================= Kết thúc phần section-contact ======================= */
 
+/* Reponsive Mobile */
 @media (max-width: 739px){
-  .title-header{
-    font-size: 12px;
+  body, html {
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+    height: 100%;
+    padding-left: 1%;
   }
 
-  .header{
-    transform: translateY(-100%);
+  .title-header{
+    font-size: 6px;
   }
 
   .header nav ul li a{
-    font-size: 14px;
+    font-size: 12px;
   }
 
-  #section-intro{
+  .heading-section{
     margin-top: -20%;
   }
 
-  .fa-solid.fa-bars{
-    display: block;
-
+  .heading-section p{
+    font-size: 24px;
   }
+  /* ======================= Bắt đầu phần section-intro ======================= */
+  #section-intro{
+    margin-top: -20%;
+    height: 600px;
+    max-height: 500px;
+  }
+
+  .typing span, .typing div p{
+    font-size: 20px;
+  }
+
+  .br-intro span {
+    font-size: 18px;
+  }
+
+  .banner-intro{
+    height: 50%;
+  }
+
+  .web-intro, .app-intro{
+    background-repeat: repeat;
+    width: 100%;
+    height: 80%;
+  }
+
+  .content-banner{
+    height: 100%;
+    width: 100%;
+    max-width: 739px;
+  }
+
+  .title-banner{
+    font-size: 24px;
+  }
+
+  .title-banner ~ span{
+    font-size: 18px;
+  }
+
+  .banner img{
+    width: 40%;
+  }
+  /* ======================= Kết thúc phần section-intro ======================= */
+
+
+  /* ======================= Bắt đầu phần section-about ======================= */
+  .general-introduction{
+    flex-direction: column-reverse;
+  }
+
+  .img-gen-intro {
+    width: 90%;
+    margin: 8%;
+  }
+
+  .content-gen-intro{
+    width: 90%;
+  }
+
+  .container-about-founder{
+    width: 92%;
+    height: 20vh;
+  }
+
+  .content-part-hidden img {
+    height: 50%;
+  }
+
+  .content-show-all{
+    font-size: 14px;
+  }
+
+  .content-hidden h3{
+    font-size: 20px;
+  }
+
+  .content-hidden h3~span{
+    font-size: 12px;
+  }
+
+  .icon-founder i{
+    font-size: 35px;
+  }
+
+  .icon-founder i~span{
+    font-size: 10px;
+  }
+
+  .founder2{
+    transform: translateX(0);
+  }
+
+  .quick-contact::after{
+    margin-left: -15%;
+  }
+  /* ======================= Kết thúc phần section-about ======================= */
+
+
+  /* ======================= Bắt đầu phần section-services ======================= */
+  .wrap-container-overview-content{
+    margin-top: 15%;
+    flex-direction: column;
+  }
+
+  .wrap-container-image, .wrap-container-content-service-overview{
+    width: 100%;
+  }
+
+  .wrap-container-image img {
+    width: 80%;
+    height: 80%;
+  }
+
+  .wrap-container-content-service-overview h3{
+    font-size: 20px;
+  }
+
+  .list-overview p, .sub-list-overview p{
+    font-size: 15px;
+  }
+
+  .sub-list-overview{
+    margin-left: 5%;
+  }
+
+  .wrap-packages-web{
+    height: fit-content;
+    flex-direction: column;
+  }
+
+  .package-web{
+    width: 90%;
+    margin-top: 15%;
+    margin-bottom: 5%;
+  }
+
+  .sup-sale .prices-web{
+    margin-top: 30%;
+  }
+
+  .content-package-web{
+    height: 300px;
+  }
+
+  .wrap-container-packages-app-service{
+    flex-direction: column;
+  }
+
+  .container-packages-app-services{
+    width: 100%;
+    margin: 3% 0;
+    height: 15px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .container-packages-app-services:hover{
+    height: 100%;
+  }
+
+  .wrap-container-packages-app-service:hover > :not(:hover){
+    transform: translateY(0);
+  }
+
+  .container-packages-app-services button{
+    bottom: 2%;
+    left: 40%;
+    transform: translateX(250%);
+  }
+
+  .content-package-app:hover + button{
+    bottom: 2%;
+    left: 40%;
+    transform: translateX(0);
+  }
+  /* ======================= Kết thúc phần section-services ======================= */
+
+
+  /* ======================= Kết thúc phần section-services ======================= */
+  #section-contact{
+    height: fit-content;
+  }
+
+  .wrap-container-form-contact{
+    flex-direction: column-reverse;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .img-contact-form{
+    width: 95%;
+    height: 50%;
+    margin-left: 0;
+    margin-bottom: 5%;
+  }
+
+  .img-contact-form img{
+    height: 50%;
+  }
+
+  .wrap-form-contact{
+    width: 99%;
+  }
+
+  .btn-contact{
+    width: 103%;
+    margin-bottom: 5%;
+  }
+
+  .text-orther-contact{
+    margin-top: 10%;
+  }
+
+  .orther-contact i{
+    font-size: 200%;
+  }
+
+  .orther-contact span{
+    transform: translateY(30%);
+  }
+  /* ======================= Kết thúc phần section-services ======================= */
 }

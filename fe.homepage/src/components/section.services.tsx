@@ -327,9 +327,9 @@ const SectionServices: React.FC = () => {
             <button><i className="fa-solid fa-phone"></i>Gọi ngay!</button>
           </div>
           <div className="container-packages-app-services business">
-            <span>Personal</span>
+            <span>Business</span>
             <div className="contact-services-app">
-              <h1>Business</h1>
+              <h1>Liên hệ</h1>
               <h3>0985.008.180</h3>
             </div>
             <div className="content-package-app">

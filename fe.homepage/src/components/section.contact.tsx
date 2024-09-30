@@ -16,7 +16,6 @@ const SectionContact: React.FC = () => {
                 <label htmlFor="">Email của bạn</label>
               </div>
               <div className="input-content-contact">
-                {/* <input type="text" name="" id="" required/> */}
                 <textarea name="" id="" rows={6} required></textarea>
                 <label htmlFor="">Nội dung</label>
               </div>

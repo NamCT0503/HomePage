@@ -4,7 +4,6 @@ const Header: React.FC = () => {
     const [positionHeader, setPositionHeader] = useState('unset');
     const [paddingHeader, setPaddingHeader] = useState('20px');
     const [opacityHeader, setOpacityHeader] = useState(1);
-    const [hiddenHeader, setHiddenHeader] = useState(false);
     const [hiddenUptoTop, setHiddenUptoTop] = useState('none');
 
     useEffect(() => {
@@ -25,14 +24,12 @@ const Header: React.FC = () => {
             setPositionHeader('sticky');
             setOpacityHeader(0.3);
             setHiddenUptoTop('block');
-            if(scrollY > 82 && scrollY <= 1030) handleClick('intro'); //1268
-            if(scrollY > 1031 && scrollY <= 1970) handleClick('about'); //2511
-            if(scrollY > 1971 && scrollY <= 5600) handleClick('services'); //3736
-            if(scrollY > 5600) handleClick('contact'); //3736
+            if(scrollY > 82 && scrollY <= 1030) handleClick('intro');
+            if(scrollY > 1031 && scrollY <= 1970) handleClick('about');
+            if(scrollY > 1971 && scrollY <= 5600) handleClick('services');
+            if(scrollY > 5600) handleClick('contact');
           }
-        } else {
-          setHiddenHeader(true);
-        }
+        } 
       }
   
       window.addEventListener('scroll', handleScroll);
@@ -61,10 +58,6 @@ const Header: React.FC = () => {
 
       liTagCurrent!.style.borderBottom = '3px solid white';
       liTagCurrent!.style.paddingBottom = '5%';
-    }
-
-    const handleClickHiddenMenuBar = () => {
-
     }
 
     return (
