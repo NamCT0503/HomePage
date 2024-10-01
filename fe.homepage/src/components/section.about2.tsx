@@ -82,24 +82,27 @@ const SectionAbout2: React.FC = () => {
             <div className="container-content-aboout2">
                 <div className="content-about2">
                     <i className="fa-solid fa-check"></i>
-                    <p>Cung cấp các giải pháp công nghệ tối ưu cho doanh nghiệp và cá nhân.</p>
+                    <div>Cung cấp các giải pháp công nghệ tối ưu cho doanh nghiệp và cá nhân.</div>
                 </div>
                 <div className="content-about2">
                     <i className="fa-solid fa-check"></i>
-                    <p>Đa dạng nền tảng tích hợp dịch vụ phù hợp với yêu cầu khách hàng.</p>
+                    <div>Đa dạng nền tảng tích hợp dịch vụ phù hợp với yêu cầu khách hàng.</div>
                 </div>
                 <div className="content-about2">
                     <i className="fa-solid fa-check"></i>
-                    <p>Chi phí tốt nhất để có thể tiếp cận mọi tệp khách hàng.</p>
+                    <div>Chi phí tốt nhất để có thể tiếp cận mọi tệp khách hàng.</div>
                 </div>
                 <div className="content-about2">
                     <i className="fa-solid fa-check"></i>
-                    <p>Dễ dàng quản lý tài nguyên hệ thống của bạn.</p>
+                    <div>Dễ dàng quản lý, truy suất tài nguyên hệ thống của bạn.</div>
                 </div>
             </div>
             <div className="btn-content-about2">
                 <button className='about2-web'>Website</button>
                 <button className='about2-app'>Mobile</button>
+            </div>
+            <div className="img-about2">
+                <img src="/about2-bg.png" alt="" />
             </div>
         </div>
     </section>

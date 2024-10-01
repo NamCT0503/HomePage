@@ -419,7 +419,7 @@ body, html {
   align-items: center;
 }
 
-.content-about2 p{
+.content-about2 div{
   font-size: 21px;
 }
 
@@ -459,6 +459,10 @@ body, html {
 .about2-app:hover{
   background-color: #C60000;
   color: white;
+}
+
+.img-about2{
+  display: none;
 }
 /* ======================= Kết thúc phần section-about2 ======================= */
 
@@ -1105,7 +1109,7 @@ body, html {
     font-family: Arial, sans-serif;
     scroll-behavior: smooth;
     height: 100%;
-    padding-left: 1%;
+    overflow-x: hidden;
   }
 
   .title-header{
@@ -1118,6 +1122,7 @@ body, html {
 
   .heading-section{
     margin-top: -20%;
+    opacity: 1 !important;
   }
 
   .heading-section p{
@@ -1169,14 +1174,84 @@ body, html {
 
 
   /* ======================= Bắt đầu phần section-about2 ======================= */
+  #section-about2{
+    background-image: none;
+  }
 
+  #section-about2 .heading-section{
+    margin-top: 10%;
+  }
+
+  .wrap-container-quick-intro-about2{
+    opacity: 1 !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(0);
+    margin-top: -20%;
+  }
+
+  .qucick-intro-about2{
+    width: 90%;
+    margin: 5%;
+  }
+
+  .content-quick-intro-about2 h3,
+  .content-quick-intro-about2 span{
+    font-size: 20px;
+  }
+
+  .wrap-container-content-about2{
+    opacity: 1 !important;
+  }
+
+  .container-content-aboout2{
+    z-index: 2;
+  }
+
+  .content-about2{
+    align-items: flex-start;
+    justify-content: center;
+    margin-right: 2%;
+    margin-top: 2%;
+  }
+
+  .content-about2 div{
+    font-size: 16px;
+    text-align: left;
+  }
+
+  .btn-content-about2{
+    margin-top: 10%;
+    z-index: 2;
+  }
+
+  .btn-content-about2 button{
+    padding: 7% 32%;
+  }
+
+  .img-about2{
+    display: block;
+    width: 100%;
+    border: 1px solid black;
+    transform: translateX(-41%);
+  }
+
+  .img-about2 img{
+    width: 100%;
+    transform: scale(1.8);
+  }
   /* ======================= Kết thúc phần section-about2 ======================= */
 
 
   /* ======================= Bắt đầu phần section-services ======================= */
+  #section-services{
+    z-index: 3;
+  }
   .wrap-container-overview-content{
     margin-top: 15%;
     flex-direction: column;
+    transform: translateX(0) !important;
   }
 
   .wrap-container-image, .wrap-container-content-service-overview{
@@ -1198,6 +1273,11 @@ body, html {
 
   .sub-list-overview{
     margin-left: 5%;
+  }
+
+  .wrap-container-service-package,
+  .wrap-container-service-package + img{
+    opacity: 1 !important;
   }
 
   .wrap-packages-web{
@@ -1224,27 +1304,25 @@ body, html {
   }
 
   .container-packages-app-services{
-    width: 100%;
+    width: 90%;
     margin: 3% 0;
-    height: 15px;
-    transition: all 0.3s ease-in-out;
-  }
-
-  .container-packages-app-services:hover{
     height: 100%;
-  }
-
-  .wrap-container-packages-app-service:hover > :not(:hover){
-    transform: translateY(0);
+    transition: all 0.3s ease-in-out;
   }
 
   .container-packages-app-services button{
     bottom: 2%;
     left: 40%;
-    transform: translateX(250%);
+    transform: translateX(500%);
   }
 
   .content-package-app:hover + button{
+    bottom: 2%;
+    left: 40%;
+    transform: translateX(0);
+  }
+
+  .content-package-app + button:hover{
     bottom: 2%;
     left: 40%;
     transform: translateX(0);
@@ -1261,6 +1339,7 @@ body, html {
     flex-direction: column-reverse;
     justify-content: center;
     align-items: center;
+    transform: translateX(0) !important;
   }
 
   .img-contact-form{
@@ -1285,6 +1364,13 @@ body, html {
 
   .text-orther-contact{
     margin-top: 10%;
+    opacity: 1 !important;
+  }
+
+  .orther-contact{
+    transform: translateY(0) !important;
+    overflow: auto;
+    height: 100px;
   }
 
   .orther-contact i{
