@@ -5,6 +5,7 @@ body, html {
   scroll-behavior: smooth;
   height: 100%;
   width: 100%;
+  overflow-x: visible;
 }
 
 ::-webkit-scrollbar {
@@ -125,6 +126,7 @@ body, html {
   background-repeat: no-repeat;
   background-size: 100%;
   position: relative;
+  /* overflow: hidden; */
 }
 #section-intro::before {
   content: "";
@@ -465,6 +467,7 @@ body, html {
 /* ======================= Bắt đầu phần section-services ======================= */
 #section-services{
   height: fit-content;
+  overflow-x: hidden;
 }
 
 .wrap-container-overview-content{
@@ -744,7 +747,7 @@ body, html {
   color: black;
   display: flex;
   flex-direction: column;
-  margin: 0 0.3%;
+  border-left: 1px solid grey;
   position: relative;
   transition: all 0.5s ease-in-out;
   
@@ -755,7 +758,7 @@ body, html {
 }
 
 .wrap-container-packages-app-service:hover > :not(:hover){
-  transform: translateY(100%);
+  opacity: 0.1;
 }
 
 .contact-services-app h1, .contact-services-app h3{
@@ -884,6 +887,7 @@ body, html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow-x: hidden;
 }
 
 .wrap-container-form-contact{
@@ -894,6 +898,7 @@ body, html {
   padding: 1%;
   display: flex;
   transition: all 0.5s ease-in-out;
+  /* overflow: hidden; */
 }
 
 .wrap-form-contact{
@@ -904,11 +909,18 @@ body, html {
   background-color: white;
 }
 
+.wrap-form-contact form{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 70%;
+}
+
 .input-content-contact{
   position: relative;
-  margin: 5% 0;
+  margin: 1% 0;
   width: 100%;
-  max-width: 80vh;
 }
 
 .input-content-contact input{
@@ -1031,6 +1043,7 @@ body, html {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
   /* transform: translateY(-100%); */
   transition: all 0.5s ease-in-out;
 }
@@ -1156,7 +1169,7 @@ body, html {
 
 
   /* ======================= Bắt đầu phần section-about2 ======================= */
-  
+
   /* ======================= Kết thúc phần section-about2 ======================= */
 
 

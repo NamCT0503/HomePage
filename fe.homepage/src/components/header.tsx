@@ -5,6 +5,7 @@ const Header: React.FC = () => {
     const [paddingHeader, setPaddingHeader] = useState('20px');
     const [opacityHeader, setOpacityHeader] = useState(1);
     const [hiddenUptoTop, setHiddenUptoTop] = useState('none');
+    const [widthHeadeer, setWidthheader] = useState('100%');
 
     useEffect(() => {
       const widthScreen = window.innerWidth;
@@ -20,7 +21,8 @@ const Header: React.FC = () => {
             setHiddenUptoTop('none');
             handleClick('null')
           } else {
-            setPaddingHeader('5px');
+            setWidthheader('100%')
+            // setPaddingHeader('5px 0');
             setPositionHeader('sticky');
             setOpacityHeader(0.3);
             setHiddenUptoTop('block');
@@ -72,7 +74,8 @@ const Header: React.FC = () => {
             id='header'
             style={{
                 padding: paddingHeader,
-                position: positionHeader as any
+                position: positionHeader as any,
+                width: widthHeadeer
             }}
         >
           <div 
