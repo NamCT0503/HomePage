@@ -11,10 +11,10 @@ const Header: React.FC = () => {
 
       const handleScroll = () => {
         const scrollY = window.scrollY;
-        // console.log('Scroll position: ', scrollY);
+        console.log('Scroll position: ', scrollY);
         if(widthScreen > 739){
           if(scrollY === 0){
-            setPaddingHeader('20px');
+            setPaddingHeader('20px'); 
             setPositionHeader('unset');
             setOpacityHeader(1);
             setHiddenUptoTop('none');
@@ -24,10 +24,16 @@ const Header: React.FC = () => {
             setPositionHeader('sticky');
             setOpacityHeader(0.3);
             setHiddenUptoTop('block');
-            if(scrollY > 82 && scrollY <= 1030) handleClick('intro');
-            if(scrollY > 1031 && scrollY <= 1970) handleClick('about');
-            if(scrollY > 1971 && scrollY <= 5600) handleClick('services');
-            if(scrollY > 5600) handleClick('contact');
+            if(scrollY > 82 && scrollY <= 760){
+              handleClick('intro');//1030
+            }
+            if(scrollY > 761 && scrollY <= 1760){
+              handleClick('about2');//1970
+            }
+            if(scrollY > 1961 && scrollY <= 4590){
+              handleClick('services');//5600
+            }
+            if(scrollY > 4591) handleClick('contact');
           }
         } 
       }
@@ -85,11 +91,11 @@ const Header: React.FC = () => {
                   <a href="#section-intro">Home</a>
                 </li>
                 <li 
-                  id='about' 
+                  id='about2' 
                   style={{opacity: opacityHeader}} 
                   onClick={() => handleClick('about')}
                 >
-                  <a href="#section-about">About</a>
+                  <a href="#section-about2">About</a>
                 </li>
                 <li 
                   id='services' 

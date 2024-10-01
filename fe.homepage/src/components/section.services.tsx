@@ -1,13 +1,49 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const SectionServices: React.FC = () => {
-  console.log(process.env.IMG_OVERVIEW)
+  const [opacityHeading, setOpacityHeading] = useState(0);
+  const [transXWrapOverContent, setTransXWrapOverContent] = useState('translateX(-100%)');
+  const [opacityWrapPackagesWeb, setOpacityWrapPackagesWeb] = useState(0);
+  const [opacityWrapPackagesApp, setOpacityPackagesApp] = useState(0);
+
+  useEffect(() => {
+    const widthScreen = window.innerWidth;
+
+    const handleScroll = () => {
+        const scrollY = window.scrollY;
+        if(widthScreen > 739){
+            if(scrollY > 1550){
+              setOpacityHeading(1);
+              setTransXWrapOverContent('translateX(0)');
+            }
+            if(scrollY > 2360) setOpacityWrapPackagesWeb(1);
+            if(scrollY > 3320) setOpacityPackagesApp(1);
+        } 
+    }
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+        window.removeEventListener('scroll', handleScroll)
+    }
+  }, [0, window.location.reload]);
+
   return (
     <section id="section-services" className="section">
-      <div className="heading-section">
+      <div 
+        className="heading-section"
+        style={{
+          opacity: opacityHeading
+        }}
+      >
         <p>Dịch vụ của chúng tôi</p>
       </div>
-      <div className="wrap-container-overview-content">
+      <div 
+        className="wrap-container-overview-content"
+        style={{
+          transform: transXWrapOverContent
+        }}
+      >
         <div className="wrap-container-image">
           <img src="/services-overview.png" width={200} height={200} />
         </div>
@@ -39,8 +75,13 @@ const SectionServices: React.FC = () => {
             </div>
         </div>
       </div>
-      <div className="wrap-container-service-package" id='price-web'>
-        {/* <img src="/service-package-theme.jpg" alt="" /> */}
+      <div 
+        className="wrap-container-service-package" 
+        id='price-web'
+        style={{
+          opacity: opacityWrapPackagesWeb
+        }}
+      >
         <div className="content-package-web-service">
           <h2>GÓI DỊCH VỤ WEBSITE</h2>
           <p>Công nghệ web hàng đầu - Tiết kiệm chi phí - Bàn giao web nhanh chóng</p>
@@ -211,8 +252,21 @@ const SectionServices: React.FC = () => {
           </div>
         </div>
       </div>
-      <img src="/services-separate-page.png" alt="" />
-      <div className="wrap-container-service-package app" id='price-app'>
+      <img 
+        src="/services-separate-page.png" 
+        alt=""
+        style={{
+          opacity: opacityWrapPackagesApp,
+          transition: 'all 0.5s ease-in-out'
+        }}
+      />
+      <div 
+        className="wrap-container-service-package app" 
+        id='price-app'
+        style={{
+          opacity: opacityWrapPackagesApp
+        }}
+      >
         <div className="content-package-app-services">
           <h2>GÓI DỊCH VỤ APP</h2>
           <p>Giá thành ưu đãi - Chất lượng ưu việt</p>

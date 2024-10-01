@@ -9,6 +9,7 @@ import SectionAbout from './components/section.about';
 import SectionServices from './components/section.services';
 import SectionContact from './components/section.contact';
 import { Helmet } from 'react-helmet';
+import SectionAbout2 from './components/section.about2';
 
 function App() {
   return (
@@ -18,7 +19,8 @@ function App() {
       </Helmet>
       <Header></Header>
       <SectionIntro></SectionIntro>
-      <SectionAbout></SectionAbout>
+      {/* <SectionAbout></SectionAbout> */}
+      <SectionAbout2></SectionAbout2>
       <SectionServices></SectionServices>
       <SectionContact></SectionContact>
       <Footer></Footer>
