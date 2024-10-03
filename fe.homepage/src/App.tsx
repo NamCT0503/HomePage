@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet';
+import {Routes, Route} from 'react-router-dom'
 import logo from './logo.svg';
 import './App.css';
 import Header from './components/header';
@@ -8,8 +9,8 @@ import SectionIntro from './components/section.intro';
 import SectionAbout from './components/section.about';
 import SectionServices from './components/section.services';
 import SectionContact from './components/section.contact';
-import { Helmet } from 'react-helmet';
 import SectionAbout2 from './components/section.about2';
+import BreakingNews from './components/breaking.news';
 
 function App() {
   return (
@@ -17,12 +18,16 @@ function App() {
       <Helmet>
         <script src="https://kit.fontawesome.com/1c03073856.js" crossOrigin="anonymous"></script>
       </Helmet>
-      <Header></Header>
-      <SectionIntro></SectionIntro>
-      {/* <SectionAbout></SectionAbout> */}
-      <SectionAbout2></SectionAbout2>
-      <SectionServices></SectionServices>
-      <SectionContact></SectionContact>
+      <Routes>
+        <Route path='/' element={[
+          <Header></Header>,
+          <SectionIntro></SectionIntro>, 
+          <SectionAbout2></SectionAbout2>,
+          <SectionServices></SectionServices>,
+          <SectionContact></SectionContact>
+        ]}/>
+        <Route path='/blogs/*' element={<BreakingNews></BreakingNews>} />
+      </Routes>
       <Footer></Footer>
     </div>
   );

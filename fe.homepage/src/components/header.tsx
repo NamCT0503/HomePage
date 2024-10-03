@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Header: React.FC = () => {
     const [positionHeader, setPositionHeader] = useState('unset');
@@ -113,6 +114,12 @@ const Header: React.FC = () => {
                   onClick={() => handleClick('contact')}
                 >
                   <a href="#section-contact">Contact</a>
+                </li>
+                <li 
+                  id='blogs' 
+                  style={{opacity: opacityHeader}} 
+                >
+                  <Link to={'/blogs'}>Blogs</Link>
                 </li>
               </ul>
           </nav>
