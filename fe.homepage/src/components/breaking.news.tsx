@@ -56,8 +56,24 @@ const BreakingNews: React.FC = () => {
         </Helmet>
         <section id='section-news' className={style.section}>
             <header className={style.header} id='header'>
-                <div className={style.titleHeader}>
-                    <h1>My Website</h1>
+                <Link 
+                    to={'/'} 
+                    style={{
+                        textDecoration: 'none',
+                        color: 'white'
+                    }}
+                >
+                    <div className={style.titleHeader}>
+                        <h1>My Website</h1>
+                    </div>
+                </Link>
+                <div className={style.containerBtnSignupSignin}>
+                    <div className={style.btnSignup}>
+                        Đăng ký
+                    </div>
+                    <div className={style.btnSignin}>
+                        Đăng nhập
+                    </div>
                 </div>
             </header>
             <div className={style.wrapMenubarBlogs}>

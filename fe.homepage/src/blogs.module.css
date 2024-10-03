@@ -1,26 +1,9 @@
-/* html, body {
-    overflow-x: ;
-} */
-
-/* #section-news{
-    border: 10px solid black;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-} */
-
-/* #section-news header{
-    margin-top: -6.5%;
-    position: sticky;
-} */
-
 .section{
     width: 100%;
     height: fit-content;
 }
 
-.section header{
+.header{
     width: 100%;
     background-color: #333;
     color: white;
@@ -33,9 +16,48 @@
     z-index: 100;
 }
 
+.containerBtnSignupSignin{
+    width: 15%;
+    padding: 0 2%;
+    margin-right: 2%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.containerBtnSignupSignin div{
+    padding: 3% 6%;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease-in-out;
+}
+
+.btnSignup{
+    border: 1px solid #c60000;
+    background-color: white;
+    color: #c60000;
+}
+
+.btnSignup:hover{
+    border: 1px solid white;
+    background-color: #c60000;
+    color: white;
+    box-shadow: 0 0 5px white;
+}
+
+.btnSignin{
+    border: 1px solid #c60000;
+    background-color: #c60000;
+    color: white;
+}
+
+.btnSignin:hover{
+    box-shadow: 0 0 20px #c60000;
+}
+
 /* ======================= Bắt đầu phần menubar ======================= */
 .wrapMenubarBlogs{
-    /* border: 1px solid black; */
     margin-top: 2%;
     display: flex;
     justify-content: space-around;
@@ -63,9 +85,7 @@
     padding: 0.9% 5%;
     border-radius: 20px;
     transition: all 0.3s ease-in-out;
-    /* border: 1px solid black; */
     color: black;
-    /* width: 5%; */
     display: flex;
     justify-content: center;
     align-items: center;
