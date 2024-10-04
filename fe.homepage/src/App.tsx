@@ -11,6 +11,7 @@ import SectionServices from './components/section.services';
 import SectionContact from './components/section.contact';
 import SectionAbout2 from './components/section.about2';
 import BreakingNews from './components/breaking.news';
+import BlogContent from './components/blog.content';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <SectionContact></SectionContact>
         ]}/>
         <Route path='/blogs/*' element={<BreakingNews></BreakingNews>} />
+        <Route path='blogs/post/*' element={<BlogContent></BlogContent>}></Route>
       </Routes>
       <Footer></Footer>
     </div>

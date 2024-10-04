@@ -1,11 +1,18 @@
 import React from "react";
-import style from "../blogs.module.css"
+import { useNavigate } from 'react-router-dom';
+import style from "../css module/blogs.module.css"
 
 const BlogAll: React.FC = () => {
+    const navigate = useNavigate();
+
+    const handleClickViewBlog = () => {
+        navigate('post/view-blog');
+    }
+
     return(
         <div className={style.wrapContainerBlogAll}>
             <div className={style.containerBlogOutstanding}>
-                <img src="/blog-all-outstanding.png" alt="" />
+                <img src="/blog-all-outstanding.png" onClick={handleClickViewBlog}/>
                 <div className={style.contentOutStandingAll}>
                     <div className={style.headerOutstandingAll}>
                         Weekly Articles with Insight — Our blog at 
@@ -91,7 +98,8 @@ const BlogAll: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                </div><div className={style.containerGroup3Blogs}>
+                </div>
+                <div className={style.containerGroup3Blogs}>
                     <div className={style.wrapContainerAllBlog}>
                         <img src="/blog1.png" alt="" />
                         <div className={style.containerBlog}>
@@ -162,20 +170,5 @@ const BlogAll: React.FC = () => {
         </div>
     )
 }
-//space 25%
-export default BlogAll;
 
-{/* <div className={style.containerPrevNext}>
-    <div className={style.pageCurrent}></div>
-    <div className={style.totalPage}>
-        {number.map(item => {
-            return(
-                <div>{item}</div>
-            )
-        })}
-    </div>
-    <div className={style.btnPrevNext}>
-        <i className="fa-solid fa-chevron-left"></i>
-        <i className="fa-solid fa-chevron-right"></i>
-    </div>
-</div> */}
+export default BlogAll;
