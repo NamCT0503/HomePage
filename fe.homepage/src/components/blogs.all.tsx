@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom';
-import style from "../css module/blogs.module.css"
+import style from "../css.module/blogs.module.css"
 
 const BlogAll: React.FC = () => {
     const navigate = useNavigate();

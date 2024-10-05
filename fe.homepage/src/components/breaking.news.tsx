@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import style from "../css module/blogs.module.css";
+import style from "../css.module/blogs.module.css";
 import { Link, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import BlogAll from './blogs.all';

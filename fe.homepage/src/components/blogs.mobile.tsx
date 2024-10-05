@@ -1,4 +1,4 @@
-import style from "../css module/blogs.module.css";
+import style from "../css.module/blogs.module.css";
 
 const BlogsMobile = () => {
     return(

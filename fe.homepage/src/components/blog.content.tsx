@@ -1,8 +1,8 @@
 // import { Helmet } from 'react-helmet';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import style from "../css module/blog.content.module.css";
-import parent from "../css module/blogs.module.css";
+import style from "../css.module/blog.content.module.css";
+import parent from "../css.module/blogs.module.css";
 import { useEffect, useState } from 'react';
 
 const BlogContent = () => {
