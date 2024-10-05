@@ -5,10 +5,12 @@ import db from "../models";
 import { Op, where } from "sequelize";
 import { AccountEntity } from "../entities/app.entity";
 
-export const getAccount = async (param: string | number) => {
+//Superadmin được phép lấy ra danh sách tài khoản hoặc tìm kiếm tài khoản
+//Admin chỉ được phép lấy ra thông tin tài khoản của mình
+export const getAccount = async (param: string | number, idMyOwn: number) => {
     try {
         let result: any;
-        if(param){
+        if(param && !idMyOwn){
             const conditions = `%${param}%`
             const searchConditions = {
                 [Op.or]: [
@@ -20,7 +22,11 @@ export const getAccount = async (param: string | number) => {
             }
             result = await db.Account.findAll({ where: searchConditions });
         } else {
-            result = await db.Account.findAll();
+            if(idMyOwn){
+                result = await db.Account.findByPk(idMyOwn);
+            } else {
+                result = await db.Account.findAll();
+            }
         }
 
         return result;
@@ -108,6 +114,53 @@ export const signup = async (data: AccountEntity) => {
         return{ status: 200, message: 'Created Successfully!'};
     } catch (error) {
         console.error('=== In signup: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+//Chỉ được phép sửa thông tin tài khoản của mình (dù là admin hay superadmin)
+export const upateAccount = async (data: Partial<AccountEntity>, payload: any) => {
+    try {
+        const userExisted = await db.Account.findByPk(payload.sub);
+        if(!userExisted) return{ status: 400, message: 'NotFound Account'};
+        if(userExisted.username !== payload.username) return{ status: 400, message: 'Confirm Info Incorrect!'};
+
+        const formatAccount = {
+            fullname: data.fullname? data.fullname: userExisted.fullname,
+            username: data.username? data.username: userExisted.username,
+            password: data.password? await hashPassword(data.password): userExisted.password,
+        }
+
+        await db.Account.update(formatAccount,{
+            where: { id: userExisted.id}
+        });
+
+        return{ status: 200, message: 'Updated Successfully!'};
+    } catch (error) {
+        console.error('=== In updateAccount: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+//Admin chỉ được phép xóa tài khoản của mình
+//Superadmin được phép xóa tất cả tài khoản
+export const deleteAccount = async (id: number, isMyOwn: any) => {
+    try {
+        if(id && isMyOwn.role === 'superadmin'){
+            await db.Account.destroy({ where: { id: id}});
+        } else {
+            await db.Account.destroy({ where: { id: isMyOwn.sub}});
+        }
+
+        return{ status: 200, message: "Deleted Sucessfully!"};
+    } catch (error) {
+        console.error('=== In deleteAccount: '+error);
         return{
             status: 500,
             messgae: error

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import ServiceApp from "./ServiceApp";
 
 class ContentApp extends Model{
     public id!: number;
@@ -31,7 +32,7 @@ ContentApp.init(
             allowNull: true,
             defaultValue: 'fa-solid fa-circle'
         },
-        subtitle: {
+        content: {
             type: DataTypes.STRING,
             allowNull: false
         }
@@ -43,5 +44,15 @@ ContentApp.init(
         paranoid: true
     }
 )
+
+ServiceApp.hasMany(ContentApp, {
+    foreignKey: 'serapp_id',
+    as: 'contentapps'
+});
+
+ContentApp.belongsTo(ServiceApp, {
+    foreignKey: 'serapp_id',
+    as: 'serviceapps'
+});
 
 export default ContentApp;

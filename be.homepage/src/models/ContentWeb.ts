@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import ServiceWeb from "./ServiceWeb";
 
 class ContentWeb extends Model{
     public id!: number;
@@ -37,5 +38,15 @@ ContentWeb.init(
         paranoid: true
     }
 )
+
+ServiceWeb.hasMany(ContentWeb, {
+    foreignKey: 'serweb_id',
+    as: 'contentwebs'
+});
+
+ContentWeb.belongsTo(ServiceWeb, {
+    foreignKey: 'serweb_id',
+    as: 'servicewebs'
+})
 
 export default ContentWeb;

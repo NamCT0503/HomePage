@@ -19,7 +19,7 @@ module.exports = {
                 allowNull: true,
                 defaultValue: 'fa-solid fa-circle'
             },
-            subtitle: {
+            content: {
                 type: Sequelize.STRING,
                 allowNull: false
             },

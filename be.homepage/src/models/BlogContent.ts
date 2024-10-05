@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import Blog from "./Blog";
 
 class BlogContent extends Model{
     public id!: number;
@@ -42,5 +43,15 @@ BlogContent.init(
         paranoid: true
     }
 )
+
+Blog.hasMany(BlogContent, {
+    foreignKey: 'blogid',
+    as: 'blogcontents'
+});
+
+BlogContent.belongsTo(Blog, {
+    foreignKey: 'blogid',
+    as: 'blogs'
+})
 
 export default BlogContent;

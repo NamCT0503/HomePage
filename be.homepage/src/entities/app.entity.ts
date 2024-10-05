@@ -29,26 +29,26 @@ export interface BlogContentEntity {
     content: string;
 }
 
-export interface ServiceWeb {
+export interface ServiceWebEntity {
     id?: number;
     title: string;
-    price: number;
+    price: string;
 }
 
-export interface ContentWeb {
+export interface ContentWebEntity {
     id?: number;
     serweb_id: number;
     content: string;
 }
 
-export interface ServiceApp {
+export interface ServiceAppEntity {
     id?: number;
     type: string;
     title: string;
     subtitle: string;
 }
 
-export interface ContentApp {
+export interface ContentAppEntity {
     id?: number;
     serapp_id: number;
     icon?: string;

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import Account from "./Account";
 
 class Blog extends Model{
     public id!: number;
@@ -70,5 +71,15 @@ Blog.init(
         paranoid: true
     }
 )
+
+Account.hasMany(Blog, {
+    foreignKey: 'postedBy',
+    as: 'blogs'
+});
+
+Blog.belongsTo(Account, {
+    foreignKey: 'postedBy',
+    as: 'accounts'
+})
 
 export default Blog;
