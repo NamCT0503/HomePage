@@ -5,7 +5,9 @@ export const controller_getContentApp = async (
     req: Request,
     res: Response
 ) => {
-    res.json(await getContentApp(req.body.serapp_id));
+    const serapp_id = parseInt(req.params.id);
+    const ref = req.params.ref;
+    res.json(await getContentApp(serapp_id, ref));
 }
 
 export const controller_createContentApp = async (

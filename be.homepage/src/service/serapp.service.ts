@@ -1,5 +1,6 @@
 import { ServiceAppEntity } from "../entities/app.entity";
 import db from "../models";
+import { deleteContentApp } from "./contentapp.service";
 
 export const getAllSerApp = async () => {
     try {
@@ -68,6 +69,8 @@ export const updateSerAppPackage = async (data: Partial<ServiceAppEntity>) => {
 export const deleteSerAppPackage = async (id: number) => {
     try {
         if(!id || id === 0) return{ status: 400, message: "DataInput Invali!"};
+
+        await deleteContentApp(id, 'all');
 
         await db.ServiceApp.destroy({ where: { id: id}});
         return{ status: 200, message: "Deleted Successfully!"};

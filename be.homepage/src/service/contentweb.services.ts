@@ -1,12 +1,37 @@
 import { ContentWebEntity } from "../entities/app.entity";
 import db from "../models";
+import ServiceWeb from "../models/ServiceWeb";
 
 //Lấy tất cả danh sách nội dung
 //Hoặc lấy nội dung theo serweb_id
-export const getContentWeb = async (id?: number) => {
+export const getContentWeb = async (id: number, ref: string) => {
     try {
         let result: any;
         if(id){
+            if(ref !== ':ref'){
+                result = await db.ContentWeb.findAll({
+                    attributes: ['id', 'serweb_id', 'content'],
+                    include: [{
+                        model: ServiceWeb,
+                        as: 'servicewebs',
+                        attributes: ['title', 'price']
+                    }],
+                    where: { serweb_id: id}
+                });
+
+                const arrResult: any[] = [];
+                await result?.map((item: any) => {
+                    arrResult.push({
+                        id: item.id,
+                        serweb_id: item.serweb_id,
+                        title: item.servicewebs.title,
+                        price: item.servicewebs.price
+                    })
+                })
+
+                return arrResult;
+            }
+
             const contentwebExxisted = await db.ServiceWeb.findByPk(id);
             if(!contentwebExxisted)
                 return{ status: 400, message: "NotFound Record Match ID!"};
@@ -15,6 +40,30 @@ export const getContentWeb = async (id?: number) => {
                 where: { serweb_id: id}
             });
             return result;
+        }
+
+        if(ref !== ':ref'){
+            const findAll = await db.ContentWeb.findAll({
+                attributes: ['id', 'serweb_id', 'content'],
+                include: [{
+                    model: ServiceWeb,
+                    as: 'servicewebs',
+                    attributes: ['title', 'price']
+                }],
+            });
+
+            const arrResult: any[] = [];
+            await findAll?.map((items: any) => {
+                arrResult.push({
+                    id: items.id,
+                    serweb_id: items.serweb_id,
+                    title: items.servicewebs.title,
+                    price: items.servicewebs.price,
+                    content: items.content
+                })
+            });
+
+            return arrResult;
         }
 
         result = await db.ContentWeb.findAll();

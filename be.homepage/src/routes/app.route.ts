@@ -24,7 +24,7 @@ router.put('/service/web/upate', validateUserMiddleware() as any, controller_upd
 router.delete('/service/web/delete', validateUserMiddleware() as any, controller_deleteSerWebPackage);
 
 //ContentWeb
-router.get('/service/web/get-content', validateUserMiddleware() as any, controller_getContentWeb);
+router.get('/service/web/get-content/:id/:ref', controller_getContentWeb);
 router.post('/service/web/content/create', validateUserMiddleware() as any, controller_createContentWebPackage);
 router.put('/service/web/content/update', validateUserMiddleware() as any, controller_updateContentWeb);
 router.delete('/service/web/content/delete', validateUserMiddleware() as any, controller_deleteContentWeb);
@@ -37,7 +37,7 @@ router.put('/service/app/update', validateUserMiddleware() as any, controller_up
 router.delete('/service/app/delete', validateUserMiddleware() as any, controller_deleteSerAppPackage);
 
 //ContentApp
-router.get('/service/app/content/get-list', validateUserMiddleware() as any, controller_getContentApp);
+router.get('/service/app/get-content/:id/:ref', controller_getContentApp);
 router.post('/service/app/content/create', validateUserMiddleware() as any, controller_createContentApp);
 router.put('/service/app/content/update', validateUserMiddleware() as any, controller_updateContentApp);
 router.delete('/service/app/content/delete', validateUserMiddleware() as any, controller_deleteContentApp);

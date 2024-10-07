@@ -13,7 +13,7 @@ const Header: React.FC = () => {
 
       const handleScroll = () => {
         const scrollY = window.scrollY;
-        console.log('Scroll position: ', scrollY);
+        // console.log('Scroll position: ', scrollY);
         if(widthScreen > 739){
           if(scrollY === 0){
             setPaddingHeader('20px'); 

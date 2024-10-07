@@ -5,7 +5,8 @@ export const controller_getContentWeb = async (
     req: Request,
     res: Response
 ) => {
-    res.json(await getContentWeb(req.body.serweb_id));
+    const serweb_id = parseInt(req.params.id);
+    res.json(await getContentWeb(serweb_id, req.params.ref));
 }
 
 export const controller_createContentWebPackage = async (

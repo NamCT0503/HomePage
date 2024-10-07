@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
+// const url = 'http://localhost:5000/api/homepage/service/web/get-content';
+const urlWeb = `http://localhost:5000/api/homepage/service/web/get-content/:id/${'ref'}`;
+const urlApp = `http://localhost:5000/api/homepage/service/app/get-content/:id/${'ref'}`;
+
 const SectionServices: React.FC = () => {
   const [opacityHeading, setOpacityHeading] = useState(0);
   const [transXWrapOverContent, setTransXWrapOverContent] = useState('translateX(-100%)');
   const [opacityWrapPackagesWeb, setOpacityWrapPackagesWeb] = useState(0);
   const [opacityWrapPackagesApp, setOpacityPackagesApp] = useState(0);
+  const [dataSerWeb, setDataSerWeb] = useState<any[]>();
+  const [filterDataWeb, setFilterDateWeb] = useState<any[]>();
+  const [dataSerApp, setDataSerApp] = useState<any[]>();
+  const [filterDataApp, setFilterDateApp] = useState<any[]>();
+
+  useEffect(() => {
+    fetcher(urlWeb, true);
+    fetcher(urlApp, false);
+  }, []);
 
   useEffect(() => {
     const widthScreen = window.innerWidth;
@@ -28,6 +41,39 @@ const SectionServices: React.FC = () => {
     }
   }, [0, window.location.reload]);
 
+  const fetcher = async (url: string, type: boolean) => {
+    try {
+      const res = await fetch(url, {
+        method: "GET"
+      });
+      const data = await res.json();
+      
+      // const filData = await data?.filter((items: any, index: any, self: any) => 
+      //   index === self?.findIndex((filter: any) => filter.serweb_id === items.serweb_id)
+      // ); 
+
+      if(type){
+        const filData = await data?.filter((items: any, index: any, self: any) => 
+          index === self?.findIndex((filter: any) => filter.serweb_id === items.serweb_id)
+        ); 
+        console.log('true')
+        setDataSerWeb(data);
+        setFilterDateWeb(filData);
+      } else {
+        const filData = await data?.filter((items: any, index: any, self: any) => 
+          index === self?.findIndex((filter: any) => filter.serapp_id === items.serapp_id)
+        ); 
+        console.log('false')
+        setDataSerApp(data);
+        setFilterDateApp(filData);
+      }
+    } catch (error) {
+      console.log('Fetch Error: ', error);
+    }
+  }
+
+  console.log('dtapp: ', dataSerApp);
+  console.log('filapp: ', filterDataApp);
   return (
     <section id="section-services" className="section">
       <div 
@@ -48,7 +94,7 @@ const SectionServices: React.FC = () => {
           <img src="/services-overview.png" width={200} height={200} />
         </div>
         <div className="wrap-container-content-service-overview">
-          <h3>Giải pháp tiên tiến - Ứng dụng thông minh - Tác vụ chuyên nghiệp</h3>
+            <h3>Giải pháp tiên tiến - Ứng dụng thông minh - Tác vụ chuyên nghiệp</h3>
             <div className='list-overview'>
               <i className="fa-solid fa-caret-right"></i>
               <p>Giá thành vừa phải, chất lượng sản phẩm như ý.</p>
@@ -86,169 +132,33 @@ const SectionServices: React.FC = () => {
           <h2>GÓI DỊCH VỤ WEBSITE</h2>
           <p>Công nghệ web hàng đầu - Tiết kiệm chi phí - Bàn giao web nhanh chóng</p>
           <div className="wrap-packages-web">
-            <div className="package-web basic">
-              <p className='prices-web'>1.450.000</p>
-              <p className='types-web'>GÓI WEB CƠ BẢN</p>
-              <div className="type-package-web">
-                TRỌN GÓI
-              </div>
-              <div className="content-package-web">
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
+            {filterDataWeb?.map(items => {
+              let subClass: string = '';
+              const content = dataSerWeb?.filter((data) => data.serweb_id === items.serweb_id).map((data) => data.content);
+
+              if(items.title?.includes('CƠ BẢN')) subClass = 'basic';
+              if(items.title?.includes('SEO')) subClass = 'seo'
+              if(items.title?.includes('BÁN HÀNG')) subClass = 'sup-sale'
+              if(items.title?.includes('CHUYÊN NGHIỆP')) subClass = 'pro'
+
+              return(
+                <div className={`package-web ${subClass}`}>
+                  <p className="prices-web">{items.price}</p>
+                  <p className="types-web">{items.title}</p>
+                  <div className="type-package-web">TRỌN GÓI</div>
+                  <div className="content-package-web">
+                    {content?.map(conts => {
+                      return(
+                        <div className="content-in-package-web">
+                          <p>{conts}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <input type="button" value="Đăng ký" />
                 </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-              </div>
-              <input type="button" value="Đăng ký" />
-            </div>
-            <div className="package-web seo">
-              <p className='prices-web'>1.450.000</p>
-              <p className='types-web'>GÓI WEB CƠ BẢN</p>
-              <div className="type-package-web">
-                TRỌN GÓI
-              </div>
-              <div className="content-package-web">
-                <div className="content-in-package-web">
-                  
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-              </div>
-              <input type="button" value="Đăng ký" />
-            </div>
-            <div className="package-web sup-sale">
-              <div className="recommend-web"></div>
-              <span>Nên dùng</span>
-              <p className='prices-web'>1.450.000</p>
-              <p className='types-web'>GÓI WEB CƠ BẢN</p>
-              <div className="type-package-web">
-                TRỌN GÓI
-              </div>
-              <div className="content-package-web">
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-              </div>
-              <input type="button" value="Đăng ký" />
-            </div>
-            <div className="package-web pro">
-              <p className='prices-web'>1.450.000</p>
-              <p className='types-web'>GÓI WEB CƠ BẢN</p>
-              <div className="type-package-web">
-                TRỌN GÓI
-              </div>
-              <div className="content-package-web">
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-                <div className="content-in-package-web">
-                  <p>avsg asgsad adhaush ashaudh ajdai ashas dáh</p>
-                </div>
-              </div>
-              <input type="button" value="Đăng ký" />
-            </div>
+              )
+            })}
           </div>
         </div>
       </div>
@@ -272,168 +182,38 @@ const SectionServices: React.FC = () => {
           <p>Giá thành ưu đãi - Chất lượng ưu việt</p>
         </div>
         <div className="wrap-container-packages-app-service">
-          <div className="container-packages-app-services personal">
-            <span>Personal</span>
-            <div className="contact-services-app">
-              <h1>Liên hệ</h1>
-              <h3>0985.008.180</h3>
-            </div>
-            <div className="content-package-app">
-              <div className="content-line">
-                <i className="fa-solid fa-mobile-screen-button"></i>
-                <p>App theo mẫu lựa chọn có sẵn.</p>
+          {filterDataApp?.map(items => {
+            let subClass = '';
+            const content = dataSerApp?.filter(data => data.serapp_id === items.serapp_id)
+            .map(data => ({
+              icon: data.icon,
+              content: data.content
+            }));
+
+            if(items.type === 'Personal') subClass = 'personal';
+            if(items.type === 'Professional') subClass = 'professional';
+            if(items.type === 'Business') subClass = 'business';
+            return(
+              <div className={`container-packages-app-services ${subClass}`}>
+                <span>{items.type}</span>
+                <div className="contact-services-app">
+                  <h1>{items.title}</h1>
+                  <h3>{items.subtitle}</h3>
+                </div>
+                <div className="content-package-app">
+                  {content?.map(items => {
+                    return(
+                      <div className="content-line">
+                        <i className={`${items.icon}`}></i>
+                        <p>{items.content}</p>
+                      </div>
+                    )
+                  })}
+                </div>
+                <button><i className="fa-solid fa-phone"></i>Gọi ngay!</button>
               </div>
-              <div className="content-line">
-                <i className="fa-brands fa-android"></i>
-                <p>Phiên bản App Mobile Android.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-apple"></i>
-                <p>Phiên bản App Mobile iOS.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-code"></i>
-                <p>Phiên bản Backend - API.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-earth-americas"></i>
-                <p>Website giới thiệu cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-chrome"></i>
-                <p>01 Logo cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-video"></i>
-                <p>Video ngắn thương hiệu.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-image"></i>
-                <p>02 Banner cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-address-card"></i>
-                <p>Mẫu danh thiếp.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-cloud"></i>
-                <p>02 tháng Server tại Việt Nam.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-headset"></i>
-                <p>Hỗ trợ trong giờ hành chính.</p>
-              </div>
-            </div>
-            <button><i className="fa-solid fa-phone"></i>Gọi ngay!</button>
-          </div>
-          <div className="container-packages-app-services professional">
-            <span>Professional</span>
-            <div className="contact-services-app">
-              <h1>Liên hệ</h1>
-              <h3>0985.008.180</h3>
-            </div>
-            <div className="content-package-app">
-              <div className="content-line">
-                <i className="fa-solid fa-mobile-screen-button"></i>
-                <p>App theo mẫu lựa chọn có sẵn.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-android"></i>
-                <p>Phiên bản App Mobile Android.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-apple"></i>
-                <p>Phiên bản App Mobile iOS.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-code"></i>
-                <p>Phiên bản Backend - API.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-earth-americas"></i>
-                <p>Website giới thiệu cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-chrome"></i>
-                <p>01 Logo cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-video"></i>
-                <p>Video ngắn thương hiệu.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-image"></i>
-                <p>02 Banner cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-address-card"></i>
-                <p>Mẫu danh thiếp.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-cloud"></i>
-                <p>02 tháng Server tại Việt Nam.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-headset"></i>
-                <p>Hỗ trợ trong giờ hành chính.</p>
-              </div>
-            </div>
-            <button><i className="fa-solid fa-phone"></i>Gọi ngay!</button>
-          </div>
-          <div className="container-packages-app-services business">
-            <span>Business</span>
-            <div className="contact-services-app">
-              <h1>Liên hệ</h1>
-              <h3>0985.008.180</h3>
-            </div>
-            <div className="content-package-app">
-              <div className="content-line">
-                <i className="fa-solid fa-mobile-screen-button"></i>
-                <p>App theo mẫu lựa chọn có sẵn.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-android"></i>
-                <p>Phiên bản App Mobile Android.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-apple"></i>
-                <p>Phiên bản App Mobile iOS.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-code"></i>
-                <p>Phiên bản Backend - API.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-earth-americas"></i>
-                <p>Website giới thiệu cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-brands fa-chrome"></i>
-                <p>01 Logo cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-video"></i>
-                <p>Video ngắn thương hiệu.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-file-image"></i>
-                <p>02 Banner cơ bản.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-regular fa-address-card"></i>
-                <p>Mẫu danh thiếp.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-cloud"></i>
-                <p>02 tháng Server tại Việt Nam.</p>
-              </div>
-              <div className="content-line">
-                <i className="fa-solid fa-headset"></i>
-                <p>Hỗ trợ trong giờ hành chính.</p>
-              </div>
-            </div>
-            <button><i className="fa-solid fa-phone"></i>Gọi ngay!</button>
-          </div>
+            )
+          })}
         </div>
       </div>
     </section>

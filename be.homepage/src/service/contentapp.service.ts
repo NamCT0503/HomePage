@@ -1,19 +1,69 @@
 import { ContentAppEntity } from "../entities/app.entity";
 import db from "../models";
+import ServiceApp from "../models/ServiceApp";
 
-export const getContentApp = async (serappId: number) => {
+export const getContentApp = async (serappId: number, ref: string) => {
     try {
+        let result: any, arrResult: any[] = [];
+
         if(serappId){
             if(serappId === 0) return{ status: 400, message: "DataInput Invalid!"};
 
-            const result = await db.ContentApp.findAll({
-                where: { serapp_id: serappId}
-            });
-            return result;
+            if(ref !== ':ref'){
+                const query = await db.ContentApp.findAll({
+                    attributes: ['id', 'serapp_id', 'icon', 'content'],
+                    include: [{
+                        model: ServiceApp,
+                        as: 'serviceapps',
+                        attributes: ['type', 'title', 'subtitle']
+                    }],
+                    where: { serapp_id: serappId}
+                });
+                
+                query?.map((item: any) => {
+                    arrResult.push({
+                        id: item.id,
+                        serapp_id: item.serapp_id,
+                        icon: item.icon,
+                        content: item.content,
+                        type: item.serviceapps.type,
+                        title: item.serviceapps.title,
+                        subtitle: item.serviceapps.subtitle
+                    })
+                });
+            } else {
+                result = await db.ContentApp.findAll({
+                    where: { serapp_id: serappId}
+                });
+            }
+        } else {
+            if(ref !== ':ref'){
+                const query = await db.ContentApp.findAll({
+                    attributes: ['id', 'serapp_id', 'icon', 'content'],
+                    include: [{
+                        model: ServiceApp,
+                        as: 'serviceapps',
+                        attributes: ['type', 'title', 'subtitle']
+                    }]
+                });
+
+                query?.map((item: any) => {
+                    arrResult.push({
+                        id: item.id,
+                        serapp_id: item.serapp_id,
+                        icon: item.icon,
+                        content: item.content,
+                        type: item.serviceapps.type,
+                        title: item.serviceapps.title,
+                        subtitle: item.serviceapps.subtitle
+                    })
+                });
+            } else {
+                result = await db.ContentApp.findAll();
+            }
         }
 
-        const result = await db.ContentApp.findAll();
-        return result;
+        return result? result: arrResult;
     } catch (error) {
         console.error('=== In getContentApp: '+error);
         return{
