@@ -15,10 +15,10 @@ export interface BlogEntity {
     img?: string;
     title: string;
     description: string;
-    postedAt: Date;
+    postedAt: Date | string;
     postedBy: number;
     tag?: string;
-    isOutstanding?: boolean;
+    isOutstanding?: number;
     view: number;
 }
 

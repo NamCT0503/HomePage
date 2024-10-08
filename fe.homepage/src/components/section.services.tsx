@@ -72,8 +72,6 @@ const SectionServices: React.FC = () => {
     }
   }
 
-  console.log('dtapp: ', dataSerApp);
-  console.log('filapp: ', filterDataApp);
   return (
     <section id="section-services" className="section">
       <div 
