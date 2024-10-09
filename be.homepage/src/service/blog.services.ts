@@ -5,38 +5,69 @@ import path from "path";
 import fs from "fs";
 import { minioClient } from "../routes/app.route";
 import * as dotenv from "dotenv";
-import { Op } from "sequelize";
+import { Op, Sequelize, where } from "sequelize";
 
 dotenv.config();
 
-export const getBlogs = async (filter?: any, page?: number) => {
+export const getBlogs = async (filter?: any, page?: string) => {
     try {
         let result: any;
+        if(page === ':page') page = '1';
+        if(filter === ':filter' || filter === '') filter = undefined;
+
         const recordPage = 6;
-        const currentPage = page? page: 1;
+        const currentPage = page? parseInt(page): 1;
         const offset = (currentPage - 1) * recordPage;
         
         if(filter){
-            const condition = `%${filter}%`;
-            const searchCondition = {
-                [Op.or]: [
-                    { title: { [Op.like]: condition}},
-                    { description: { [Op.like]: condition}},
-                    { postedAt: filter}
-                ]
-            }
+            if(filter === 'isOutstanding'){
+                result = await db.Blog.findAndCountAll({
+                    where: { isOutstanding: 1}
+                });
+                return result;
+            } else if(filter === 'tagWebsite'){
+                result = await db.Blog.findAndCountAll({
+                    limit: recordPage,
+                    offset: offset,
+                    order: [['id', 'DESC']],
+                    where: { tag: 'website', isOutstanding: 0}
+                });
+                // return result;
+            } else if(filter === 'tagMobile'){
+                result = await db.Blog.findAndCountAll({
+                    where: { tag: 'mobile', isOutstanding: 0}
+                });
+                // return result;
+            } else if(filter === 'isRandom'){
+                result = await db.Blog.findAll({
+                    limit: 4,
+                    order: Sequelize.literal('RAND()'),
+                    where: { isOutstanding: 0}
+                });
 
-            result = await db.Blog.findAndCountAll({
-                limit: recordPage,
-                offset: offset,
-                order: ['id', 'DESC'],
-                where: searchCondition
-            });
+                return result;
+            } else {
+                const condition = `%${filter}%`;
+                const searchCondition = {
+                    [Op.or]: [
+                        { title: { [Op.like]: condition}},
+                        { description: { [Op.like]: condition}}
+                    ]
+                }
+
+                result = await db.Blog.findAndCountAll({
+                    limit: recordPage,
+                    offset: offset,
+                    order: [['id', 'DESC']],
+                    where: searchCondition
+                });
+            }
         } else {
             result = await db.Blog.findAndCountAll({
                 limit: recordPage,
                 offset: offset,
                 order: [['id', 'DESC']],
+                where: { isOutstanding: 0}
             });
         }
         
@@ -64,6 +95,15 @@ export const createBlogOverview = async (data: any) => {
             !data.description || data.description === ''
         ) 
         return{ status: 400, message: "DataInput Invalid!"};
+
+        const blogs = await db.Blog.findAll({
+            where: { isOutstanding: 1}
+        });
+        if(blogs){
+            const checkIsOutstanding = parseInt(data.isOutstanding) === 1? true: false;
+            if(blogs[0].dataValues.isOutstanding === checkIsOutstanding)
+                return{ status: 400, message: "Just Only One Blog Outstanding!"};
+        }
 
         const imgPath = await getPathImgFormBucket(data);
         if(typeof(imgPath) !== 'string') return imgPath;
@@ -106,7 +146,7 @@ export const updateBlog = async (data: Partial<BlogEntity>, imgReq?: any) => {
         const outstandingExisted = await db.Blog.findAll({
             where: { isOutstanding: 1}
         });
-        if(outstandingExisted && data.isOutstanding === 1)
+        if(outstandingExisted && (data.isOutstanding === 1 || data.isOutstanding?.toString() === '1'))
             return{ status: 400, message: "Just Only One Blog Outstanding!"};
 
         let img: string, objectName: string;

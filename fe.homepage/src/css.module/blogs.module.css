@@ -291,6 +291,8 @@
     background-color: white;
     box-shadow: 0 0 5px grey;
     transition: all 0.2s ease-in-out;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .wrapContainerAllBlog:hover{

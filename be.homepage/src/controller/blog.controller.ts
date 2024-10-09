@@ -6,8 +6,8 @@ export const controller_getBlogs = async (
     req: Request,
     res: Response
 ) => {
-    const filter = req.body.filter;
-    const page = req.body.page;
+    const filter = req.params.filter;
+    const page = req.params.page;
     res.json(await getBlogs(filter, page));
 }
 

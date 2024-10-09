@@ -62,7 +62,7 @@ router.put('/service/app/content/update', validateUserMiddleware() as any, contr
 router.delete('/service/app/content/delete', validateUserMiddleware() as any, controller_deleteContentApp);
 
 //Blog
-router.get('/service/blog/get-blogs', controller_getBlogs);
+router.get('/service/blog/get-blogs/:filter/:page', controller_getBlogs);
 router.post('/service/blog/create', validateUserMiddleware() as any, upload.single('img'), controller_createBlogOverview);
 router.put('/service/blog/update', validateUserMiddleware() as any, upload.single('img'), actionOneSelfMiddelware() as any, controller_updateBlog);
 router.delete('/service/blog/delete', validateUserMiddleware() as any, actionOneSelfMiddelware() as any, controller_deleteBlog);

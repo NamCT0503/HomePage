@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import style from "../css.module/blogs.module.css";
 import { Link, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -6,19 +6,41 @@ import BlogAll from './blogs.all';
 import BlogsWebsite from './blogs.website';
 import BlogsMobile from './blogs.mobile';
 
+export let dataSearchBlogs: any;
+const url = 'http://localhost:5000/api/homepage/service/blog/get-blogs/isRandom/:page';
+
 const BreakingNews: React.FC = () => {
-    const [currentBgAtAll, setCurrentBgAtAll] = useState('#C60000');
-    const [currentTextAtAll, setCurrentTextAtAll] = useState('white');
-    const [currentBgAtWeb, setCurrentBgAtWeb] = useState('white');
-    const [currentTextAtWeb, setCurrentTextAtWeb] = useState('black');
-    const [currentBgAtApp, setCurrentBgAtApp] = useState('white');
-    const [currentTextAtApp, setCurrentTextAtApp] = useState('black');
     const [bgColorBlogAll, setBgColorBlogAll] = useState('#C60000');
     const [bgColorBlogWeb, setBgColorBlogWeb] = useState('white');
     const [bgColorBlogApp, setBgColorBlogApp] = useState('white');
     const [colorBlogAll, setColorBlogAll] = useState('white');
     const [colorBlogWeb, setColorBlogWeb] = useState('black');
     const [colorBlogApp, setColorBlogApp] = useState('black');
+    const [dataRecommend, setDataRecommend] = useState<any>([]);
+    const [dataSearch, setDataSearch] = useState<any>([]);
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
+        dataSearchBlogs = dataSearch;
+        <BlogAll blogs={[dataSearch]}/>
+    }, [dataSearch]) 
+
+    useEffect(() => {
+        const fetcher = async (url: string) => {
+            try {
+                const res = await fetch(url, {
+                    method: "GET"
+                });
+    
+                const data = await res.json();
+                setDataRecommend(data);
+            } catch (error) {
+                console.log('Fetch Error: ', error);
+            }
+        }
+
+        fetcher(url);
+    }, [])
 
     const blogsCurrent = (blog: string) => {
         if(blog === 'all'){
@@ -42,6 +64,26 @@ const BreakingNews: React.FC = () => {
             setColorBlogAll('black');
             setColorBlogWeb('black');
             setColorBlogApp('white');
+        }
+    }
+
+    const dataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        setSearch(e.target.value)
+    }
+
+    const handleSearch = async (search: string) => {
+        const url = `http://localhost:5000/api/homepage/service/blog/get-blogs/${search}/:page`;
+        try {
+            const res = await fetch(url, {
+                method: "GET"
+            });
+
+            const data = await res.json();
+            setDataSearch(data);
+        } catch (error) {
+            console.log('Fetch Error: ', error);
         }
     }
 
@@ -116,62 +158,48 @@ const BreakingNews: React.FC = () => {
                 </nav>
                 <div className={style.containerSearch}>
                     <div className={style.inputSearch}>
-                        <input type="text" name="" id="" placeholder='search' />
+                        <input 
+                            type="text" 
+                            id="search" 
+                            placeholder='search'
+                            onChange={dataChange}
+                         />
                     </div>
                     <div className={style.btnSearch}>
-                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <i 
+                            className="fa-solid fa-magnifying-glass"
+                            onClick={() => handleSearch(search)}
+                        >
+                        </i>
                     </div>
                 </div>
             </div>
             <div className={style.wrapContainerContentBlogs}>
                 <div className={style.wrapContainerBlogs}>
                     <Routes>
-                        <Route path='/' element={<BlogAll></BlogAll>}></Route>
+                        <Route path='/' element={<BlogAll blogs={[dataSearch]}></BlogAll>}></Route>
                         <Route path='/website' element={<BlogsWebsite></BlogsWebsite>}></Route>
                         <Route path='/mobile' element={<BlogsMobile></BlogsMobile>}></Route>
                     </Routes>
                 </div>
                 <div className={style.wrapContainerRelatedBlogs}>
                     <div className={style.titleContainerRealted}>
-                        <h3>Bài viết liên quan</h3>
+                        <h3>Có thể bạn quan tâm</h3>
                     </div>
                     <div className={style.containerContentRelatedBlog}>
-                        <div className="wrapBlogsRelated">
-                            <div className={style.areaHeaderBlogRelated}>
-                                <div>Website</div>
-                                <div>01-10-2024</div>
-                            </div>
-                            <div className={style.areaContentBlogRelated}>
-                                <div>Announcing the Strategic Partnership between Stringee and CXsphere</div>
-                            </div>
-                        </div>
-                        <div className="wrapBlogsRelated">
-                            <div className={style.areaHeaderBlogRelated}>
-                                <div>Website</div>
-                                <div>02-10-2024</div>
-                            </div>
-                            <div className={style.areaContentBlogRelated}>
-                                <div>Announcing the Strategic Partnership between Stringee and CXsphere</div>
-                            </div>
-                        </div>
-                        <div className="wrapBlogsRelated">
-                            <div className={style.areaHeaderBlogRelated}>
-                                <div>Mobile</div>
-                                <div>01-10-2024</div>
-                            </div>
-                            <div className={style.areaContentBlogRelated}>
-                                <div>Announcing the Strategic Partnership between Stringee and CXsphere</div>
-                            </div>
-                        </div>
-                        <div className="wrapBlogsRelated">
-                            <div className={style.areaHeaderBlogRelated}>
-                                <div>Mobile</div>
-                                <div>02-10-2024</div>
-                            </div>
-                            <div className={style.areaContentBlogRelated}>
-                                <div>Announcing the Strategic Partnership between Stringee and CXsphere</div>
-                            </div>
-                        </div>
+                        {dataRecommend?.map((items: any) => {
+                            return(
+                                <div className="wrapBlogsRelated">
+                                    <div className={style.areaHeaderBlogRelated}>
+                                        <div>{items.tag}</div>
+                                        <div>{items.postedAt?.split('T')[0]}</div>
+                                    </div>
+                                    <div className={style.areaContentBlogRelated}>
+                                        <div>{items.title}</div>
+                                    </div>
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
