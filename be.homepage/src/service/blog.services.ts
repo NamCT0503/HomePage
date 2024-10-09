@@ -6,6 +6,7 @@ import fs from "fs";
 import { minioClient } from "../routes/app.route";
 import * as dotenv from "dotenv";
 import { Op, Sequelize, where } from "sequelize";
+import { deleteBlogContent } from "./blog.content.services";
 
 dotenv.config();
 
@@ -187,9 +188,9 @@ export const updateBlog = async (data: Partial<BlogEntity>, imgReq?: any) => {
     }
 }
 
-export const deleteBlog = async (id: number) => {
+export const deleteBlog = async (id: number | string) => {
     try {
-        if(!id || id === 0 || typeof(id) !== 'number')
+        if(!id || id === 0 || id === '')
             return{ status: 400, message: "DataInput Invalid!"};
 
         const blogExisted = await db.Blog.findByPk(id);
@@ -198,6 +199,8 @@ export const deleteBlog = async (id: number) => {
         const bucketName = process.env.MinIO_BUCKETNAME!;
         const objectName = blogExisted.img.split(`${bucketName}/`)[1];
         await deleteImgInBucket(bucketName, objectName);
+
+        await deleteBlogContent(id, 'all');
 
         await db.Blog.destroy({
             where: { id: id}
@@ -226,7 +229,7 @@ export function getTimeLocal(){
     return `${year}-${month}-${day} ${hours}-${minutes}-${seconds}`;
 }
 
-const getPathImgFormBucket = async (data: any) => {
+export const getPathImgFormBucket = async (data: any) => {
     try {
         const fileName = `${Date.now()}_${data.img?.originalname}`
         const bucketName = process.env.MinIO_BUCKETNAME as string;
@@ -260,7 +263,7 @@ const getPathImgFormBucket = async (data: any) => {
     }
 }
 
-const deleteImgInBucket = async (bucketName: string, objectName: string) => {
+export const deleteImgInBucket = async (bucketName: string, objectName: string) => {
     try {
         if(bucketName === '' || objectName === '')
             return{ status: 500, message: 'DataInput Img Bucket Invalid!'};
