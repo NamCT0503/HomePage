@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
 import style from "../css.module/blogs.module.css";
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import BlogAll from './blogs.all';
 import BlogsWebsite from './blogs.website';
@@ -19,6 +19,9 @@ const BreakingNews: React.FC = () => {
     const [dataRecommend, setDataRecommend] = useState<any>([]);
     const [dataSearch, setDataSearch] = useState<any>([]);
     const [search, setSearch] = useState('');
+
+    const location = useLocation();
+    const navigate = useNavigate();
 
     useEffect(() => {
         dataSearchBlogs = dataSearch;
@@ -42,22 +45,26 @@ const BreakingNews: React.FC = () => {
         fetcher(url);
     }, [])
 
-    const blogsCurrent = (blog: string) => {
-        if(blog === 'all'){
+    useEffect(() => {
+        blogsCurrent();
+    }, [location.pathname]);
+
+    const blogsCurrent = () => {
+        if(location.pathname === '/blogs'){
             setBgColorBlogAll('#C60000');
             setBgColorBlogWeb('white');
             setBgColorBlogApp('white');
             setColorBlogAll('white');
             setColorBlogWeb('black');
             setColorBlogApp('black');
-        } else if(blog === 'web'){
+        } else if(location.pathname === '/blogs/website'){
             setBgColorBlogAll('white');
             setBgColorBlogWeb('#C60000');
             setBgColorBlogApp('white');
             setColorBlogAll('black');
             setColorBlogWeb('white');
             setColorBlogApp('black');
-        } else {
+        } else if(location.pathname === '/blogs/mobile'){
             setBgColorBlogAll('white');
             setBgColorBlogWeb('white');
             setBgColorBlogApp('#C60000');
@@ -85,6 +92,11 @@ const BreakingNews: React.FC = () => {
         } catch (error) {
             console.log('Fetch Error: ', error);
         }
+    }
+
+    const handleClickViewBlog = (title: string, data: any) => {
+        const blogPath = title.replace(/\s+/g, '-');
+        navigate(`post/view-blog/${blogPath}`, { state: data});
     }
 
     return (
@@ -128,7 +140,9 @@ const BreakingNews: React.FC = () => {
                                 backgroundColor: bgColorBlogAll,
                                 color: colorBlogAll
                             }}
-                            onClick={() => blogsCurrent('all')}
+                            onClick={() => {
+                                setDataSearch(undefined);
+                            }}
                         >
                             All
                         </Link>
@@ -139,7 +153,6 @@ const BreakingNews: React.FC = () => {
                                 backgroundColor: bgColorBlogWeb,
                                 color: colorBlogWeb
                             }}
-                            onClick={() => blogsCurrent('web')}
                         >
                             Website
                         </Link>
@@ -150,7 +163,6 @@ const BreakingNews: React.FC = () => {
                                 backgroundColor: bgColorBlogApp,
                                 color: colorBlogApp
                             }}
-                            onClick={() => blogsCurrent('app')}
                         >
                             Mobile
                         </Link>
@@ -165,12 +177,11 @@ const BreakingNews: React.FC = () => {
                             onChange={dataChange}
                          />
                     </div>
-                    <div className={style.btnSearch}>
-                        <i 
-                            className="fa-solid fa-magnifying-glass"
-                            onClick={() => handleSearch(search)}
-                        >
-                        </i>
+                    <div 
+                        className={style.btnSearch}
+                        onClick={() => handleSearch(search)}
+                    >
+                        <i className="fa-solid fa-magnifying-glass"></i>
                     </div>
                 </div>
             </div>
@@ -194,7 +205,12 @@ const BreakingNews: React.FC = () => {
                                         <div>{items.tag}</div>
                                         <div>{items.postedAt?.split('T')[0]}</div>
                                     </div>
-                                    <div className={style.areaContentBlogRelated}>
+                                    <div 
+                                        className={style.areaContentBlogRelated}
+                                        onClick={() => 
+                                            handleClickViewBlog(items.title, items)
+                                        }
+                                    >
                                         <div>{items.title}</div>
                                     </div>
                                 </div>

@@ -188,6 +188,10 @@
 .imgInContentBC img{
     width: 100%;
 }
+
+.textulBC, .textolBC{
+    margin-left: -2%;
+}
 /* ========== Kết thúc phần containerContentBC ========== */
 
 /* ========== Bắt đầu phần wrapContainerOrtherBlogsBC ========== */
@@ -211,7 +215,7 @@
 .containerOrtherBlogsBC i{
     margin: 0 !important;
     padding: 10px 5px !important;
-    background-color: white !important;
+    background-color: rgba(255, 255, 255, 0) !important;
     color: black !important;
     font-size: 20px !important;
     cursor: pointer;

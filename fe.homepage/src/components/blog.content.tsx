@@ -1,19 +1,30 @@
-// import { Helmet } from 'react-helmet';
+/* eslint-disable */
+
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import style from "../css.module/blog.content.module.css";
 import parent from "../css.module/blogs.module.css";
 import { useEffect, useState } from 'react';
 
 const BlogContent = () => {
     const [isSticky, setIsSticky] = useState(true);
+    const [dataBC, setDataBC] = useState<any>([]);
+    const [dataOrtherBlogs, setDataOrtherBlogs] = useState<any>([]);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+    const blogData = location.state;
 
     useEffect(() => {
         window.addEventListener('scroll', viewCurrentClient);
+        if(blogData){
+            fetcher(blogData.id);
+            fetchOrtherBlogs(blogData.id);
+        }
 
         return () => window.removeEventListener('scroll', viewCurrentClient);
-    }, []);
-
+    }, [blogData]);
+ 
     const viewCurrentClient = () => {
         const container = document.querySelector(`.${style.containerContentBC}`);
         const areaTable = document.querySelector(`.${style.areaTableOfContent}`);
@@ -31,15 +42,72 @@ const BlogContent = () => {
         }
     }
 
+    const fetcher = async (id: number) => {
+        try {
+            const url =  `http://localhost:5000/api/homepage/service/blog/content/get/${id}`;
+            const res = await fetch(url, {
+                method: "GET"
+            });
+
+            const data = await res.json();
+            setDataBC(data);
+        } catch (error) {
+            console.log('Fetch Error: ', error);
+        }
+    }
+
+    const fetchOrtherBlogs = async (id: number, page?: number | string) => {
+        try {
+            const url = `http://localhost:5000/api/homepage/service/blog/get-orther-blogs/${id}/${page? page: ':page'}`;
+            const res = await fetch(url, {
+                method: "GET"
+            });
+
+            const data = await res.json();
+            setDataOrtherBlogs(data);
+        } catch (error) {
+            console.log('Fetch Error: ', error);
+        }
+    }
+
+    const getDayPassed = (date: string) => {
+        const posted_day = date?.split('T')[0];
+        const lastPosted = Date.now() - new Date(posted_day).getTime();
+        const dayPassed = Math.floor(lastPosted / (1000*60*60*24));
+        return dayPassed;
+    }
+
+    const handleClickPreNextPage = async (pre_next: string , id: number) => {
+        try {
+            const totalPage = dataOrtherBlogs.totalPages;
+            let pageCurrent = dataOrtherBlogs.currentPage;
+            if(pre_next === 'next'){
+                if(pageCurrent < totalPage){
+                    await fetchOrtherBlogs(id, pageCurrent+=1);
+                } else {
+                    return alert('Đã đến số trang tối đa!');
+                }
+            }
+
+            if(pre_next === 'pre'){
+                if(pageCurrent > 1){
+                    await fetchOrtherBlogs(id, pageCurrent-=1);
+                } else {
+                    return alert('Đã đến trang đầu tiên!');
+                }
+            }
+        } catch (error) {
+            console.log('Pre-Next Error: ', error);
+        }
+    }
+
+    const handleClickViewBlog = (title: string, data: any) => {
+        const blogPath = title.replace(/\s+/g, '-');
+        navigate(`post/view-blog/${blogPath}`, { state: data});
+    }
+
     return(
         <>
-        {/* <Helmet>
-            <style>{`
-                body, html {
-                    overflow-x: hidden;
-                }
-            `}</style>
-        </Helmet> */}
         <HelmetProvider>
         <Helmet>
             <style>{`
@@ -71,147 +139,166 @@ const BlogContent = () => {
                     </div>
                 </div>
             </header>
-            <div className={style.wrapContainerContentBC}>
-                <div className={style.navbarTittleBC}>
-                    <div className={style.pathNavbar}>Home</div>
-                    <div className={style.pathNavbar}>Website</div>
-                    <div className={style.titleBC}>
-                        Weekly Articles with Insight
-                    </div>
-                </div>
-                <div className={style.containerBlogOverview}>
-                    <div className={style.contentBC}>
-                        <div className={parent.tagBlog}>
-                            <div className={parent.tag}>Business</div>
-                        </div>
-                        <div className={style.headerBC}>
-                            Weekly Articles with Insight
-                        </div>
-                        <div className={style.containerTagBC}>
-                            <div>NamCT</div>
-                            <div>01-10-2024</div>
+            {Array.isArray(dataBC)? 
+                <div className={style.wrapContainerContentBC}>
+                    <div className={style.navbarTittleBC}>
+                        <Link to={'/blogs'} style={{textDecoration: 'none'}}><div className={style.pathNavbar}>Home</div></Link>
+                        <Link 
+                            to={blogData.tag === 'website'? '/blogs/website': '/blogs/mobile'}
+                            style={{textDecoration: 'none'}}
+                        >
+                            <div className={style.pathNavbar}>
+                                {blogData.tag.charAt(0).toUpperCase() + blogData.tag.slice(1)}
+                            </div>
+                        </Link>
+                        <div className={style.titleBC}>
+                            {blogData.title}
                         </div>
                     </div>
-                    <img src="/blog-all-outstanding.png" alt="" />
-                </div>
-                <div className={style.containerContentBC}>
-                    <div className={style.areaShowContentBC}>
-                        <div className={style.textNormalBC}>
-                            Today, we are thrilled to announce 
-                            a significant milestone in the field 
-                            of information and communication technology: 
-                            the strategic partnership between Stringee and 
-                            CXsphere. This collaboration not only opens up 
-                            numerous new opportunities but also solidifies 
-                            the positions of both companies in providing 
-                            the most comprehensive and advanced solutions 
-                            to our clients.
-                        </div>
-                        <div className={style.textHeaderBC}>
-                            Introduction to the Partners
-                        </div>
-                        <div className={style.imgInContentBC}>
-                            <img src="/blog4.jpg" alt="" />
-                        </div>
-                        <div className={style.textNormalBC}>
-                        Stringee is one of the leading providers of communication API platforms in Vietnam. By integrating calling, messaging, and video services into businesses' applications and websites, Stringee has empowered thousands of enterprises to enhance their customer interaction efficiency. <br />
-Besides, we have StringeeX, an all-in-one communication solution that seamlessly integrates voice, messaging, and video capabilities into your applications and websites. <br />
-CXsphere specializes in delivering comprehensive customer experience (CX) solutions. Utilizing cutting-edge technologies such as artificial intelligence (AI) and data analytics, CXsphere helps businesses gain deeper insights into their customers' needs and behaviors, thereby enabling them to offer more personalized and effective customer service.
-                        </div>
-                        <div className={style.textHeaderBC}>
-                            Goals and Vision of the Partnership
-                        </div>
-                        <div className={style.textNormalBC}>
-                        Businesses partnering with Stringee and CXsphere will experience numerous benefits, including:
-Unified Communication Platform: A single, integrated platform for all communication needs, reducing complexity and improving efficiency.
-Advanced Analytics: Access to powerful analytics tools that provide actionable insights into customer interactions and feedback.
-Enhanced Scalability: Solutions that can grow with the business, ensuring that communication and customer experience capabilities remain robust as the company expands.
-Increased Competitive Edge: By offering superior customer service and communication capabilities, businesses can stand out in a crowded market.
-                        </div>
-                    </div>
-                    <div className={style.areaTableOfContent} style={{ position: isSticky ? 'sticky' : 'relative' }}>
-                        <div className={style.headerToC}>
-                            <h3>Nội dung bài đăng</h3>
-                            <i className="fa-solid fa-chevron-up"></i>
-                        </div>
-                        <div className={style.tableOfContent}>
-                            <div className={style.indexToC}>Introduction to the Partners</div>
-                            <div className={style.indexToC}>Goals and Vision of the Partnership</div>
-                            <div className={style.indexToC}>Introduction to the Partners</div>
-                            <div className={style.indexToC}>Introduction to the Partners</div>
-                        </div>
-                    </div>
-                </div>
-                <div className={style.wrapContainerOrtherBlogsBC}>
-                    <h3>Bài viết khác</h3>
-                    <div className={style.containerOrtherBlogsBC}>
-                        <i className="fa-solid fa-chevron-left"></i>
-                        <div className={`${parent.containerGroup3Blogs} ${style.containerBlogsBC}`}>
-                            <div className={parent.wrapContainerAllBlog}>
-                                <img src="/blog1.png" alt="" />
-                                <div className={parent.containerBlog}>
-                                    <div className={parent.footerBlog}>
-                                        <div className={parent.tagBlog}>
-                                            <div className={parent.tag}>Business</div>
-                                            <div>1 day ago</div>
-                                        </div>
-                                    </div>
-                                    <div className={parent.headerBlog}>
-                                        Here is header blog
-                                    </div>
-                                    <div className={parent.postedAt}>
-                                        Đăng ngày: 01-10-2024.
-                                    </div>
-                                    <div className={parent.description}>
-                                        Here is description.
-                                    </div>
+                    <div className={style.containerBlogOverview}>
+                        <div className={style.contentBC}>
+                            <div className={parent.tagBlog}>
+                                <div className={parent.tag}>
+                                    {blogData.tag.charAt(0).toUpperCase() + blogData.tag.slice(1)}
                                 </div>
                             </div>
-                            <div className={parent.wrapContainerAllBlog}>
-                                <img src="/blog2.jpg" alt="" />
-                                <div className={parent.containerBlog}>
-                                    <div className={parent.footerBlog}>
-                                        <div className={parent.tagBlog}>
-                                            <div className={parent.tag}>Business</div>
-                                            <div>1 day ago</div>
-                                        </div>
-                                    </div>
-                                    <div className={parent.headerBlog}>
-                                        Here is header blog2
-                                    </div>
-                                    <div className={parent.postedAt}>
-                                        Đăng ngày: 01-10-2024.
-                                    </div>
-                                    <div className={parent.description}>
-                                        Here is description.
-                                    </div>
-                                </div>
+                            <div className={style.headerBC}>
+                                {blogData.title}
                             </div>
-                            <div className={parent.wrapContainerAllBlog}>
-                                <img src="/blog3.jpg" alt="" />
-                                <div className={parent.containerBlog}>
-                                    <div className={parent.footerBlog}>
-                                        <div className={parent.tagBlog}>
-                                            <div className={parent.tag}>Business</div>
-                                            <div>1 day ago</div>
-                                        </div>
-                                    </div>
-                                    <div className={parent.headerBlog}>
-                                        Here is header blog3
-                                    </div>
-                                    <div className={parent.postedAt}>
-                                        Đăng ngày: 01-10-2024.
-                                    </div>
-                                    <div className={parent.description}>
-                                        Here is description.
-                                    </div>
-                                </div>
+                            <div className={style.containerTagBC}>
+                                <div>{dataBC[0]?.postedBy}</div>
+                                <div>{dataBC[0]?.createdAt.split('T')[0]}</div>
                             </div>
                         </div>
-                        <i className="fa-solid fa-chevron-right"></i>
+                        <img src={`${blogData.img}`} alt="" />
                     </div>
-                </div>
-            </div>
+                    <div className={style.containerContentBC}>
+                        <div className={style.areaShowContentBC}>
+                            {dataBC.map((items: any) => {
+
+                                let typeContent: any, content: any, contentList: any;
+                                if(items.type_content === 'text'){
+                                    typeContent = style.textNormalBC;
+                                    content = items.content;
+                                }
+                                if(items.type_content === 'heading'){
+                                    typeContent = style.textHeaderBC;
+                                    content = items.content;
+                                }
+                                if(items.type_content === 'image'){
+                                    typeContent = style.imgInContentBC;
+                                    content = <img src={items.content} />
+                                }
+                                if(items.type_content === 'textul'){
+                                    typeContent = style.textulBC;
+                                    contentList = items.content.split(/\r?\n/).map((conts: any) => {
+                                        return(
+                                            <ul>
+                                                <li><b>{conts.split(':')[0]}: </b>{conts.split(':')[1]}</li>
+                                            </ul>
+                                        )
+                                    })
+                                    content = undefined;
+                                }
+                                if(items.type_content === 'textol'){
+                                    typeContent = style.textulBC;
+                                    contentList = items.content.split(/\r?\n/).map((conts: any) => {
+                                        return(
+                                            <ol>
+                                                <li><b>{conts.split(':')[0]}: </b>{conts.split(':')[1]}</li>
+                                            </ol>
+                                        )
+                                    })
+                                    content = undefined;
+                                }
+
+                                return(
+                                    <div className={typeContent}>
+                                        {content? content: contentList}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className={style.areaTableOfContent} style={{ position: isSticky ? 'sticky' : 'relative' }}>
+                            <div className={style.headerToC}>
+                                <h3>Nội dung bài đăng</h3>
+                                <i className="fa-solid fa-chevron-up"></i>
+                            </div>
+                            <div className={style.tableOfContent}>
+                                {dataBC
+                                .filter((items: any) => items.type_content === 'heading')
+                                .map((items: any) => {
+                                    return(
+                                        <div className={style.indexToC}>{items.content}</div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={style.wrapContainerOrtherBlogsBC}>
+                        <h3>Bài viết khác</h3>
+                        <div className={style.containerOrtherBlogsBC}>
+                            <i 
+                                className="fa-solid fa-chevron-left"
+                                onClick={() =>
+                                    handleClickPreNextPage('pre', blogData.id)
+                                }
+                            >
+                            </i>
+                            <div className={`${parent.containerGroup3Blogs} ${style.containerBlogsBC}`}>
+                                {dataOrtherBlogs?.blogs?.map((items: any) => {
+                                    return(
+                                        <div className={parent.wrapContainerAllBlog}>
+                                            <img 
+                                                src={items.img}
+                                                onClick={() =>
+                                                    handleClickViewBlog(items.title, items)
+                                                }
+                                            />
+                                            <div className={parent.containerBlog}>
+                                                <div className={parent.footerBlog}>
+                                                    <div className={parent.tagBlog}>
+                                                        <div className={parent.tag}>Business</div>
+                                                        <div>
+                                                            {
+                                                                getDayPassed(items.createdAt.split('T')[0]) === 0?
+                                                                "Trong hôm nay":
+                                                                getDayPassed(items.createdAt.split('T')[0])+" ngày trước"
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div 
+                                                    className={parent.headerBlog}
+                                                    onClick={() =>
+                                                        handleClickViewBlog(items.title, items)
+                                                    }
+                                                >
+                                                    {items.title}
+                                                </div>
+                                                <div className={parent.postedAt}>
+                                                    Đăng ngày: {items.postedAt.split('T')[0]}.
+                                                </div>
+                                                <div className={parent.description}>
+                                                    {items.description}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                            <i 
+                                className="fa-solid fa-chevron-right"
+                                onClick={() =>
+                                    handleClickPreNextPage('next', blogData.id)
+                                }
+                            >
+                            </i>
+                        </div>
+                    </div>
+                </div>: 
+                <div style={{height: '571px'}}>Bài đăng tạm thời chưa có nội dung</div>
+            }
         </div>
         </>
     )

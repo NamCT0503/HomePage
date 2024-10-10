@@ -7,7 +7,7 @@ import { controller_createWebPackage, controller_deleteSerWebPackage, controller
 import { controller_createContentWebPackage, controller_deleteContentWeb, controller_getContentWeb, controller_updateContentWeb } from "../controller/content.web.controller";
 import { controller_createSerAppPackage, controller_deleteSerAppPackage, controller_getAllSerAppPackage, controller_updateSerAppPackage } from "../controller/serapp.controller";
 import { controller_createContentApp, controller_deleteContentApp, controller_getContentApp, controller_updateContentApp } from "../controller/contentapp.controller";
-import { controller_createBlogOverview, controller_deleteBlog, controller_getBlogs, controller_updateBlog } from "../controller/blog.controller";
+import { controller_createBlogOverview, controller_deleteBlog, controller_getBlogs, controller_getOrtherBlogs, controller_updateBlog } from "../controller/blog.controller";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
@@ -64,6 +64,7 @@ router.delete('/service/app/content/delete', validateUserMiddleware() as any, co
 
 //Blog
 router.get('/service/blog/get-blogs/:filter/:page', controller_getBlogs);
+router.get('/service/blog/get-orther-blogs/:id/:page', controller_getOrtherBlogs);
 router.post('/service/blog/create', validateUserMiddleware() as any, upload.single('img'), controller_createBlogOverview);
 router.put('/service/blog/update', validateUserMiddleware() as any, upload.single('img'), actionOneSelfMiddelware() as any, controller_updateBlog);
 router.delete('/service/blog/delete', validateUserMiddleware() as any, actionOneSelfMiddelware() as any, controller_deleteBlog);

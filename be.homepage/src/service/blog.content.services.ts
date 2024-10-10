@@ -1,5 +1,7 @@
 import { BlogContentEntity } from "../entities/app.entity";
 import db from "../models";
+import Account from "../models/Account";
+import Blog from "../models/Blog";
 import { deleteImgInBucket, getPathImgFormBucket } from "./blog.services";
 import * as dotenv from "dotenv";
 
@@ -13,13 +15,38 @@ export const getBlogContent = async (blogId: string | number) => {
         if(blogId === ':blogid') return{ status: 400, message: "ParamInput Invalid!"};
 
         const result = await db.BlogContent.findAll({
+            include: {
+                model: Blog,
+                as: 'blogs',
+                attributes: ['postedBy'],
+                include: {
+                    model: Account,
+                    as: 'accounts',
+                    attributes: ['username']
+                }
+            },
             where: { blogid: blogId}
         });
-        console.log(result);
+
         if(!result || result.length === 0) 
             return{ status: 400, message: "NotFound Record Match DataInput!"};
 
-        return result;
+        let formatResult: any[] = [];
+        result.map((items: any) => {
+            formatResult.push({
+                id: items.id,
+                blogid: items.blogid,
+                type_content: items.type_content,
+                content: items.content,
+                postedBy: items.blogs.accounts.username,
+                postedAccId: items.blogs.postedBy,
+                createdAt: items.createdAt,
+                updatedAt: items.updatedAt,
+                deletedAt: items.deletedAt
+            });
+        });
+
+        return formatResult;
     } catch (error) {
         console.error('=== In getBlogContent: '+error);
         return{

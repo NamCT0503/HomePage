@@ -88,6 +88,46 @@ export const getBlogs = async (filter?: any, page?: string) => {
     }
 }
 
+export const getBlogOrther = async (id: number | string, page?: number | string) => {
+    try {
+        if(!id || id === 0 || id === '') return{ status: 400, message: "ParamInput Invalid!"};
+
+        const blogExisted = await db.Blog.findByPk(id);
+        if(!blogExisted) return{ status: 400, message: "NotFound Record Match ParamInput!"};
+
+        const recordPage = 3;
+        const currentPage = (!page || page === ':page')? 1: parseInt(page as string);
+        const offset = (currentPage - 1) * recordPage;
+
+        const result = await db.Blog.findAndCountAll({
+            limit: recordPage,
+            offset: offset,
+            order: [['id', 'DESC']],
+            where: {
+                id: {[Op.ne]: id},
+                [Op.or]: [
+                    { tag: {[Op.eq]: blogExisted.tag}},
+                    { postedBy: blogExisted.postedBy}
+                ]
+            }
+        });
+
+        return{
+            totalItems: result.count,
+            totalPages: Math.ceil(result.count / recordPage),
+            currentPage: currentPage,
+            recordPage: recordPage,
+            blogs: result.rows
+        };
+    } catch (error) {
+        console.error('=== In getBlogOrther: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
 export const createBlogOverview = async (data: any) => {
     try {
         if(

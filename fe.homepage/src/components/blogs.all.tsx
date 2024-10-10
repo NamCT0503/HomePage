@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import style from "../css.module/blogs.module.css"
-import { dataSearchBlogs } from "./breaking.news";
 
 export interface Blogs {
     blogs: any[]
@@ -17,8 +16,9 @@ const BlogAll = (props: Blogs) => {
     const [dataBlogs, setDataBlogs] = useState<any[]>([]);
     const [blogOutstanding, setBlogOutstanding] = useState<any>();
 
-    const handleClickViewBlog = () => {
-        navigate('post/view-blog');
+    const handleClickViewBlog = (title: string, data: any) => {
+        const blogPath = title.replace(/\s+/g, '-');
+        navigate(`post/view-blog/${blogPath}`, { state: data});
     }
 
     useEffect(() => {
@@ -84,9 +84,19 @@ const BlogAll = (props: Blogs) => {
     return(
         <div className={style.wrapContainerBlogAll}>
             <div className={style.containerBlogOutstanding}>
-                <img src={blogOutstanding?.rows[0].img} onClick={handleClickViewBlog} />
+                <img 
+                    src={blogOutstanding?.rows[0].img} 
+                    onClick={
+                        () => handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0])
+                    } 
+                />
                 <div className={style.contentOutStandingAll}>
-                    <div className={style.headerOutstandingAll}>
+                    <div 
+                        className={style.headerOutstandingAll}
+                        onClick={() =>
+                            handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0])
+                        }
+                    >
                         {blogOutstanding?.rows[0].title}
                     </div>
                     <div className={style.postedAt}>
@@ -113,7 +123,12 @@ const BlogAll = (props: Blogs) => {
                                 const dayPassed = getDayPassed(items?.postedAt);
                             return(
                                 <div className={style.wrapContainerAllBlog}>
-                                    <img src={items.img} alt="" />
+                                    <img 
+                                        src={items.img} alt=""
+                                        onClick={() =>
+                                            handleClickViewBlog(items.title, items)
+                                        }
+                                     />
                                     <div className={style.containerBlog}>
                                         <div className={style.footerBlog}>
                                             <div className={style.tagBlog}>
@@ -127,13 +142,18 @@ const BlogAll = (props: Blogs) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={style.headerBlog}>
+                                        <div 
+                                            className={style.headerBlog}
+                                            onClick={() => 
+                                                handleClickViewBlog(items.title, items)
+                                            }
+                                        >
                                             {items?.title}
                                         </div>
                                         <div className={style.postedAt}>
                                             Đăng ngày: {items?.postedAt.split('T')[0]}.
                                         </div>
-                                        <div className={style.description}>
+                                        <div className={`${style.description} ${style.allBlogs}`}>
                                             {items?.description}
                                         </div>
                                     </div>
@@ -148,7 +168,12 @@ const BlogAll = (props: Blogs) => {
                                 const dayPassed = getDayPassed(items?.postedAt);
                             return(
                                 <div className={style.wrapContainerAllBlog}>
-                                    <img src={items.img} alt="" />
+                                    <img 
+                                        src={items.img} alt=""
+                                        onClick={() =>
+                                            handleClickViewBlog(items.title, items)
+                                        }
+                                     />
                                     <div className={style.containerBlog}>
                                         <div className={style.footerBlog}>
                                             <div className={style.tagBlog}>
@@ -162,13 +187,18 @@ const BlogAll = (props: Blogs) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={style.headerBlog}>
+                                        <div 
+                                            className={style.headerBlog}
+                                            onClick={() =>
+                                                handleClickViewBlog(items.title, items)
+                                            }
+                                        >
                                             {items?.title}
                                         </div>
                                         <div className={style.postedAt}>
                                             Đăng ngày: {items?.postedAt.split('T')[0]}.
                                         </div>
-                                        <div className={style.description}>
+                                        <div className={`${style.description} ${style.allBlogs}`}>
                                             {items?.description}
                                         </div>
                                     </div>

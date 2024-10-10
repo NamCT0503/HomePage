@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { userRequest } from "../middleware/validate.user.middleware";
-import { createBlogOverview, deleteBlog, getBlogs, getTimeLocal, updateBlog } from "../service/blog.services";
+import { createBlogOverview, deleteBlog, getBlogOrther, getBlogs, getTimeLocal, updateBlog } from "../service/blog.services";
 
 export const controller_getBlogs = async (
     req: Request,
@@ -9,6 +9,13 @@ export const controller_getBlogs = async (
     const filter = req.params.filter;
     const page = req.params.page;
     res.json(await getBlogs(filter, page));
+}
+
+export const controller_getOrtherBlogs = async (
+    req: Request,
+    res: Response
+) => {
+    res.json(await getBlogOrther(req.params.id, req.params.page));
 }
 
 export const controller_createBlogOverview = async (

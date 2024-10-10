@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import style from "../css.module/blogs.module.css";
+import { useNavigate } from "react-router-dom";
 
 const url = 'http://localhost:5000/api/homepage/service/blog/get-blogs/tagWebsite/:page';
 const url_getBlogOutstanding = `http://localhost:5000/api/homepage/service/blog/get-blogs/isOutstanding/:page`
@@ -7,6 +8,8 @@ const url_getBlogOutstanding = `http://localhost:5000/api/homepage/service/blog/
 const BlogsWebsite = () => {
     const [data, setData] = useState<any>([]);
     const [blogOutstanding, setBlogOutstanding] = useState<any>();
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetcher(url, false);
@@ -67,14 +70,28 @@ const BlogsWebsite = () => {
             console.log('Fetch Error: ', error);
         }
     }
-    console.log('data: ', data);
+
+    const handleClickViewBlog = (title: string, data: any) => {
+        const blogPath = title.replace(/\s+/g, '-');
+        navigate(`../post/view-blog/${blogPath}`, { state: data});
+    }
 
     return(
         <div className={style.wrapContainerBlogAll}>
             <div className={style.containerBlogOutstanding}>
-                <img src={blogOutstanding?.rows[0].img} />
+                <img 
+                    src={blogOutstanding?.rows[0].img} 
+                    onClick={() => {
+                        handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0]);
+                    }}
+                />
                 <div className={style.contentOutStandingAll}>
-                    <div className={style.headerOutstandingAll}>
+                    <div 
+                        className={style.headerOutstandingAll}
+                        onClick={() => {
+                            handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0]);
+                        }}
+                    >
                         {blogOutstanding?.rows[0].title}
                     </div>
                     <div className={style.postedAt}>
@@ -101,7 +118,12 @@ const BlogsWebsite = () => {
                                 const dayPassed = getDayPassed(items?.postedAt);
                             return(
                                 <div className={style.wrapContainerAllBlog}>
-                                    <img src={items.img} alt="" />
+                                    <img 
+                                        src={items.img} alt=""
+                                        onClick={() => 
+                                            handleClickViewBlog(items.title, items)
+                                        }
+                                    />
                                     <div className={style.containerBlog}>
                                         <div className={style.footerBlog}>
                                             <div className={style.tagBlog}>
@@ -115,13 +137,18 @@ const BlogsWebsite = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className={style.headerBlog}>
+                                        <div 
+                                            className={style.headerBlog}
+                                            onClick={() => 
+                                                handleClickViewBlog(items.title, items)
+                                            }
+                                        >
                                             {items?.title}
                                         </div>
                                         <div className={style.postedAt}>
                                             Đăng ngày: {items?.postedAt.split('T')[0]}.
                                         </div>
-                                        <div className={style.description}>
+                                        <div className={`${style.description} ${style.allBlogs}`}>
                                             {items?.description}
                                         </div>
                                     </div>
