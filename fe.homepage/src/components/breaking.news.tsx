@@ -99,6 +99,11 @@ const BreakingNews: React.FC = () => {
         navigate(`post/view-blog/${blogPath}`, { state: data});
     }
 
+    const handleClickAuth = (destination: string) => {
+        if(destination === 'signin') navigate('../auth/signin');
+        else navigate('../auth/signup')
+    }
+
     return (
         <>
         <Helmet>
@@ -122,10 +127,10 @@ const BreakingNews: React.FC = () => {
                     </div>
                 </Link>
                 <div className={style.containerBtnSignupSignin}>
-                    <div className={style.btnSignup}>
+                    <div className={style.btnSignup} onClick={() => handleClickAuth('signup')}>
                         Đăng ký
                     </div>
-                    <div className={style.btnSignin}>
+                    <div className={style.btnSignin} onClick={() => handleClickAuth('signin')}>
                         Đăng nhập
                     </div>
                 </div>

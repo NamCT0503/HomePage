@@ -6,6 +6,7 @@ class Account extends Model{
     public fullname!: string;
     public username!: string;
     public password!: string;
+    public avatar!: string;
     public email!: string;
     public role!: string;
     public readonly createdAt!: Date;
@@ -31,6 +32,11 @@ Account.init(
         password: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        avatar: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            defaultValue: '/image/default_image.jpg'
         },
         email: {
             type: DataTypes.STRING,

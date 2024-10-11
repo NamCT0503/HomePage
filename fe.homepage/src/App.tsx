@@ -12,6 +12,9 @@ import SectionContact from './components/section.contact';
 import SectionAbout2 from './components/section.about2';
 import BreakingNews from './components/breaking.news';
 import BlogContent from './components/blog.content';
+import SigninLayout from './components/auth.signin';
+import SignupLayout from './components/auth.signup';
+import AdminIndex from './components/admin/admin.index';
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
         ]}/>
         <Route path='/blogs/*' element={<BreakingNews></BreakingNews>} />
         <Route path='blogs/post/*' element={<BlogContent></BlogContent>}></Route>
+        <Route path='/auth/signin' element={<SigninLayout></SigninLayout>}></Route>
+        <Route path='/auth/signup' element={<SignupLayout></SignupLayout>}></Route>
+        <Route path='/admin/*' element={<AdminIndex></AdminIndex>}></Route>
       </Routes>
       <Footer></Footer>
     </div>

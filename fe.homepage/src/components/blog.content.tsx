@@ -106,6 +106,36 @@ const BlogContent = () => {
         navigate(`post/view-blog/${blogPath}`, { state: data});
     }
 
+    const handleScrollToId = (id: string) => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    // const handleScrollToId = (id: string) => {
+    //     console.log(`Scrolling to element with id: ${id}`);
+    //     const element = document.getElementById(id);
+    //     if (element) {
+    //         const topOffset = 30;
+    //         const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+    
+    //         console.log(`Element position: ${elementPosition}`);
+    
+    //         if ('scrollRestoration' in window.history) {
+    //             window.history.scrollRestoration = 'manual'
+    //         }
+
+    //         window.scrollTo({
+    //             top: 0,
+    //             behavior: 'smooth',
+    //         });
+    //     } else {
+    //         console.log(`Element with id ${id} not found`);
+    //     }
+    // };
+    
+
     return(
         <>
         <HelmetProvider>
@@ -213,7 +243,7 @@ const BlogContent = () => {
                                 }
 
                                 return(
-                                    <div className={typeContent}>
+                                    <div className={typeContent} id={items.id}>
                                         {content? content: contentList}
                                     </div>
                                 )
@@ -229,7 +259,9 @@ const BlogContent = () => {
                                 .filter((items: any) => items.type_content === 'heading')
                                 .map((items: any) => {
                                     return(
-                                        <div className={style.indexToC}>{items.content}</div>
+                                        <>
+                                            <div className={style.indexToC} onClick={() => handleScrollToId(items.id)}>{items.content}</div>
+                                        </>
                                     )
                                 })}
                             </div>

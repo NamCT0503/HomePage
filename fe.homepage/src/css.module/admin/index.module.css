@@ -1,0 +1,33 @@
+.wrapContainerIndexPage{
+    display: grid;
+    height: 100vh;
+    width: 100%;
+    grid-template-columns: 1fr 5fr;
+    grid-template-rows: 1fr 8fr;
+    grid-template-areas: 
+        'menubar navbarH'
+        'menubar content'
+    ;
+}
+
+.wrapContainerMenubar{
+    grid-area: menubar;
+    border: 1px solid red;
+}
+
+.wrapNavbarHeader{
+    grid-area: navbarH;
+    border: 1px solid yellow;
+}
+
+.wrapContainerContent{
+    border: 1px solid blue;
+    grid-area: content;
+    overflow-y: scroll;
+}
+
+.test{
+    background-color: brown;
+    width: 100%;
+    height: 280%;
+}
