@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createSerWebPackage, deleteSerWebPackage, getAllWebPackage, updateSerWebPackage } from "../service/serweb.services";
+import { userRequest } from "../middleware/validate.user.middleware";
 
 export const controller_getAllWebPackage = async (
     req: Request,
@@ -9,22 +10,22 @@ export const controller_getAllWebPackage = async (
 }
 
 export const controller_createWebPackage = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await createSerWebPackage(req.body));
+    res.json(await createSerWebPackage(req.body, req.user.sub));
 }
 
 export const controller_updateSerWebPackage = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await updateSerWebPackage(req.body));
+    res.json(await updateSerWebPackage(req.body, req.user.sub));
 }
 
 export const controller_deleteSerWebPackage = async(
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await deleteSerWebPackage(req.body.id));
+    res.json(await deleteSerWebPackage(req.body.id, req.user.sub));
 }

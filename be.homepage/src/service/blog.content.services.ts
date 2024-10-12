@@ -1,9 +1,10 @@
-import { BlogContentEntity } from "../entities/app.entity";
+import { BlogContentEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import Account from "../models/Account";
 import Blog from "../models/Blog";
 import { deleteImgInBucket, getPathImgFormBucket } from "./blog.services";
 import * as dotenv from "dotenv";
+import { createNoti } from "./notification.services";
 
 dotenv.config();
 
@@ -56,7 +57,7 @@ export const getBlogContent = async (blogId: string | number) => {
     }
 }
 
-export const createBlogContent = async (data: any) => {
+export const createBlogContent = async (data: any, sub: number) => {
     try {
         if(
             !data ||
@@ -68,7 +69,7 @@ export const createBlogContent = async (data: any) => {
         const blogExisted = await db.Blog.findByPk(data.blogid);
         if(!blogExisted) return{ status: 400, message: "NotFound Record Match DataInput!"};
 
-        let content = data.img;
+        let content = data.img, formatNoti: NotificationEntity;
         if(data.type_content === 'image'){
             const imgPath = await getPathImgFormBucket(data);
             if(typeof(imgPath) !== 'string') return imgPath;
@@ -76,15 +77,34 @@ export const createBlogContent = async (data: any) => {
             content = imgPath;
         }
 
+        const findBlogId = await db.BlogContent.findOne({
+            where: { blogid: data.blogid}
+        });
+        if(!findBlogId){
+            formatNoti = {
+                actionid: data.blogid,
+                type_noti: 'blog',
+                status: 'new',
+                actionBy: sub
+            }
+        } else {
+            formatNoti = {
+                actionid: data.blogid,
+                type_noti: 'blog',
+                status: 'update',
+                actionBy: sub
+            }
+        }
+
         const formatData = {
             blogid: data.blogid,
             type_content: data.type_content,
             content: content
         }
-
-        // return formatData.content.split(/\r?\n/)[1];
-
         await db.BlogContent.create(formatData);
+
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Created Successfully!"};
     } catch (error) {
         console.error('=== In createBlogContent: '+error);
@@ -95,7 +115,7 @@ export const createBlogContent = async (data: any) => {
     }
 }
 
-export const updateBlogContent = async (data: any) => {
+export const updateBlogContent = async (data: any, sub: number) => {
     try {
         if(
             !data ||
@@ -133,6 +153,14 @@ export const updateBlogContent = async (data: any) => {
             where: { id: data.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: blogExisted.serapp_id,
+            type_noti: 'blog',
+            status: 'update',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
         console.error('=== In updateBlogContent: '+error);
@@ -143,7 +171,7 @@ export const updateBlogContent = async (data: any) => {
     }
 }
 
-export const deleteBlogContent = async (id: string | number, scope: string) => {
+export const deleteBlogContent = async (id: string | number, scope: string, sub: number) => {
     try {
         if(!id || id === '' || id === 0)
             return{ status: 400, message: "DataInput Invalid!"};
@@ -179,6 +207,14 @@ export const deleteBlogContent = async (id: string | number, scope: string) => {
             await db.BlogContent.destroy({
                 where: { id: id}
             });
+
+            const formatNoti: NotificationEntity = {
+                actionid: bcExisted.serapp_id,
+                type_noti: 'app',
+                status: 'update',
+                actionBy: sub
+            }
+            await createNoti(formatNoti, `Xóa nội dung contentid: ${id}`);
         }
 
         return{ status: 200, message: "Deleted Successfully!"};

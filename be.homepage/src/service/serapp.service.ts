@@ -1,6 +1,7 @@
-import { ServiceAppEntity } from "../entities/app.entity";
+import { NotificationEntity, ServiceAppEntity } from "../entities/app.entity";
 import db from "../models";
 import { deleteContentApp } from "./contentapp.service";
+import { createNoti } from "./notification.services";
 
 export const getAllSerApp = async () => {
     try {
@@ -15,7 +16,7 @@ export const getAllSerApp = async () => {
     }
 }
 
-export const createSerAppPackage = async (data: ServiceAppEntity) => {
+export const createSerAppPackage = async (data: ServiceAppEntity, sub: number) => {
     try {
         if(
             !data ||
@@ -28,7 +29,16 @@ export const createSerAppPackage = async (data: ServiceAppEntity) => {
         const {count} = await db.ServiceApp.findAndCountAll();
         if(count === 3) return{ status: 400, message: "The Number of Record Reaches Limit!"};
 
-        await db.ServiceApp.create(data);
+        const newSerApp = await db.ServiceApp.create(data);
+
+        const formatNoti: NotificationEntity = {
+            actionid: newSerApp.id,
+            type_noti: 'app',
+            status: 'new',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Created Successfully!"};
     } catch (error) {
         console.error('=== In createSerAppPackage: '+error);
@@ -39,7 +49,7 @@ export const createSerAppPackage = async (data: ServiceAppEntity) => {
     }
 }
 
-export const updateSerAppPackage = async (data: Partial<ServiceAppEntity>) => {
+export const updateSerAppPackage = async (data: Partial<ServiceAppEntity>, sub: number) => {
     try {
         if(!data || (!data.id || data.id === 0)) 
             return{ status: 400, message: "DataInput Invalid!"};
@@ -56,6 +66,14 @@ export const updateSerAppPackage = async (data: Partial<ServiceAppEntity>) => {
             where: { id: data.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: data.id,
+            type_noti: 'app',
+            status: 'update',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
         console.error('=== In upateSerAppPackage: '+error);
@@ -66,13 +84,22 @@ export const updateSerAppPackage = async (data: Partial<ServiceAppEntity>) => {
     }
 }
 
-export const deleteSerAppPackage = async (id: number) => {
+export const deleteSerAppPackage = async (id: number, sub: number) => {
     try {
         if(!id || id === 0) return{ status: 400, message: "DataInput Invali!"};
 
-        await deleteContentApp(id, 'all');
+        await deleteContentApp(id, 'all', sub);
 
         await db.ServiceApp.destroy({ where: { id: id}});
+
+        const formatNoti: NotificationEntity = {
+            actionid: id,
+            type_noti: 'app',
+            status: 'delete',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, 'Dịch vụ này đã bị xóa!');
+
         return{ status: 200, message: "Deleted Successfully!"};
     } catch (error) {
         console.error('=== In deleteSerAppPackage: '+error);

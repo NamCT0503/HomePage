@@ -1,6 +1,7 @@
-import { ContentWebEntity } from "../entities/app.entity";
+import { ContentWebEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import ServiceWeb from "../models/ServiceWeb";
+import { createNoti } from "./notification.services";
 
 //Lấy tất cả danh sách nội dung
 //Hoặc lấy nội dung theo serweb_id
@@ -77,7 +78,7 @@ export const getContentWeb = async (id: number, ref: string) => {
     }
 }
 
-export const createContentWeb = async (data: ContentWebEntity) => {
+export const createContentWeb = async (data: ContentWebEntity, sub: number) => {
     try {
         if(
             !data ||
@@ -89,7 +90,30 @@ export const createContentWeb = async (data: ContentWebEntity) => {
         const {count} = await db.ContentWeb.findAndCountAll({ where: {serweb_id: data.serweb_id}});
         if(count === 10) return{ status: 400, message: "The Number of Record Reaches Limit!"};
 
+        const serwebExisted = await db.ContentWeb.findOne({
+            where: { serweb_id: data.serweb_id}
+        });
+
+        let formatNoti: NotificationEntity;
+        if(!serwebExisted){
+            formatNoti = {
+                actionid: data.serweb_id,
+                type_noti: 'web',
+                status: 'new',
+                actionBy: sub
+            }
+        } else {
+            formatNoti = {
+                actionid: data.serweb_id,
+                type_noti: 'web',
+                status: 'update',
+                actionBy: sub
+            }
+        }
         await db.ContentWeb.create(data);
+
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Created Successflly!"};
     } catch (error) {
         console.error('=== In createContentWeb: '+error);
@@ -100,12 +124,13 @@ export const createContentWeb = async (data: ContentWebEntity) => {
     }
 }
 
-export const updateContentWeb = async (data: Partial<ContentWebEntity>) => {
+export const updateContentWeb = async (data: Partial<ContentWebEntity>, sub: number) => {
     try {
         if(
             !data ||
             (!data.content || data.content === '') ||
-            (!data.id || data.id === 0)
+            (!data.id || data.id === 0) ||
+            (!data.serweb_id || data.serweb_id === 0)
         )
             return{ status: 400, message: "DataInput Invalid!"};
 
@@ -119,6 +144,14 @@ export const updateContentWeb = async (data: Partial<ContentWebEntity>) => {
             where: {id: data.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: data.serweb_id,
+            type_noti: 'web',
+            status: 'update',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
         console.error('=== In updateContentWeb: '+error);
@@ -129,14 +162,25 @@ export const updateContentWeb = async (data: Partial<ContentWebEntity>) => {
     }
 }
 
-export const deleteContentWeb = async (id: number, scope: string) => {
+export const deleteContentWeb = async (id: number, scope: string, sub: number) => {
     try {
         if(!id) return{ status: 400, message: "DataInput Invalid!"};
 
-        if(!scope){
+        if(scope !== 'all'){
+            const findSerWeb = await db.ContentWeb.findByPk(id);
+
+            const formatNoti: NotificationEntity = {
+                actionid: findSerWeb.serweb_id,
+                type_noti: 'web',
+                status: 'update',
+                actionBy: sub
+            }
+
             await db.ContentWeb.destroy({
                 where: { id: id}
             });
+
+            await createNoti(formatNoti, `Xóa nội dung contentid: ${id}`);
         } else {
             await db.ContentWeb.destroy({
                 where: { serweb_id: id}

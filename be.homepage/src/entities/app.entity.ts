@@ -54,3 +54,19 @@ export interface ContentAppEntity {
     icon?: string;
     content: string;
 }
+
+export interface NotificationEntity {
+    id?: number;
+    actionid: number;
+    type_noti: string;
+    status: string;
+    actionBy: number;
+}
+
+export interface NotiDetailEntity {
+    id?: number;
+    accountid: number;
+    notiid: number;
+    seen?: boolean;
+    dataChange: string;
+}

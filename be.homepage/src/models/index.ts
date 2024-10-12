@@ -9,6 +9,8 @@ import ContentApp from './ContentApp';
 import ContentWeb from './ContentWeb';
 import ServiceApp from './ServiceApp';
 import ServiceWeb from './ServiceWeb';
+import Notification from './Notification';
+import NotiDetail from './NotiDetail';
 
 export interface SequelizeConfig {
   database: string;
@@ -39,7 +41,9 @@ const db: { [key: string]: any; sequelize?: Sequelize; Sequelize?: typeof Sequel
   ContentApp,
   ContentWeb,
   ServiceApp,
-  ServiceWeb
+  ServiceWeb,
+  Notification,
+  NotiDetail
 }
 
 readdirSync(__dirname)

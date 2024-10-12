@@ -1,5 +1,4 @@
 .wrapcontainerAuth{
-    /* height: 80vh; */
     width: 100%;
     height: 100vh;
     display: flex;
@@ -17,7 +16,6 @@
 }
 
 .wrapFormAuth{
-    /* border: 2px solid red; */
     display: flex;
     justify-content: flex-end;
     align-items: start;
@@ -31,18 +29,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* border: 1px solid black; */
     width: 60%;
     height: 80%;
 }
 
-/* .formAuth > * {
-    padding: 5%;
-} */
-
 .inputIn4{
     width: 80%;
-    /* border: 1px solid green; */
     margin: 3% 0;
     position: relative;
 }
@@ -87,7 +79,7 @@
     border-radius: 5px;
 }
 
-span{
+.inputIn4 ~ span{
     width: 80%;
 }
 

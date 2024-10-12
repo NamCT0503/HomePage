@@ -42,15 +42,15 @@ export const controller_createBlogOverview = async (
 }
 
 export const controller_updateBlog = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await updateBlog(req.body, req.file));
+    res.json(await updateBlog(req.body, req.user.sub, req.file));
 }
 
 export const controller_deleteBlog = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await deleteBlog(req.body.id));
+    res.json(await deleteBlog(req.body.id, req.user.sub));
 }

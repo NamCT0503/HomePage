@@ -1,5 +1,5 @@
 import multer from "multer";
-import { BlogEntity } from "../entities/app.entity";
+import { BlogEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import path from "path";
 import fs from "fs";
@@ -7,6 +7,7 @@ import { minioClient } from "../routes/app.route";
 import * as dotenv from "dotenv";
 import { Op, Sequelize, where } from "sequelize";
 import { deleteBlogContent } from "./blog.content.services";
+import { createNoti } from "./notification.services";
 
 dotenv.config();
 
@@ -146,8 +147,8 @@ export const createBlogOverview = async (data: any) => {
                 return{ status: 400, message: "Just Only One Blog Outstanding!"};
         }
 
-        const imgPath = await getPathImgFormBucket(data);
-        if(typeof(imgPath) !== 'string') return imgPath;
+        const imgPath = data.img? await getPathImgFormBucket(data): null;
+        // if(typeof(imgPath) !== 'string') return imgPath;
 
         const formatData = {
             img: imgPath,
@@ -159,8 +160,16 @@ export const createBlogOverview = async (data: any) => {
             isOutstanding: data.isOutstanding,
             view: data.view
         }
+        const newBlog = await db.Blog.create(formatData);
 
-        await db.Blog.create(formatData);
+        const formatNoti: NotificationEntity = {
+            actionid: newBlog.id,
+            type_noti: 'blog',
+            status: 'new',
+            actionBy: data.postedBy
+        }
+        await createNoti(formatNoti, formatData);
+
         return{ status: 200, message: "Created Successfully!"};
     } catch (error) {
         console.error('=== In createBlogOverview: '+error);
@@ -171,7 +180,7 @@ export const createBlogOverview = async (data: any) => {
     }
 }
 
-export const updateBlog = async (data: Partial<BlogEntity>, imgReq?: any) => {
+export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?: any) => {
     try {
         if(
             !data ||
@@ -218,6 +227,14 @@ export const updateBlog = async (data: Partial<BlogEntity>, imgReq?: any) => {
             where: { id: data.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: data.id,
+            type_noti: 'blog',
+            status: 'update',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
         console.error('=== In updateBlog: '+error);
@@ -228,7 +245,7 @@ export const updateBlog = async (data: Partial<BlogEntity>, imgReq?: any) => {
     }
 }
 
-export const deleteBlog = async (id: number | string) => {
+export const deleteBlog = async (id: number | string, sub: number) => {
     try {
         if(!id || id === 0 || id === '')
             return{ status: 400, message: "DataInput Invalid!"};
@@ -236,15 +253,25 @@ export const deleteBlog = async (id: number | string) => {
         const blogExisted = await db.Blog.findByPk(id);
         if(!blogExisted) return{ status: 400, message: "NotFound Record Match DataInput!"};
 
-        const bucketName = process.env.MinIO_BUCKETNAME!;
-        const objectName = blogExisted.img.split(`${bucketName}/`)[1];
-        await deleteImgInBucket(bucketName, objectName);
+        if(blogExisted.img ){
+            const bucketName = process.env.MinIO_BUCKETNAME!;
+            const objectName = blogExisted.img.split(`${bucketName}/`)[1];
+            await deleteImgInBucket(bucketName, objectName);
+        }
 
-        await deleteBlogContent(id, 'all');
+        await deleteBlogContent(id, 'all', sub);
 
         await db.Blog.destroy({
             where: { id: id}
         });
+
+        const formatNoti: NotificationEntity = {
+            actionid: id as number,
+            type_noti: 'blog',
+            status: 'delete',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, 'Bài viết này đã bị xóa!');
 
         return{ status: 200, message: "Deleted Successfully!"};
     } catch (error) {

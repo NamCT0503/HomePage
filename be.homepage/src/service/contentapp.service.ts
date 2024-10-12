@@ -1,6 +1,7 @@
-import { ContentAppEntity } from "../entities/app.entity";
+import { ContentAppEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import ServiceApp from "../models/ServiceApp";
+import { createNoti } from "./notification.services";
 
 export const getContentApp = async (serappId: number, ref: string) => {
     try {
@@ -73,7 +74,7 @@ export const getContentApp = async (serappId: number, ref: string) => {
     }
 }
 
-export const createContentApp = async (data: ContentAppEntity) => {
+export const createContentApp = async (data: ContentAppEntity, sub: number) => {
     try {
         if(
             !data ||
@@ -82,12 +83,31 @@ export const createContentApp = async (data: ContentAppEntity) => {
         )
             return{ status: 400, message: "DataInput Invalid!"};
 
+        let formatNoti: NotificationEntity;
         const {count} = await db.ContentApp.findAndCountAll({
             where: { serapp_id: data.serapp_id}
         });
+        if(count === 0 || !count){
+            formatNoti = {
+                actionid: data.serapp_id,
+                type_noti: 'app',
+                status: 'new',
+                actionBy: sub
+            }
+        } else {
+            formatNoti = {
+                actionid: data.serapp_id,
+                type_noti: 'app',
+                status: 'update',
+                actionBy: sub
+            }
+        }
         if(count === 11) return{ status: 400, message: "The Number of Record Reaches Limit!"};
 
         await db.ContentApp.create(data);
+
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Created Successfully!"};
     } catch (error) {
         console.error('=== In createContentApp: '+error);
@@ -98,7 +118,7 @@ export const createContentApp = async (data: ContentAppEntity) => {
     }
 }
 
-export const updateContentApp = async (data: Partial<ContentAppEntity>) => {
+export const updateContentApp = async (data: Partial<ContentAppEntity>, sub: number) => {
     try {
         if(!data || (!data.id || data.id === 0))
             return{ status: 400, message: "DataInput Invalid!"};
@@ -114,6 +134,14 @@ export const updateContentApp = async (data: Partial<ContentAppEntity>) => {
             where: { id: data.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: contentappExisted.serapp_id,
+            type_noti: 'app',
+            status: 'update',
+            actionBy: sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
         console.error('=== In upateContentApp: '+error);
@@ -124,16 +152,25 @@ export const updateContentApp = async (data: Partial<ContentAppEntity>) => {
     }
 }
 
-export const deleteContentApp = async (paramId: number, scope: string) => {
+export const deleteContentApp = async (paramId: number, scope: string, sub: number) => {
     try {
         if(!paramId || paramId === 0) return{ status: 400, message: "DataInput Invalid!"};
 
-        if(scope){
+        if(scope === 'all'){
             await db.ContentApp.destroy({
                 where: { serapp_id: paramId}
             });
         } else {
+            const serappExisted = await db.ContentApp.findByPk(paramId);
+            const formatNoti: NotificationEntity = {
+                actionid: serappExisted.serapp_id,
+                type_noti: 'app',
+                status: 'update',
+                actionBy: sub
+            }
+
             await db.ContentApp.destroy({ where: {id: paramId}});
+            await createNoti(formatNoti, `Xóa nội dung contetnid: ${paramId}`);
         }
 
         return{ status: 200, message: "Deleted Sucessfully!"};

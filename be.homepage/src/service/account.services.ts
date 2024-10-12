@@ -3,7 +3,8 @@ import  * as bcrypt from "bcrypt";
 import * as dotenv from "dotenv";
 import db from "../models";
 import { Op, where } from "sequelize";
-import { AccountEntity } from "../entities/app.entity";
+import { AccountEntity, NotiDetailEntity, NotificationEntity } from "../entities/app.entity";
+import { createNoti } from "./notification.services";
 
 //Superadmin được phép lấy ra danh sách tài khoản hoặc tìm kiếm tài khoản
 //Admin chỉ được phép lấy ra thông tin tài khoản của mình
@@ -93,7 +94,7 @@ export const signin = async (username: string, password: string) => {
     }
 }
 
-export const signup = async (data: AccountEntity) => {
+export const signup = async (data: AccountEntity, sub: number) => {
     try {
         if(
             !data || data === null ||
@@ -109,8 +110,22 @@ export const signup = async (data: AccountEntity) => {
             email: data.email? data.email: null,
             role: data.role
         }
+        const newAccount = await db.Account.create(formatAccount);
 
-        await db.Account.create(formatAccount);
+        const formatNoti: NotificationEntity = {
+            actionid: newAccount.id,
+            type_noti: 'account',
+            status: 'new',
+            actionBy: sub
+        }
+        const formatDataChange = {
+            fullname: data.fullname,
+            username: data.username,
+            email: data.email? data.email: null,
+            role: data.role
+        }
+        await createNoti(formatNoti, formatDataChange);
+
         return{ status: 200, message: 'Created Successfully!'};
     } catch (error) {
         console.error('=== In signup: '+error);
@@ -138,6 +153,14 @@ export const upateAccount = async (data: Partial<AccountEntity>, payload: any) =
             where: { id: userExisted.id}
         });
 
+        const formatNoti: NotificationEntity = {
+            actionid: userExisted.id,
+            type_noti: 'account',
+            status: 'update',
+            actionBy: payload.sub
+        }
+        await createNoti(formatNoti, data);
+
         return{ status: 200, message: 'Updated Successfully!'};
     } catch (error) {
         console.error('=== In updateAccount: '+error);
@@ -154,8 +177,24 @@ export const deleteAccount = async (id: number, isMyOwn: any) => {
     try {
         if(id && isMyOwn.role === 'superadmin'){
             await db.Account.destroy({ where: { id: id}});
+
+            const formatNoti: NotificationEntity = {
+                actionid: id,
+                type_noti: 'account',
+                status: 'delete',
+                actionBy: isMyOwn.sub
+            }
+            await createNoti(formatNoti);
         } else {
             await db.Account.destroy({ where: { id: isMyOwn.sub}});
+
+            const formatNoti: NotificationEntity = {
+                actionid: isMyOwn.sub,
+                type_noti: 'account',
+                status: 'delete',
+                actionBy: isMyOwn.sub
+            }
+            await createNoti(formatNoti);
         }
 
         return{ status: 200, message: "Deleted Sucessfully!"};

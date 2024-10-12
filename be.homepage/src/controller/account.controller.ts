@@ -21,11 +21,12 @@ export const controller_signin = async (
 }
 
 export const controller_signup = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
     const data = req.body;
-    res.json(await signup(data));
+    const sub = req.user.sub;
+    res.json(await signup(data, sub));
 }
 
 export const controller_updateAccount = async (

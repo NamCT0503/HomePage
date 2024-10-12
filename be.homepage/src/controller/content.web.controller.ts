@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { createContentWeb, deleteContentWeb, getContentWeb, updateContentWeb } from "../service/contentweb.services";
+import { userRequest } from "../middleware/validate.user.middleware";
 
 export const controller_getContentWeb = async (
     req: Request,
@@ -10,22 +11,22 @@ export const controller_getContentWeb = async (
 }
 
 export const controller_createContentWebPackage = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await createContentWeb(req.body));
+    res.json(await createContentWeb(req.body, req.user.sub));
 }
 
 export const controller_updateContentWeb = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await updateContentWeb(req.body));
+    res.json(await updateContentWeb(req.body, req.user.sub));
 }
 
 export const controller_deleteContentWeb = async (
-    req: Request,
+    req: userRequest,
     res: Response
 ) => {
-    res.json(await deleteContentWeb(req.body.id, req.body.scope));
+    res.json(await deleteContentWeb(req.body.id, req.body.scope, req.user.sub));
 }
