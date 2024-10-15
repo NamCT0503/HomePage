@@ -19,7 +19,7 @@ export const getBlogContent = async (blogId: string | number) => {
             include: {
                 model: Blog,
                 as: 'blogs',
-                attributes: ['postedBy'],
+                attributes: ['img', 'title', 'description' ,'postedBy', 'tag'],
                 include: {
                     model: Account,
                     as: 'accounts',
@@ -42,6 +42,10 @@ export const getBlogContent = async (blogId: string | number) => {
                 content: items.content,
                 postedBy: items.blogs.accounts.username,
                 postedAccId: items.blogs.postedBy,
+                blogImg: items.blogs.img,
+                blogTitle: items.blogs.title,
+                blogDesc: items.blogs.description,
+                blogTag: items.blogs.tag,
                 createdAt: items.createdAt,
                 updatedAt: items.updatedAt,
                 deletedAt: items.deletedAt

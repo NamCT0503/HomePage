@@ -48,16 +48,16 @@ export const createNoti = async (data: NotificationEntity, dataChange?: any) => 
             where: { id: {[Op.ne]: data.actionid}}
         });
 
-        await allAccount.filter((items: any) => items.id !== data.actionBy)
-        .map(async (items: any) => {
-            const formatData: NotiDetailEntity = {
-                accountid: items.id,
-                notiid: addNoti.id,
-                seen: false,
-                dataChange: dataChange? JSON.stringify(dataChange): 'Thay đổi không được hiển thị'
-            }
-            await createNotiDetail(formatData);
-        })
+        // await allAccount.filter((items: any) => items.id !== data.actionBy)
+        // .map(async (items: any) => {
+        //     const formatData: NotiDetailEntity = {
+        //         accountid: items.id,
+        //         notiid: addNoti.id,
+        //         seen: false,
+        //         dataChange: dataChange? JSON.stringify(dataChange): 'Thay đổi không được hiển thị'
+        //     }
+        //     await createNotiDetail(formatData);
+        // })
 
         return{ 
             status: 200, 

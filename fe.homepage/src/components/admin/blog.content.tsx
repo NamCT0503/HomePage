@@ -1,26 +1,62 @@
 /* eslint-disable */
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import style from "../../css.module/admin/blog.content.module.css";
 import Cookies from "js-cookie";
+import { useLocation } from "react-router-dom";
+import { sendReq } from "../auth.signin";
 
 let idRecord: number = 0;
+const url_getContentBlog = 'http://localhost:5000/api/homepage/service/blog/content/get/';
+const url_delContentBlog = 'http://localhost:5000/api/homepage/service/blog/content/delete/'
 
 const BlogContent = () => {
     const accessToken = Cookies.get('accessToken');
+    const location = useLocation();
+    const typeState = location.state?.type;
+    const idState = location.state?.id;
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const isMounted = useRef(false);
     const [dataBlogCover, setDataBlogCover] = useState({
         img: '' as any,
         title: '',
         description: '',
-        tag: 'website',
+        tag: '',
         isOutstanding: false
     });
     const [dataTextInput, setDataTextInput] = useState();
     const [selectedFiles, setSelectedFiles] = useState<{imgid: number, img: File}[]>([]);
     const [idRecordRes, setIdRecordRes] = useState();
     const [alertCrBC, setAlertCrBC] = useState(true);
+    const [contentBlog, setContentBlog] = useState<any>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url_getContentBlog + `${idState}`);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const uniqueData = Array.from(new Set(data.map((item: any) => item.id)))
+                        .map(id => data.find((item: any) => item.id === id));
+
+                    setContentBlog(uniqueData);
+
+                    uniqueData.forEach((item: any) => {
+                        handleAddChildElement(item.type_content, item);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching content blog:', error);
+            }
+        };
+
+        if (!isMounted.current) {
+            fetchData();
+            isMounted.current = true;
+        }
+    }, []);
 
     const handleClickDivImg = () => {
         fileInputRef.current?.click();
@@ -65,7 +101,6 @@ const BlogContent = () => {
             });
 
             const dataRes = await res.json();
-            console.log('res create: ', dataRes)
             setIdRecordRes(dataRes.idRecord.id);
             return alert(dataRes.message);
         } catch (error) {
@@ -74,10 +109,10 @@ const BlogContent = () => {
     }
 
     
-    const handleAddChildElement  = (type: string) => {
+    const handleAddChildElement  = (type: string, dataUpdate?: any) => {
         const node: any = document.querySelector(`.${style.areaContentBlog}`);
         let childElement :any = document.createElement('div');; 
-        childElement.id = `${type}_${idRecord+=1}`;
+        childElement.id = dataUpdate? `${type}update${dataUpdate.id}_${idRecord+=1}`: `${type}_${idRecord+=1}`;
         childElement.contentEditable = 'true';
 
         if(type === 'image'){
@@ -88,28 +123,28 @@ const BlogContent = () => {
             
             const img = document.createElement('img');
             img.className = style.childImg;
-            img.src = '';
+            img.src = dataUpdate?.content;
 
             inputFile.onchange = (event: any) => {
                 const file = event.target.files[0];
-                if (file) {
-                    img.src = URL.createObjectURL(file);
-                    setSelectedFiles((prevFiles) => {
-                        const existingFile = prevFiles.find(item => item.imgid === childElement.id);
-                        if (existingFile) {
-                            return prevFiles.map(item =>
-                                item.imgid===childElement.id? { ...item, img: file }: item
-                            );
-                        } else {
-                            return [...prevFiles, { imgid: childElement.id, img: file }];
-                        }
-                    });
-                }
+                
+                img.src = URL.createObjectURL(file);
+                setSelectedFiles((prevFiles) => {
+                    const existingFile = prevFiles.find(item => item.imgid === childElement.id);
+                    if (existingFile) {
+                        return prevFiles.map(item =>
+                            item.imgid===childElement.id? { ...item, img: file }: item
+                        );
+                    } else {
+                        return [...prevFiles, { imgid: childElement.id, img: file }];
+                    }
+                });
             };
 
             childElement.appendChild(img);
             childElement.appendChild(inputFile);
         } else {
+            childElement.innerHTML = dataUpdate? dataUpdate.content: '';
             if(type === 'text' || type === 'textul' || type === 'textol'){
                 childElement.className = style.childElementText;
             }
@@ -131,13 +166,18 @@ const BlogContent = () => {
     };
 
     const getContentById = (id: string) => {
+        const idUp = id.includes('update')? id.split('_')[0].split('update')[1]: undefined
         const divElement = document.getElementById(id);
         if (divElement) {
             if(id.includes('image')){
-                return divElement.innerText;
+                return {
+                    idDiv: idUp,
+                    content: divElement.innerText
+                };
             }
             return{
                 id: id,
+                idDiv: idUp,
                 text: divElement.innerText
             };
         } else {
@@ -148,14 +188,18 @@ const BlogContent = () => {
 
     const handleClickCreateContentBlog = () => {
         try {
-            if(!idRecordRes) return alert('Bài đăng chưa tồn tại để tạo nội dung!');
+            if(!idRecordRes && !idState) return alert('Bài đăng chưa tồn tại để tạo nội dung!');
             const listId: any[] = getChildElementIds();
             listId.map(items => {
-                const dataById = getContentById(items);
-                dataById? 
-                postContent(idRecordRes!, dataById, true): 
-                postContent(idRecordRes!, 
-                    selectedFiles.filter(item => item.imgid===items),
+                const dataById :any = getContentById(items);
+                console.log('dataById: ', dataById)
+                dataById.idDiv? 
+                postContent(dataById.idDiv,
+                    dataById.text? dataById: selectedFiles.filter(item => item.imgid===items), 
+                    false
+                ): 
+                postContent(idRecordRes!? idRecordRes: contentBlog[0]?.blogid, 
+                    dataById.text? dataById: selectedFiles.filter(item => item.imgid===items),
                     true
                 )
             })
@@ -170,6 +214,7 @@ const BlogContent = () => {
     const delElement = (id: string) => {
         const element = document.getElementById(`${id}`);
         if (!element) return alert('Lỗi DOM!');
+        // console.log(id)
     
         let timeout: any = null; 
 
@@ -181,6 +226,10 @@ const BlogContent = () => {
                     const isConfirmed = confirm("Bạn có chắc chắn muốn xóa phần tử này không?");
                     if (isConfirmed) {
                         element.remove(); 
+                        if(id.includes('update')){
+                            const idNumber = parseInt(id.split('update')[1].split('_')[0]);
+                            handleDeleteContentBlog(idNumber);
+                        }
                     } else {
                         element.style.opacity = '1'; 
                     }
@@ -195,71 +244,104 @@ const BlogContent = () => {
         };
     };
 
-    const postContent = async (id: string | number, data: any, createOrUp: boolean) => {
+    const postContent = async (blogid: string | number, data: any, create: boolean) => {
         const url_create = 'http://localhost:5000/api/homepage/service/blog/content/create';
         const url_update = 'http://localhost:5000/api/homepage/service/blog/content/update';
 
         const formData = new FormData();
+        console.log('data: ', data);
 
         try {
             let res: any;
-            if(id){
-                if(createOrUp){
-                    formData.append('blogid', id.toString());
-                    formData.append('stt', 
-                        data?.id? data?.id.split('_')[1]: 
-                        data[0]?.imgid.split('_')[1]
-                    );
-                    formData.append('type_content', 
-                        data?.id? data?.id.split('_')[0]: 
-                        data[0]?.imgid.split('_')[0]
-                    );
-                    formData.append('content', 
-                        data?.text? data.text: data[0]?.img
-                    );
+            if(blogid){
+                if(create){
+                    if(
+                        (data?.text && data?.text !== '') ||
+                        (data[0]?.img && data[0]?.img !== '')
+                    ){
+                        formData.append('blogid', blogid.toString());
+                        formData.append('stt', 
+                            data?.id? data?.id.split('_')[1]: 
+                            data[0]?.imgid.split('_')[1]
+                        );
+                        formData.append('type_content', 
+                            data?.id? data?.id.split('_')[0]: 
+                            data[0]?.imgid.split('_')[0]
+                        );
+                        formData.append('content', 
+                            data?.text? data.text: data[0]?.img
+                        );
 
-                    res = await fetch(url_create, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                        }
-                    });
-
-                    const dataRes = await res.json();
-                    return dataRes.status===200? setAlertCrBC(true): setAlertCrBC(false);
+                        res = await fetch(url_create, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`,
+                            }
+                        });
+    
+                        const dataRes = await res.json();
+                        return dataRes.status===200? setAlertCrBC(true): setAlertCrBC(false);
+                    }
                 } else {
-                    formData.append('id', id.toString());
-                    formData.append('type_content', data.type_content);
-                    formData.append('content', data.content);
+                    if(
+                        (data?.text && data?.text !== '') ||
+                        (data[0]?.img && data[0]?.img !== '')
+                    ){
+                        formData.append('id', blogid.toString());
+                        formData.append('type_content', 
+                            data?.id? data?.id.split('update')[0]: 
+                            data[0]?.imgid.split('update')[0]
+                        );
+                        formData.append('content', 
+                            data?.text? data?.text: data[0]?.img
+                        );
 
-                    res = await fetch(url_update, {
-                        method: 'PUT',
-                        body: formData,
-                        headers: {
-                            'Authorization': `Bearer ${accessToken}`,
-                        }
-                    });
-
-                    const dataRes = await res.json();
-                    return alert(dataRes.message);
+                        res = await fetch(url_update, {
+                            method: 'PUT',
+                            body: formData,
+                            headers: {
+                                'Authorization': `Bearer ${accessToken}`,
+                            }
+                        });
+    
+                        const dataRes = await res.json();
+                        return dataRes.status===200? setAlertCrBC(true): setAlertCrBC(false);
+                    }
                 }
-            } else {
-                return alert('Bài đăng chưa tồn tại để đăng nội dung!');
-            }
-        } catch (error) {
+            } 
+        }
+         catch (error) {
             console.log('Create Error: ', error);
         }
     }
 
-    // console.log('textarea: ', dataTextInput)
-    
+    const handleDeleteContentBlog = async (id: number) => {
+        try {
+            const url = url_delContentBlog+`${id}`+'/:scope';
+            const res = await sendReq(url, {
+                method: 'DELETE',
+            });
+            const dataRes = await res.json();
+            return dataRes?.message;
+        } catch (error) {
+            console.log('Delete Error: ', error);
+        }
+    }
+
     return(
         <div className={style.wrapContainerLayoutContent}>
             <div className={style.wrapContainerCoverPage}>
                 <h3>Trang bìa</h3>
                 <div className={style.containerContent}>
-                    <img src={dataBlogCover.img? URL.createObjectURL(dataBlogCover.img): ''} alt="Ảnh bìa" />
+                    <img 
+                        src={
+                            (dataBlogCover.img && dataBlogCover.img!=='')?
+                            URL.createObjectURL(dataBlogCover.img): 
+                            contentBlog[0]?.blogImg? contentBlog[0].blogImg: ''
+                        } 
+                        alt="Ảnh bìa" 
+                    />
                     <div className={style.divAddImg} onClick={handleClickDivImg}>
                         <i className="fa-solid fa-plus"></i>
                         <input
@@ -282,25 +364,46 @@ const BlogContent = () => {
                             type="text" 
                             placeholder="Tiêu đề"
                             name="title"
-                            value={dataBlogCover.title}
+                            value={
+                                dataBlogCover.title!==''?
+                                dataBlogCover.title:
+                                contentBlog[0]?.blogTitle? 
+                                contentBlog[0]?.blogTitle: ''
+                            }
                             onChange={handleDataChange} 
                         />
                         <input 
                             type="text" 
                             placeholder="Mô tả" 
                             name="description"
-                            value={dataBlogCover.description}
+                            value={
+                                dataBlogCover.description!==''?
+                                dataBlogCover.description:
+                                contentBlog[0]?.blogDesc? 
+                                contentBlog[0]?.blogDesc: ''
+                            }
                             onChange={handleDataChange}
                         />
                         <div className={style.areHorizionCoverPage}>
-                            <select value={dataBlogCover.tag} name="tag" onChange={handleChooseTag}>
-                                <option value="website">website</option>
-                                <option value="mobile">mobile</option>
+                            <select 
+                                value={
+                                    dataBlogCover.tag!==''?
+                                    dataBlogCover.tag:
+                                    contentBlog[0]?.blogTag? 
+                                    contentBlog[0]?.blogTag: ''
+                                }
+                                name="tag" 
+                                onChange={handleChooseTag}
+                            >
+                                <option value={contentBlog[0]?.blogTag==='website'? 'website': 'mobile'}>
+                                    {contentBlog[0]?.blogTag==='website'? 'website': 'mobile'}
+                                </option>
+                                <option value={contentBlog[0]?.blogTag==='website'? 'mobile': 'website'}>
+                                    {contentBlog[0]?.blogTag==='website'? 'mobile': 'website'}
+                                </option>
                             </select>
                             <button 
                                 onClick={handleClickSave}
-                                // onClick={getChildElementIds}
-                                // onClick={() => getContentById(2)}
                             >
                                 <i className="fa-solid fa-floppy-disk"></i>
                             </button>
