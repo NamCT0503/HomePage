@@ -80,11 +80,14 @@ export const signin = async (username: string, password: string) => {
             }
         }
 
-        return{ accessToken: jwt.sign(
-            payload!, 
-            process.env.JWT_SECRET as string, 
-            { expiresIn: '1d'}
-        )}
+        return{ 
+            sub: payload.sub,
+            accessToken: jwt.sign(
+                payload!, 
+                process.env.JWT_SECRET as string, 
+                { expiresIn: '1d'}
+            )
+        }
     } catch (error) {
         console.error('=== In signin: '+error);
         return{

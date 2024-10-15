@@ -25,6 +25,7 @@ export interface BlogEntity {
 export interface BlogContentEntity {
     id?: number;
     blogid: number;
+    stt: number;
     type_content: string;
     content: string;
 }

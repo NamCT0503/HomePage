@@ -35,3 +35,28 @@ export interface ContentWebEntity{
     updatedAt: Date | string;
     deletedAt: Date | string;
 }
+
+export interface BlogsEntity {
+    id: number;
+    img: string;
+    title: string;
+    description: string;
+    postedAt: Date | string;
+    postedBy: number;
+    tag: string;
+    isOutstanding: boolean;
+    view: number;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string;
+}
+
+export interface BlogContentEntity {
+    id: number;
+    blogid: number;
+    type_content: string;
+    content: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string;
+}

@@ -14,6 +14,10 @@ module.exports = {
                     key: 'id'
                 }
             },
+            stt: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
             type_content: {
                 type: Sequelize.ENUM('text', 'textol', 'textul', 'heading', 'image'),
                 allowNull: false

@@ -170,7 +170,7 @@ export const createBlogOverview = async (data: any) => {
         }
         await createNoti(formatNoti, formatData);
 
-        return{ status: 200, message: "Created Successfully!"};
+        return{ status: 200, message: "Created Successfully!", idRecord: newBlog};
     } catch (error) {
         console.error('=== In createBlogOverview: '+error);
         return{
@@ -214,7 +214,7 @@ export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?
             objectName = blogDB.img.split(`${bucketName}/`)[1];
             await deleteImgInBucket(bucketName, objectName);
         }
-
+        
         const formatData = {
             img: img!? img: blogExisted.img,
             title: data.title? data.title: blogExisted.title,

@@ -5,6 +5,7 @@ import Blog from "./Blog";
 class BlogContent extends Model{
     public id!: number;
     public blogid!: number;
+    public stt!: number;
     public type_content!: string;
     public content!: string;
     public readonly createdAt!: Date;
@@ -26,6 +27,10 @@ BlogContent.init(
                 model: 'Blog',
                 key: 'id'
             }
+        },
+        stt: {
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
         type_content: {
             type: DataTypes.ENUM('text', 'textol', 'textul', 'heading', 'image'),

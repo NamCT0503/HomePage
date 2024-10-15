@@ -110,8 +110,6 @@ const ContentListview = () => {
     return(
         <div className={style.wrapTable}>
             <table>
-                <tr>
-                </tr>
                 <tbody>
                     {data[0]?.serweb_id? data.map((items: ContentWebEntity) => {
                         return(

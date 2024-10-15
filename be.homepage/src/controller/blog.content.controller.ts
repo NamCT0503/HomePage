@@ -18,6 +18,7 @@ export const controller_createBlogContent = async (
 
     const data = {
         blogid: body.blogid,
+        stt: body.stt,
         type_content: body.type_content,
         img: body.type_content === 'image'? img: body.content
     }

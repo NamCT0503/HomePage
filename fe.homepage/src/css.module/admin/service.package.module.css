@@ -34,6 +34,29 @@ td{
     padding: 2% 0;
     text-align: center;
 }
+.blogListView table tr td{
+    /* border: 1px solid blue; */
+    width: 300px;
+}
+
+.tdImg{
+    max-width: 300px;
+    padding: 5px;
+}
+.tdImg img{
+    width: 100%;
+}
+
+.tdDesc, .tdTitle{
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+/* 
+.tdOptions > *{
+    margin: 0 5px;
+} */
 
 .contentPackage td {
     text-align: left;

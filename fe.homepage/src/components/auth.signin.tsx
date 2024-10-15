@@ -61,6 +61,7 @@ const SigninLayout = () => {
                     return console.log('Login Failed: ', status);
                 }
 
+                Cookies.set('subAccount', status.sub);
                 Cookies.set('accessToken', status.accessToken);
                 navigate('/admin/index');
             } else {

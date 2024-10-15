@@ -20,7 +20,7 @@ const actionOneSelfMiddelware = () => {
             })
             // return res.json(accId.blogs.postedBy)
 
-            const postedBy = req.body.postedBy? req.body.postedBy: accId.blogs.postedBy;
+            const postedBy = req.body.postedBy? req.body.postedBy: accId?.blogs.postedBy;
             const sub = req.user.sub;
             if(postedBy != sub) return res.status(400).json({ message: "Account NotEnough Rights!"});
 

@@ -5,6 +5,8 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import ServiceOverview from "./service.overview";
 import ServicePackage from "./service.package";
 import ContentPackage from "./content.package";
+import AdminBlogs from "./admin.blogs";
+import BlogContent from "./blog.content";
 
 const url_getSerWeb = 'http://localhost:5000/api/homepage/service/web/getall';
 const url_getSerApp = 'http://localhost:5000/api/homepage/service/app/get-all';
@@ -85,8 +87,9 @@ const AdminIndex = () => {
                     </div>
                     <div 
                         className={
-                            `${style.itemMenubar} ${location.pathname.includes('/admin/blogs/')? style.currentPage: ''}`
+                            `${style.itemMenubar} ${location.pathname.includes('blogs')? style.currentPage: ''}`
                         }
+                        onClick={() => handleNavigateMenubar('blogs')}
                     >
                         <i className="fa-solid fa-blog"></i>
                         <span>Bài đăng</span>
@@ -150,7 +153,8 @@ const AdminIndex = () => {
                     <Route path="service/website/*" element={<ContentPackage></ContentPackage>}></Route>
                     <Route path="service/mobile" element={<ServicePackage data={dataSerApp}></ServicePackage>}></Route>
                     <Route path="service/mobile/*" element={<ContentPackage></ContentPackage>}></Route>
-                    <Route path="admin/blogs" element={<AdminIndex></AdminIndex>}></Route>
+                    <Route path="blogs" element={<AdminBlogs></AdminBlogs>}></Route>
+                    <Route path="blogs/content/*" element={<BlogContent></BlogContent>}></Route>
                 </Routes>
             </div>
         </div>

@@ -37,6 +37,7 @@ export const getBlogContent = async (blogId: string | number) => {
             formatResult.push({
                 id: items.id,
                 blogid: items.blogid,
+                stt: items.stt,
                 type_content: items.type_content,
                 content: items.content,
                 postedBy: items.blogs.accounts.username,
@@ -47,7 +48,7 @@ export const getBlogContent = async (blogId: string | number) => {
             });
         });
 
-        return formatResult;
+        return formatResult.sort((a, b) => a.stt - b.stt);
     } catch (error) {
         console.error('=== In getBlogContent: '+error);
         return{
@@ -62,6 +63,7 @@ export const createBlogContent = async (data: any, sub: number) => {
         if(
             !data ||
             (!data.blogid || data.blogid === 0) ||
+            (!data.stt || data.stt === 0) ||
             (!data.type_content || data.type_content === '') ||
             (!data.img || data.img === '')
         ) return{ status: 400, message: "DataInput Invalid!"};
@@ -98,6 +100,7 @@ export const createBlogContent = async (data: any, sub: number) => {
 
         const formatData = {
             blogid: data.blogid,
+            stt: data.stt,
             type_content: data.type_content,
             content: content
         }
