@@ -127,9 +127,9 @@ const BreakingNews: React.FC = () => {
                     </div>
                 </Link>
                 <div className={style.containerBtnSignupSignin}>
-                    <div className={style.btnSignup} onClick={() => handleClickAuth('signup')}>
+                    {/* <div className={style.btnSignup} onClick={() => handleClickAuth('signup')}>
                         Đăng ký
-                    </div>
+                    </div> */}
                     <div className={style.btnSignin} onClick={() => handleClickAuth('signin')}>
                         Đăng nhập
                     </div>

@@ -296,7 +296,6 @@
 .wrapContainerAllBlog{
     width: 30%;
     height: 400px;
-    /* height: 100%; */
     border-radius: 20px;
     background-color: white;
     box-shadow: 0 0 5px grey;
@@ -341,12 +340,10 @@
 }
 
 .containerPrevNext{
-    /* border: 1px solid black; */
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 8%;
-    /* position: relative; */
     overflow: hidden;
 }
 
@@ -375,3 +372,68 @@
     width: 100%;
 }
 /* ======================= Kết thúc phần các bài blog ======================= */
+
+@media (max-width: 739px){
+    .titleHeader{
+        font-size: 10px;
+    }
+    
+    .containerBtnSignupSignin{
+        width: 30%;
+    }
+
+    .wrapMenubarBlogs{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .menubar{
+        width: 80%;
+        height: 2%;
+        transform: translateY(0);
+        padding-right: 10%;
+    }
+
+    .containerSearch, .wrapContainerRelatedBlogs{
+        display: none;
+    }
+
+    /* Phần BlogAll */
+    .containerBlogOutstanding{
+        flex-direction: column;
+        height: 350px;
+        justify-content: start;
+        margin-bottom: 5%;
+    }
+
+    .containerBlogOutstanding img{
+        width: 100%;
+        margin: 0;
+        margin-bottom: 5%;
+    }
+
+    .containerGroup3Blogs{
+        flex-direction: column;
+    }
+
+    .wrapContainerAllBlog{
+        width: 100%;
+        margin-bottom: 7%;
+    }
+
+    .wrapContainerAllBlog img {
+        height: 40%;
+    }
+
+    .containerPrevNext{
+        width: 25%;
+    }
+
+    .description{
+        width: 270px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}

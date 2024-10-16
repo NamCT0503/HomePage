@@ -138,9 +138,9 @@ const BlogContent = () => {
                     </div>
                 </Link>
                 <div className={parent.containerBtnSignupSignin}>
-                    <div className={parent.btnSignup}>
+                    {/* <div className={parent.btnSignup}>
                         Đăng ký
-                    </div>
+                    </div> */}
                     <div className={parent.btnSignin}>
                         Đăng nhập
                     </div>
