@@ -8,10 +8,10 @@ import { createNoti } from "./notification.services";
 
 //Superadmin được phép lấy ra danh sách tài khoản hoặc tìm kiếm tài khoản
 //Admin chỉ được phép lấy ra thông tin tài khoản của mình
-export const getAccount = async (param: string | number, idMyOwn: number) => {
+export const getAccount = async (param: string | number, idMyOwn: any) => {
     try {
         let result: any;
-        if(param && !idMyOwn){
+        if((param && param !==':param') && (!idMyOwn && idMyOwn !== ':id')){
             const conditions = `%${param}%`
             const searchConditions = {
                 [Op.or]: [
@@ -81,6 +81,7 @@ export const signin = async (username: string, password: string) => {
         }
 
         return{ 
+            role: payload.role,
             sub: payload.sub,
             accessToken: jwt.sign(
                 payload!, 
@@ -167,6 +168,40 @@ export const upateAccount = async (data: Partial<AccountEntity>, payload: any) =
         return{ status: 200, message: 'Updated Successfully!'};
     } catch (error) {
         console.error('=== In updateAccount: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+export const changePassword = async (oldpass: string, newpass: string, sub: number) => {
+    try {
+        if(
+            (!oldpass || oldpass === '') ||
+            (!newpass || newpass === '')
+        ) return{ status: 400, message: "DataInput Invalid!"}
+
+        const accountExisted = await db.Account.findByPk(sub);
+        if(!accountExisted) return{ status: 400, message: "Account Not Exist!"};
+
+        if(!await bcrypt.compare(oldpass, accountExisted.password)){
+            return{
+                status: 400,
+                message: 'Old Password Incorrect!'
+            }
+        }
+
+        const newPwd = await hashPassword(newpass);
+        await db.Account.update({
+            password: newPwd
+        }, {
+            where: { id: sub}
+        });
+
+        return{ status: 200, message: "Change Password Successfully!"};
+    } catch (error) {
+        console.error('=== In changePassword: '+error);
         return{
             status: 500,
             messgae: error

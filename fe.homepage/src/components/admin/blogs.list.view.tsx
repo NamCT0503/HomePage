@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { BlogsEntity } from "../../types/app.types";
 import style from "../../css.module/admin/blogs.managenment.module.css";
 import serPackage from "../../css.module/admin/service.package.module.css";
@@ -107,14 +109,17 @@ const BlogListView = (props: BlogList) => {
 
     const handleDelete = async (id: number, postedBy: number) => {
         try {
-            const url = 'http://localhost:5000/api/homepage/service/blog/delete';
-            const res = await sendReq(url, {
-                method: 'DELETE',
-                body: JSON.stringify({ id: id, postedBy: postedBy})
-            });
+            const confirmDel = confirm("Hành động này không thể hoàn tác!\nBạn vẫn muốn thực hiện?");
+            if(confirmDel){
+                const url = 'http://localhost:5000/api/homepage/service/blog/delete';
+                const res = await sendReq(url, {
+                    method: 'DELETE',
+                    body: JSON.stringify({ id: id, postedBy: postedBy})
+                });
 
-            const dataRes = await res.json();
-            return alert(dataRes.message);
+                const dataRes = await res.json();
+                return alert(dataRes.message);
+            }
         } catch (error) {
             console.log('Delete Error: ', error);
         }
@@ -206,17 +211,6 @@ const BlogListView = (props: BlogList) => {
                                 </td>
                                 <td>
                                     {
-                                        edit===items.id? 
-                                        <input 
-                                            name="postedAt"
-                                            type="text" 
-                                            style={{width: '70%'}}
-                                            value={
-                                                (dataChange.postedAt && dataChange.postedAt !== '')?
-                                                dataChange.postedAt: items.postedAt as string
-                                            }
-                                            onChange={handleDataChange}
-                                        />:
                                         ((items.postedAt as string).split('T')[0])
                                     }
                                 </td>

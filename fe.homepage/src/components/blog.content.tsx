@@ -113,29 +113,6 @@ const BlogContent = () => {
         }
     };
 
-    // const handleScrollToId = (id: string) => {
-    //     console.log(`Scrolling to element with id: ${id}`);
-    //     const element = document.getElementById(id);
-    //     if (element) {
-    //         const topOffset = 30;
-    //         const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-    
-    //         console.log(`Element position: ${elementPosition}`);
-    
-    //         if ('scrollRestoration' in window.history) {
-    //             window.history.scrollRestoration = 'manual'
-    //         }
-
-    //         window.scrollTo({
-    //             top: 0,
-    //             behavior: 'smooth',
-    //         });
-    //     } else {
-    //         console.log(`Element with id ${id} not found`);
-    //     }
-    // };
-    
-
     return(
         <>
         <HelmetProvider>

@@ -60,3 +60,16 @@ export interface BlogContentEntity {
     updatedAt?: Date | string;
     deletedAt?: Date | string;
 }
+
+export interface AccountEntity {
+    id: number;
+    fullname: string;
+    username: string;
+    password: string;
+    avatar: string;
+    email: string;
+    role: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string;
+}

@@ -7,6 +7,7 @@ import ServicePackage from "./service.package";
 import ContentPackage from "./content.package";
 import AdminBlogs from "./admin.blogs";
 import BlogContent from "./blog.content";
+import AccountManage from "./account/account.manage";
 
 const url_getSerWeb = 'http://localhost:5000/api/homepage/service/web/getall';
 const url_getSerApp = 'http://localhost:5000/api/homepage/service/app/get-all';
@@ -101,6 +102,7 @@ const AdminIndex = () => {
                         className={
                             `${style.itemMenubar} ${location.pathname.includes('/admin/account/')? style.currentPage: ''}`
                         }
+                        onClick={() => handleNavigateMenubar('accounts')}
                     >
                         <i className="fa-solid fa-user-tie"></i>
                         <span>Tài khoản</span>
@@ -155,6 +157,7 @@ const AdminIndex = () => {
                     <Route path="service/mobile/*" element={<ContentPackage></ContentPackage>}></Route>
                     <Route path="blogs" element={<AdminBlogs></AdminBlogs>}></Route>
                     <Route path="blogs/content/*" element={<BlogContent></BlogContent>}></Route>
+                    <Route path="accounts" element={<AccountManage></AccountManage>}></Route>
                 </Routes>
             </div>
         </div>

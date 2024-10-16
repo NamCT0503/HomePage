@@ -1,5 +1,5 @@
 import express from "express";
-import { controll_getAccount, controller_deleteAccount, controller_signin, controller_signup, controller_updateAccount } from "../controller/account.controller";
+import { controll_getAccount, controller_changePassword, controller_deleteAccount, controller_signin, controller_signup, controller_updateAccount } from "../controller/account.controller";
 import { signin } from "../service/account.services";
 import validateUserMiddleware from "../middleware/validate.user.middleware";
 import checkRoleAccount from "../middleware/check.role.middleware";
@@ -31,10 +31,11 @@ export const minioClient = new Client({
 const upload = multer({ storage: multer.memoryStorage() });
 
 //Account
-router.get('/get-account', validateUserMiddleware() as any, checkRoleAccount() as any ,controll_getAccount);
+router.get('/get-account/:id/:param', validateUserMiddleware() as any, checkRoleAccount() as any ,controll_getAccount);
 router.post('/login', controller_signin);
 router.post('/signup', validateUserMiddleware() as any, checkRoleAccount() as any, controller_signup);
 router.put('/account/update-account', validateUserMiddleware() as any, controller_updateAccount)
+router.put('/account/change-password', validateUserMiddleware() as any, controller_changePassword);
 router.delete('/account/delete-account', validateUserMiddleware() as any, checkRoleAccount() as any, controller_deleteAccount);
 
 //ServiceWeb

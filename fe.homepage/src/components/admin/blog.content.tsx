@@ -13,6 +13,7 @@ const url_delContentBlog = 'http://localhost:5000/api/homepage/service/blog/cont
 const BlogContent = () => {
     const accessToken = Cookies.get('accessToken');
     const location = useLocation();
+    const pathname = location.pathname;
     const typeState = location.state?.type;
     const idState = location.state?.id;
 
@@ -79,6 +80,7 @@ const BlogContent = () => {
     };
 
     const handleClickSave = async () => {
+        console.log('click cre')
         const formData = new FormData();
         
         if(dataBlogCover.title === '' || dataBlogCover.description === '')
@@ -214,7 +216,6 @@ const BlogContent = () => {
     const delElement = (id: string) => {
         const element = document.getElementById(`${id}`);
         if (!element) return alert('Lỗi DOM!');
-        // console.log(id)
     
         let timeout: any = null; 
 
@@ -342,7 +343,11 @@ const BlogContent = () => {
                         } 
                         alt="Ảnh bìa" 
                     />
-                    <div className={style.divAddImg} onClick={handleClickDivImg}>
+                    <div 
+                        className={style.divAddImg} 
+                        onClick={handleClickDivImg}
+                        style={{ display: pathname.includes('recordId=') ? 'none' : 'block' }}
+                    >
                         <i className="fa-solid fa-plus"></i>
                         <input
                             type="file"
@@ -371,6 +376,7 @@ const BlogContent = () => {
                                 contentBlog[0]?.blogTitle: ''
                             }
                             onChange={handleDataChange} 
+                            readOnly={pathname.includes('recordId=')? true: false}
                         />
                         <input 
                             type="text" 
@@ -383,6 +389,7 @@ const BlogContent = () => {
                                 contentBlog[0]?.blogDesc: ''
                             }
                             onChange={handleDataChange}
+                            readOnly={pathname.includes('recordId=')? true: false}
                         />
                         <div className={style.areHorizionCoverPage}>
                             <select 
@@ -394,6 +401,7 @@ const BlogContent = () => {
                                 }
                                 name="tag" 
                                 onChange={handleChooseTag}
+                                disabled={pathname.includes('recordId=')? true: false}
                             >
                                 <option value={contentBlog[0]?.blogTag==='website'? 'website': 'mobile'}>
                                     {contentBlog[0]?.blogTag==='website'? 'website': 'mobile'}
@@ -404,6 +412,7 @@ const BlogContent = () => {
                             </select>
                             <button 
                                 onClick={handleClickSave}
+                                style={{ display: pathname.includes('recordId=') ? 'none' : 'block' }}
                             >
                                 <i className="fa-solid fa-floppy-disk"></i>
                             </button>

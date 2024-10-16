@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
-import { deleteAccount, getAccount, signin, signup, upateAccount } from "../service/account.services";
+import { changePassword, deleteAccount, getAccount, signin, signup, upateAccount } from "../service/account.services";
 import { userRequest } from "../middleware/validate.user.middleware";
 
 export const controll_getAccount = async (
     req: Request,
     res: Response
 ) => {
-    const search = req.body.param;
-    const isMyOwn = req.body.id;
+    const search = req.params.param;
+    const isMyOwn = req.params.id? parseInt(req.params.id): 0;
     res.json(await getAccount(search, isMyOwn));
 }
 
@@ -34,6 +34,16 @@ export const controller_updateAccount = async (
     res: Response
 ) => {
     res.json(await upateAccount(req.body, req.user));
+}
+
+export const controller_changePassword = async (
+    req: userRequest,
+    res: Response
+) => {
+    const oldpass = req.body?.oldpass;
+    const newpass = req.body?.newpass;
+    const sub = req.user.sub;
+    res.json(await changePassword(oldpass, newpass, sub));
 }
 
 export const controller_deleteAccount = async (

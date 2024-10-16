@@ -6,7 +6,6 @@ import Blog from "../models/Blog";
 const actionOneSelfMiddelware = () => {
     return async (req: userRequest, res: Response, nextFunction: NextFunction) => {
         try {
-            // console.log('reqMidlleConsole: ', req)
             const accId = await db.BlogContent.findOne({
                 attributes: ['id', 'blogid'],
                 include: [
@@ -18,7 +17,6 @@ const actionOneSelfMiddelware = () => {
                 ],
                 where: { id: req.body.id? req.body.id: req.params.id}
             })
-            // return res.json(accId.blogs.postedBy)
 
             const postedBy = req.body.postedBy? req.body.postedBy: accId?.blogs.postedBy;
             const sub = req.user.sub;
