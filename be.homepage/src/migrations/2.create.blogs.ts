@@ -9,7 +9,7 @@ module.exports = {
             img: {
                 type: Sequelize.TEXT,
                 allowNull: true,
-                defaultValue: '/image/blog-all-outstanding.png'
+                defaultValue: '/blog-all-outstanding.png'
             },
             title: {
                 type: Sequelize.STRING,

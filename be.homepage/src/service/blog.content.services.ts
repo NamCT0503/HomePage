@@ -2,9 +2,11 @@ import { BlogContentEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import Account from "../models/Account";
 import Blog from "../models/Blog";
-import { deleteImgInBucket, getPathImgFormBucket } from "./blog.services";
+// import { deleteImgInBucket, getPathImgFormBucket } from "./blog.services";
 import * as dotenv from "dotenv";
 import { createNoti } from "./notification.services";
+import path from "path";
+import fs from "fs";
 
 dotenv.config();
 
@@ -77,10 +79,7 @@ export const createBlogContent = async (data: any, sub: number) => {
 
         let content = data.img, formatNoti: NotificationEntity;
         if(data.type_content === 'image'){
-            const imgPath = await getPathImgFormBucket(data);
-            if(typeof(imgPath) !== 'string') return imgPath;
-
-            content = imgPath;
+            content = data?.img.filename;
         }
 
         const findBlogId = await db.BlogContent.findOne({
@@ -134,18 +133,14 @@ export const updateBlogContent = async (data: any, sub: number) => {
 
         let formatData: any;
         if(data.type_content === 'image'){
-            const newImg = await getPathImgFormBucket(data);
-            if(typeof(newImg) !== 'string') return newImg;
-
-            const imgPath = blogExisted.content;
-            const bucketName = process.env.MinIO_BUCKETNAME!;
-            const objectName = imgPath.split(`${bucketName}/`)[1];
-
-            await deleteImgInBucket(bucketName, objectName);
+            const pathImg = path.join(__dirname, '../../public/uploads', blogExisted.content);
+            fs.unlink(pathImg, (error) => {
+                if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
+            })
 
             formatData = {
                 type_content: 'image',
-                content: newImg
+                content: `${data.img.filename}`
             }
         } else {
             formatData = {
@@ -160,13 +155,13 @@ export const updateBlogContent = async (data: any, sub: number) => {
             where: { id: data.id}
         });
 
-        const formatNoti: NotificationEntity = {
-            actionid: blogExisted.serapp_id,
-            type_noti: 'blog',
-            status: 'update',
-            actionBy: sub
-        }
-        await createNoti(formatNoti, data);
+        // const formatNoti: NotificationEntity = {
+        //     actionid: blogExisted.serapp_id,
+        //     type_noti: 'blog',
+        //     status: 'update',
+        //     actionBy: sub
+        // }
+        // await createNoti(formatNoti, data);
 
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
@@ -189,11 +184,12 @@ export const deleteBlogContent = async (id: string | number, scope: string, sub:
             });
             if(!bcExisted || bcExisted.length === 0) return{ status: 400, message: "NotFound Record Match DataInput!"};
 
-            const bucketName = process.env.MinIO_BUCKETNAME!;
             await bcExisted?.map(async (items: any) => {
                 if(items.type_content === 'image'){
-                    const objectName = items.content.split(`${bucketName}/`)[1];
-                    await deleteImgInBucket(bucketName, objectName);
+                    const pathImg = path.join(__dirname, '../../public/uploads', items.content);
+                    fs.unlink(pathImg, (error) => {
+                        if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
+                    })
                 }
             });
 
@@ -205,23 +201,23 @@ export const deleteBlogContent = async (id: string | number, scope: string, sub:
             if(!bcExisted) return{ status: 400, message: "NotFound Record Match DataInput!"};
 
             if(bcExisted.type_content === 'image'){
-                const bucketName = process.env.MinIO_BUCKETNAME!;
-                const objectName = bcExisted.content.split(`${bucketName}/`)[1];
-
-                await deleteImgInBucket(bucketName, objectName);
+                const pathImg = path.join(__dirname, '../../public/uploads', bcExisted.content);
+                fs.unlink(pathImg, (error) => {
+                    if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
+                })
             }
 
             await db.BlogContent.destroy({
                 where: { id: id}
             });
 
-            const formatNoti: NotificationEntity = {
-                actionid: bcExisted.serapp_id,
-                type_noti: 'app',
-                status: 'update',
-                actionBy: sub
-            }
-            await createNoti(formatNoti, `Xóa nội dung contentid: ${id}`);
+            // const formatNoti: NotificationEntity = {
+            //     actionid: bcExisted.serapp_id,
+            //     type_noti: 'app',
+            //     status: 'update',
+            //     actionBy: sub
+            // }
+            // await createNoti(formatNoti, `Xóa nội dung contentid: ${id}`);
         }
 
         return{ status: 200, message: "Deleted Successfully!"};

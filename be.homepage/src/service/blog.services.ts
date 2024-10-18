@@ -3,7 +3,7 @@ import { BlogEntity, NotificationEntity } from "../entities/app.entity";
 import db from "../models";
 import path from "path";
 import fs from "fs";
-import { minioClient } from "../routes/app.route";
+// import { minioClient } from "../routes/app.route";
 import * as dotenv from "dotenv";
 import { Op, Sequelize, where } from "sequelize";
 import { deleteBlogContent } from "./blog.content.services";
@@ -147,11 +147,12 @@ export const createBlogOverview = async (data: any) => {
                 return{ status: 400, message: "Just Only One Blog Outstanding!"};
         }
 
-        const imgPath = data.img? await getPathImgFormBucket(data): null;
+        // const imgPath = data.img? await getPathImgFormBucket(data): null;
         // if(typeof(imgPath) !== 'string') return imgPath;
 
         const formatData = {
-            img: imgPath,
+            // img: imgPath,
+            img: data?.img? `${data?.img.filename}`: null,
             title: data.title,
             description: data.description,
             postedAt: data.postedAt,
@@ -162,13 +163,13 @@ export const createBlogOverview = async (data: any) => {
         }
         const newBlog = await db.Blog.create(formatData);
 
-        const formatNoti: NotificationEntity = {
-            actionid: newBlog.id,
-            type_noti: 'blog',
-            status: 'new',
-            actionBy: data.postedBy
-        }
-        await createNoti(formatNoti, formatData);
+        // const formatNoti: NotificationEntity = {
+        //     actionid: newBlog.id,
+        //     type_noti: 'blog',
+        //     status: 'new',
+        //     actionBy: data.postedBy
+        // }
+        // await createNoti(formatNoti, formatData);
 
         return{ status: 200, message: "Created Successfully!", idRecord: newBlog};
     } catch (error) {
@@ -199,24 +200,15 @@ export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?
         if(outstandingExisted && (data.isOutstanding === 1 || data.isOutstanding?.toString() === '1'))
             return{ status: 400, message: "Just Only One Blog Outstanding!"};
 
-        let img: string, objectName: string;
-        const bucketName = process.env.MinIO_BUCKETNAME!;
         if(imgReq){
-            const imgData = { img: imgReq}
-            const imgPath = await getPathImgFormBucket(imgData);
-            if(typeof(imgPath) !== 'string') return imgPath;
-
-            img = imgPath; 
-
-            const blogDB = await db.Blog.findByPk(data.id);
-            if(!blogDB) return{ status: 400, message: "NotFound Record Match DataInput!"};
-
-            objectName = blogDB.img.split(`${bucketName}/`)[1];
-            await deleteImgInBucket(bucketName, objectName);
+            const pathImg = path.join(__dirname, '../../public/uploads', blogExisted.img);
+            fs.unlink(pathImg, (error) => {
+                if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
+            })
         }
         
         const formatData = {
-            img: img!? img: blogExisted.img,
+            img: imgReq? `${imgReq?.filename}`: blogExisted.img,
             title: data.title? data.title: blogExisted.title,
             description: data.description? data.description: blogExisted.description,
             postedAt: Date.now(),
@@ -227,13 +219,13 @@ export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?
             where: { id: data.id}
         });
 
-        const formatNoti: NotificationEntity = {
-            actionid: data.id,
-            type_noti: 'blog',
-            status: 'update',
-            actionBy: sub
-        }
-        await createNoti(formatNoti, data);
+        // const formatNoti: NotificationEntity = {
+        //     actionid: data.id,
+        //     type_noti: 'blog',
+        //     status: 'update',
+        //     actionBy: sub
+        // }
+        // await createNoti(formatNoti, data);
 
         return{ status: 200, message: "Updated Successfully!"};
     } catch (error) {
@@ -253,10 +245,11 @@ export const deleteBlog = async (id: number | string, sub: number) => {
         const blogExisted = await db.Blog.findByPk(id);
         if(!blogExisted) return{ status: 400, message: "NotFound Record Match DataInput!"};
 
-        if(blogExisted.img ){
-            const bucketName = process.env.MinIO_BUCKETNAME!;
-            const objectName = blogExisted.img.split(`${bucketName}/`)[1];
-            await deleteImgInBucket(bucketName, objectName);
+        if(blogExisted.img){
+            const pathImg = path.join(__dirname, '../../public/uploads', blogExisted.img);
+            fs.unlink(pathImg, (error) => {
+                if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
+            })
         }
 
         await deleteBlogContent(id, 'all', sub);
@@ -264,14 +257,6 @@ export const deleteBlog = async (id: number | string, sub: number) => {
         await db.Blog.destroy({
             where: { id: id}
         });
-
-        const formatNoti: NotificationEntity = {
-            actionid: id as number,
-            type_noti: 'blog',
-            status: 'delete',
-            actionBy: sub
-        }
-        await createNoti(formatNoti, 'Bài viết này đã bị xóa!');
 
         return{ status: 200, message: "Deleted Successfully!"};
     } catch (error) {
@@ -296,51 +281,51 @@ export function getTimeLocal(){
     return `${year}-${month}-${day} ${hours}-${minutes}-${seconds}`;
 }
 
-export const getPathImgFormBucket = async (data: any) => {
-    try {
-        const fileName = `${Date.now()}_${data.img?.originalname}`
-        const bucketName = process.env.MinIO_BUCKETNAME as string;
-        const buckets = await minioClient.listBuckets();
-        const bucketExisted = buckets.some(bucket => bucket.name === bucketName);
-        if(!bucketExisted){
-            await minioClient.makeBucket(bucketName, 'us-east-1');
-        }
+// export const getPathImgFormBucket = async (data: any) => {
+//     try {
+//         const fileName = `${Date.now()}_${data.img?.originalname}`
+//         const bucketName = process.env.MinIO_BUCKETNAME as string;
+//         const buckets = await minioClient.listBuckets();
+//         const bucketExisted = buckets.some(bucket => bucket.name === bucketName);
+//         if(!bucketExisted){
+//             await minioClient.makeBucket(bucketName, 'us-east-1');
+//         }
 
-        const uploadParams = {
-            Bucket: bucketName,
-            Body: data.img.buffer,
-            Size: data.img.size,
-            ContentType: data.img.mimetype
-        };
-        await minioClient.putObject(
-            uploadParams.Bucket,
-            fileName,
-            uploadParams.Body,
-            uploadParams.Size,
-            { 'Content-Type': uploadParams.ContentType }
-        );
+//         const uploadParams = {
+//             Bucket: bucketName,
+//             Body: data.img.buffer,
+//             Size: data.img.size,
+//             ContentType: data.img.mimetype
+//         };
+//         await minioClient.putObject(
+//             uploadParams.Bucket,
+//             fileName,
+//             uploadParams.Body,
+//             uploadParams.Size,
+//             { 'Content-Type': uploadParams.ContentType }
+//         );
 
-        return `http://localhost:9000/${bucketName}/${fileName}`;
-    } catch (error) {
-        console.error('=== In getPathImgFormBucket: '+error);
-        return{
-            status: 500,
-            messgae: error
-        }
-    }
-}
+//         return `http://localhost:9000/${bucketName}/${fileName}`;
+//     } catch (error) {
+//         console.error('=== In getPathImgFormBucket: '+error);
+//         return{
+//             status: 500,
+//             messgae: error
+//         }
+//     }
+// }
 
-export const deleteImgInBucket = async (bucketName: string, objectName: string) => {
-    try {
-        if(bucketName === '' || objectName === '')
-            return{ status: 500, message: 'DataInput Img Bucket Invalid!'};
+// export const deleteImgInBucket = async (bucketName: string, objectName: string) => {
+//     try {
+//         if(bucketName === '' || objectName === '')
+//             return{ status: 500, message: 'DataInput Img Bucket Invalid!'};
 
-        await minioClient.removeObject(bucketName, objectName);
-    } catch (error) {
-        console.error('=== In deleteImgInBucket: '+error);
-        return{
-            status: 500,
-            messgae: error
-        }
-    }
-}
+//         await minioClient.removeObject(bucketName, objectName);
+//     } catch (error) {
+//         console.error('=== In deleteImgInBucket: '+error);
+//         return{
+//             status: 500,
+//             messgae: error
+//         }
+//     }
+// }

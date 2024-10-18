@@ -36,7 +36,7 @@ Account.init(
         avatar: {
             type: DataTypes.STRING,
             allowNull: true,
-            defaultValue: '/image/default_image.jpg'
+            defaultValue: '/default_image.jpg'
         },
         email: {
             type: DataTypes.STRING,

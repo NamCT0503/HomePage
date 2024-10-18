@@ -20,15 +20,17 @@ dotenv.config();
 
 const router = express.Router();
 
-export const minioClient = new Client({
-    endPoint: process.env.MinIO_ENDPOINT as string,
-    port: parseInt(process.env.MinIO_PORT as string),
-    useSSL: false,
-    accessKey: process.env.MinIO_USERNAME as string,
-    secretKey: process.env.MinIO_PASSWORD as string,
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, path.join(__dirname, '../../public/uploads'))
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname)); 
+    }
 });
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ storage: storage });
 
 //Account
 router.get('/get-account/:id/:param', validateUserMiddleware() as any, checkRoleAccount() as any ,controll_getAccount);
