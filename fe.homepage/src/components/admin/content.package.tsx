@@ -146,7 +146,7 @@ const ContentPackage = () => {
                         type="text"
                         name="c_icon"
                         value={dataCreate.c_icon}
-                        placeholder="Icon"
+                        placeholder="Classname FontAwesome"
                         onChange={handleDataChange}
                         style={{
                             width: widthInputCreate

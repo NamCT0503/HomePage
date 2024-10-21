@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import style from "../css.module/blogs.module.css"
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
 
 export interface Blogs {
     blogs: any[]
@@ -21,16 +23,6 @@ const BlogAll = (props: Blogs) => {
         navigate(`post/view-blog/${blogPath}`, { state: data});
     }
 
-    useEffect(() => {
-        fetcher(url_getBlogs, false);
-        fetcher(url_getBlogOutstanding, true);
-    }, []);
-
-    const recordPage = dataBlogs[0]?.recordPage;
-    const numberDiv = Math.ceil(recordPage / 3);
-
-    const postedAtBlogOut = blogOutstanding?.rows[0].postedAt;
-
     const fetcher = async (url: string, isOutstanding: boolean) => {
         try {
             const res = await fetch(url, {
@@ -46,6 +38,26 @@ const BlogAll = (props: Blogs) => {
             console.log('Fetch Error: ', error);
         }
     }
+
+    useEffect(() => {
+        fetcher(url_getBlogs, false);
+        fetcher(url_getBlogOutstanding, true);
+    }, []);
+
+    if((!blogOutstanding || blogOutstanding.count===0) && (dataBlogs as any)?.blogs?.length==0){
+        return(
+            <DotLottieReact
+                src="https://lottie.host/8ee303ea-acde-4e78-bd39-fa92a440f34a/SIcGfi0vNv.lottie"
+                loop
+                autoplay
+            />
+        )
+    }
+
+    const recordPage = dataBlogs[0]?.recordPage;
+    const numberDiv = Math.ceil(recordPage / 3);
+
+    const postedAtBlogOut = blogOutstanding?.rows[0]?.postedAt;
 
     const getDayPassed = (date: string) => {
         const posted_day = date?.split('T')[0];
@@ -83,48 +95,51 @@ const BlogAll = (props: Blogs) => {
 
     return(
         <div className={style.wrapContainerBlogAll}>
-            <div className={style.containerBlogOutstanding}>
-                <img 
-                    src={blogOutstanding?.rows[0].img} 
-                    onClick={
-                        () => handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0])
-                    } 
-                />
-                <div className={style.contentOutStandingAll}>
-                    <div 
-                        className={style.headerOutstandingAll}
-                        onClick={() =>
-                            handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0])
-                        }
-                    >
-                        {blogOutstanding?.rows[0].title}
-                    </div>
-                    <div className={style.postedAt}>
-                        Đăng ngày: {postedAtBlogOut?.split('T')[0]}
-                    </div>
-                    <div className={style.description}>
-                        {blogOutstanding?.rows[0].description}
-                    </div>
-                    <div className={style.footerBlog}>
-                        <div className={style.tagBlog}>
-                            <div className={style.tag}>
-                                {blogOutstanding?.rows[0].tag}
+            {
+                (blogOutstanding && blogOutstanding?.count!==0)?
+                <div className={style.containerBlogOutstanding}>
+                    <img 
+                        src={`http://localhost:5000/${blogOutstanding?.rows[0]?.img}`} 
+                        onClick={
+                            () => handleClickViewBlog(blogOutstanding?.rows[0]?.title, blogOutstanding?.rows[0])
+                        } 
+                    />
+                    <div className={style.contentOutStandingAll}>
+                        <div 
+                            className={style.headerOutstandingAll}
+                            onClick={() =>
+                                handleClickViewBlog(blogOutstanding?.rows[0]?.title, blogOutstanding?.rows[0])
+                            }
+                        >
+                            {blogOutstanding?.rows[0]?.title}
+                        </div>
+                        <div className={style.postedAt}>
+                            Đăng ngày: {postedAtBlogOut?.split('T')[0]}
+                        </div>
+                        <div className={style.description}>
+                            {blogOutstanding?.rows[0]?.description}
+                        </div>
+                        <div className={style.footerBlog}>
+                            <div className={style.tagBlog}>
+                                <div className={style.tag}>
+                                    {blogOutstanding?.rows[0]?.tag}
+                                </div>
+                                <div>{getDayPassed(postedAtBlogOut) === 0? "Trong hôm nay": getDayPassed(postedAtBlogOut)+" ngày trước."}</div>
                             </div>
-                            <div>{getDayPassed(postedAtBlogOut) === 0? "Trong hôm nay": getDayPassed(postedAtBlogOut)+" ngày trước."}</div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div>: <></>
+            }
             <div className={style.containerAllBlogs}>
                 {blogs[0]?.blogs? Array.from({length: numberDiv}, (_, index) => (
                     <div className={style.containerGroup3Blogs}>
-                        {blogs[0]?.blogs.slice(index * 3, index * 3 + 3)
+                        {blogs[0]?.blogs?.slice(index * 3, index * 3 + 3)
                             .map((items: any) => {
                                 const dayPassed = getDayPassed(items?.postedAt);
                             return(
                                 <div className={style.wrapContainerAllBlog}>
                                     <img 
-                                        src={items.img} alt=""
+                                        src={`http://localhost:5000/${items.img}`} alt=""
                                         onClick={() =>
                                             handleClickViewBlog(items.title, items)
                                         }
@@ -169,7 +184,7 @@ const BlogAll = (props: Blogs) => {
                             return(
                                 <div className={style.wrapContainerAllBlog}>
                                     <img 
-                                        src={items.img} alt=""
+                                        src={`http://localhost:5000/${items.img}`} alt=""
                                         onClick={() =>
                                             handleClickViewBlog(items.title, items)
                                         }

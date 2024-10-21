@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import style from "../css.module/blogs.module.css";
 import { useNavigate } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const url = 'http://localhost:5000/api/homepage/service/blog/get-blogs/tagWebsite/:page';
 const url_getBlogOutstanding = `http://localhost:5000/api/homepage/service/blog/get-blogs/isOutstanding/:page`
@@ -11,10 +12,36 @@ const BlogsWebsite = () => {
 
     const navigate = useNavigate();
 
+    const fetcher = async (url: string, isOutstanding: boolean) => {
+        try {
+            const res = await fetch(url, {
+                method: "GET"
+            });
+            const dataRes = await res.json();
+            if(!isOutstanding){
+                setData([dataRes]);
+            } else {
+                setBlogOutstanding(dataRes)
+            }
+        } catch (error) {
+            console.log('Fetch Error: ', error);
+        }
+    }
+
     useEffect(() => {
         fetcher(url, false);
         fetcher(url_getBlogOutstanding, true);
     }, []);
+
+    if((!blogOutstanding || blogOutstanding.count===0) && !data?.blogs){
+        return(
+            <DotLottieReact
+                src="https://lottie.host/8ee303ea-acde-4e78-bd39-fa92a440f34a/SIcGfi0vNv.lottie"
+                loop
+                autoplay
+            />
+        )
+    }
 
     const recordPage = data[0]?.recordPage;
     const numberDiv = Math.ceil(recordPage / 3);
@@ -55,22 +82,6 @@ const BlogsWebsite = () => {
         }
     }
 
-    const fetcher = async (url: string, isOutstanding: boolean) => {
-        try {
-            const res = await fetch(url, {
-                method: "GET"
-            });
-            const dataRes = await res.json();
-            if(!isOutstanding){
-                setData([dataRes]);
-            } else {
-                setBlogOutstanding(dataRes)
-            }
-        } catch (error) {
-            console.log('Fetch Error: ', error);
-        }
-    }
-
     const handleClickViewBlog = (title: string, data: any) => {
         const blogPath = title.replace(/\s+/g, '-');
         navigate(`../post/view-blog/${blogPath}`, { state: data});
@@ -78,38 +89,41 @@ const BlogsWebsite = () => {
 
     return(
         <div className={style.wrapContainerBlogAll}>
-            <div className={style.containerBlogOutstanding}>
-                <img 
-                    src={blogOutstanding?.rows[0].img} 
-                    onClick={() => {
-                        handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0]);
-                    }}
-                />
-                <div className={style.contentOutStandingAll}>
-                    <div 
-                        className={style.headerOutstandingAll}
+            {
+                (blogOutstanding && blogOutstanding?.count)?
+                <div className={style.containerBlogOutstanding}>
+                    <img 
+                        src={`http://localhost:5000/${blogOutstanding?.rows[0].img}`} 
                         onClick={() => {
                             handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0]);
                         }}
-                    >
-                        {blogOutstanding?.rows[0].title}
-                    </div>
-                    <div className={style.postedAt}>
-                        Đăng ngày: {postedAtBlogOut?.split('T')[0]}
-                    </div>
-                    <div className={style.description}>
-                        {blogOutstanding?.rows[0].description}
-                    </div>
-                    <div className={style.footerBlog}>
-                        <div className={style.tagBlog}>
-                            <div className={style.tag}>
-                                {blogOutstanding?.rows[0].tag}
+                    />
+                    <div className={style.contentOutStandingAll}>
+                        <div 
+                            className={style.headerOutstandingAll}
+                            onClick={() => {
+                                handleClickViewBlog(blogOutstanding?.rows[0].title, blogOutstanding?.rows[0]);
+                            }}
+                        >
+                            {blogOutstanding?.rows[0].title}
+                        </div>
+                        <div className={style.postedAt}>
+                            Đăng ngày: {postedAtBlogOut?.split('T')[0]}
+                        </div>
+                        <div className={style.description}>
+                            {blogOutstanding?.rows[0].description}
+                        </div>
+                        <div className={style.footerBlog}>
+                            <div className={style.tagBlog}>
+                                <div className={style.tag}>
+                                    {blogOutstanding?.rows[0].tag}
+                                </div>
+                                <div>{getDayPassed(postedAtBlogOut) === 0? "Trong hôm nay": getDayPassed(postedAtBlogOut)+" ngày trước."}</div>
                             </div>
-                            <div>{getDayPassed(postedAtBlogOut) === 0? "Trong hôm nay": getDayPassed(postedAtBlogOut)+" ngày trước."}</div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </div>: <></>
+            }
             <div className={style.containerAllBlogs}>
                 {Array.from({length: numberDiv}, (_, index) => (
                     <div className={style.containerGroup3Blogs}>
@@ -119,7 +133,7 @@ const BlogsWebsite = () => {
                             return(
                                 <div className={style.wrapContainerAllBlog}>
                                     <img 
-                                        src={items.img} alt=""
+                                        src={`http://localhost:5000/${items.img}`} alt=""
                                         onClick={() => 
                                             handleClickViewBlog(items.title, items)
                                         }

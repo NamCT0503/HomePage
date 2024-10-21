@@ -177,7 +177,7 @@ const BlogContent = () => {
                                 <div>{dataBC[0]?.createdAt.split('T')[0]}</div>
                             </div>
                         </div>
-                        <img src={`${blogData.img}`} alt="" />
+                        <img src={`http://localhost:5000/${blogData.img}`} alt="" />
                     </div>
                     <div className={style.containerContentBC}>
                         <div className={style.areaShowContentBC}>
@@ -194,7 +194,7 @@ const BlogContent = () => {
                                 }
                                 if(items.type_content === 'image'){
                                     typeContent = style.imgInContentBC;
-                                    content = <img src={items.content} />
+                                    content = <img src={`http://localhost:5000/${items.content}`} />
                                 }
                                 if(items.type_content === 'textul'){
                                     typeContent = style.textulBC;
@@ -237,7 +237,9 @@ const BlogContent = () => {
                                 .map((items: any) => {
                                     return(
                                         <>
-                                            <div className={style.indexToC} onClick={() => handleScrollToId(items.id)}>{items.content}</div>
+                                            <div className={style.indexToC} onClick={() => handleScrollToId(items.id)}>
+                                                {items.content}
+                                            </div>
                                         </>
                                     )
                                 })}
@@ -259,7 +261,7 @@ const BlogContent = () => {
                                     return(
                                         <div className={parent.wrapContainerAllBlog}>
                                             <img 
-                                                src={items.img}
+                                                src={`http://localhost:5000/${items.img}`}
                                                 onClick={() =>
                                                     handleClickViewBlog(items.title, items)
                                                 }

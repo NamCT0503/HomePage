@@ -141,9 +141,11 @@ export const createBlogOverview = async (data: any) => {
         const blogs = await db.Blog.findAll({
             where: { isOutstanding: 1}
         });
-        if(blogs){
-            const checkIsOutstanding = parseInt(data.isOutstanding) === 1? true: false;
-            if(blogs[0].dataValues.isOutstanding === checkIsOutstanding)
+
+        if(blogs && blogs.length!==0){
+            // const checkIsOutstanding = parseInt(data.isOutstanding) === 1? true: false;
+            // console.log(checkIsOutstanding)
+            if(blogs[0]?.dataValues.isOutstanding.toString() === data.isOutstanding)
                 return{ status: 400, message: "Just Only One Blog Outstanding!"};
         }
 
@@ -185,19 +187,30 @@ export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?
     try {
         if(
             !data ||
-            (!data.id || data.id === 0) ||
+            // (!(data as any).idBlog || (data as any).idBlog === 0) ||
             data.title === '' ||
             data.description === '' ||
             data.tag === ''
         ) return {status: 400, message: "DataInput Invalid!"};
 
-        const blogExisted = await db.Blog.findByPk(data.id);
+        let blogExisted: any;
+        (data as any)?.idBlog? 
+        blogExisted = await db.Blog.findByPk((data as any).idBlog):
+        blogExisted = await db?.Blog.findByPk(data.id);
+
         if(!blogExisted) return{ status: 400, message: "NotFound Record Math ID!"};
 
         const outstandingExisted = await db.Blog.findAll({
             where: { isOutstanding: 1}
         });
-        if(outstandingExisted && (data.isOutstanding === 1 || data.isOutstanding?.toString() === '1'))
+        if(
+            outstandingExisted?.length!==0 && 
+            (
+                data.isOutstanding?.toString() === 'true' &&
+                outstandingExisted[0]?.id!==(data as any)?.idBlog?
+                (data as any)?.idBlog: data.id
+            )
+        )
             return{ status: 400, message: "Just Only One Blog Outstanding!"};
 
         if(imgReq){
@@ -206,17 +219,19 @@ export const updateBlog = async (data: Partial<BlogEntity>, sub: number, imgReq?
                 if(error) return{ status: 400, message: "Lỗi thao tác với dữ liệu file!"};
             })
         }
-        
+
         const formatData = {
             img: imgReq? `${imgReq?.filename}`: blogExisted.img,
             title: data.title? data.title: blogExisted.title,
             description: data.description? data.description: blogExisted.description,
             postedAt: Date.now(),
             tag: data.tag? data.tag: blogExisted.tag,
-            isOutstanding: data.isOutstanding? data.isOutstanding: blogExisted.isOutstanding
+            isOutstanding: data.isOutstanding?.toString()? data.isOutstanding: blogExisted.isOutstanding
         }
         await db.Blog.update(formatData, {
-            where: { id: data.id}
+            where: { 
+                id: (data as any).idBlog? (data as any).idBlog: data.id
+            }
         });
 
         // const formatNoti: NotificationEntity = {

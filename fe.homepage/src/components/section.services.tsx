@@ -56,14 +56,12 @@ const SectionServices: React.FC = () => {
         const filData = await data?.filter((items: any, index: any, self: any) => 
           index === self?.findIndex((filter: any) => filter.serweb_id === items.serweb_id)
         ); 
-        console.log('true')
         setDataSerWeb(data);
         setFilterDateWeb(filData);
       } else {
         const filData = await data?.filter((items: any, index: any, self: any) => 
           index === self?.findIndex((filter: any) => filter.serapp_id === items.serapp_id)
         ); 
-        console.log('false')
         setDataSerApp(data);
         setFilterDateApp(filData);
       }

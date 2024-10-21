@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { Helmet } from "react-helmet";
 import style from "../../css.module/admin/index.module.css";
 import { useEffect, useState } from "react";
@@ -8,24 +10,66 @@ import ContentPackage from "./content.package";
 import AdminBlogs from "./admin.blogs";
 import BlogContent from "./blog.content";
 import AccountManage from "./account/account.manage";
+import Cookies from "js-cookie";
+import { sendReq } from "../auth.signin";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 const url_getSerWeb = 'http://localhost:5000/api/homepage/service/web/getall';
 const url_getSerApp = 'http://localhost:5000/api/homepage/service/app/get-all';
+const url_info = 'http://localhost:5000/api/homepage/get-account/';
 
 const AdminIndex = () => {
     const [transXIconSearch, setTransXIconSearch] = useState('translateX(0)');
     const [widthInputSearch, setWidthInputSearch] = useState('0px');
+    const [transYDropMenu, setTransYDropMenu] = useState('translateY(-120%)');
     const [stateIconSearch, setStateIconSearch] = useState(true);
     const [dataSerWeb, setDataSerWeb] = useState<any>([]);
     const [dataSerApp, setDataSerApp] = useState<any>([]);
+    const [infoAcc, setInfoAcc] = useState<any>();
 
     const navigate = useNavigate();
     const location = useLocation();
+    const subAccount = Cookies.get('subAccount');
+
+    const fetchData = async (url: string, type: string) => {
+        try {
+            const res = await fetch(url, {
+                method: 'GET'
+            });
+            const data = await res.json();
+
+            if(type === 'web') setDataSerWeb(data);
+            if(type === 'app') setDataSerApp(data);
+        } catch (error) {
+            console.log('Fetch Error: ', error);
+        }
+    }
 
     useEffect(() => {
+        const getInfoAcc = async () => {
+            try {
+                const res = await sendReq(url_info+`${subAccount}/:param`);
+                const dataRes = await res.json();
+                setInfoAcc(dataRes);
+            } catch (error) {
+                console.log('Fetch Error: ', error);
+            }
+        }
+
+        getInfoAcc();
         fetchData(url_getSerWeb, 'web');
         fetchData(url_getSerApp, 'app');
     }, []);
+
+    if(!subAccount){
+        return(
+            <DotLottieReact
+                src="https://lottie.host/78b27860-7155-4efe-a4a1-3c4ab8aac22e/9ENLzp9CuO.lottie"
+                loop
+                autoplay
+            />
+        )
+    }
 
     const handleClickShowHideSearch = (iconName: string) => {
         if(iconName === 'close' || (iconName === 'search' && stateIconSearch)){
@@ -40,17 +84,23 @@ const AdminIndex = () => {
         navigate(to);
     }
 
-    const fetchData = async (url: string, type: string) => {
-        try {
-            const res = await fetch(url, {
-                method: 'GET'
-            });
-            const data = await res.json();
+    const handleClickAreProfile = () => {
+        setTransYDropMenu(trans => (trans==='translateY(-120%)'? 'translateY(0)': 'translateY(-120%)'));
+    }
 
-            if(type === 'web') setDataSerWeb(data);
-            if(type === 'app') setDataSerApp(data);
-        } catch (error) {
-            console.log('Fetch Error: ', error);
+    const handleClickProfile = () => {
+        setTransYDropMenu(trans => trans==='translateY(0)'? 'translateY(-120%)': 'translateY(0)')
+        navigate(`/admin/accounts/profile/${infoAcc?.username}`, { state: infoAcc});
+    }
+
+    const handleClickLogout = () => {
+        const confirmLogout = confirm('Bạn chắc chắc muốn đăng xuất chứ?');
+        setTransYDropMenu(trans => trans==='translateY(0)'? 'translateY(-120%)': 'translateY(0)');
+        if(confirmLogout){
+            Object.keys(Cookies.get()).forEach((name: string) => {
+                Cookies.remove(name);
+            });
+            navigate('/auth/signin');
         }
     }
 
@@ -100,7 +150,7 @@ const AdminIndex = () => {
                     </div>
                     <div 
                         className={
-                            `${style.itemMenubar} ${location.pathname.includes('/admin/account/')? style.currentPage: ''}`
+                            `${style.itemMenubar} ${location.pathname.includes('/admin/accounts')? style.currentPage: ''}`
                         }
                         onClick={() => handleNavigateMenubar('accounts')}
                     >
@@ -141,10 +191,41 @@ const AdminIndex = () => {
                         <i className="fa-regular fa-comments"></i>
                         <span>3</span>
                     </div>
-                    <div className={style.areaProfile}>
-                        <img src="/about-founder-img1.webp" alt="" />
-                        <span>John Wick</span>
+                    <div 
+                        className={style.areaProfile}
+                        onClick={handleClickAreProfile}
+                    >
+                        <img 
+                            src={
+                                infoAcc?.avatar?
+                                `http://localhost:5000/${infoAcc?.avatar}`:
+                                'http://localhost:5000/default_image.jpg'
+                            } 
+                            alt="" 
+                        />
+                        <span>{infoAcc?.fullname}</span>
                         <i className="fa-solid fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div 
+                    className={style.areaDropMenuProfile}
+                    style={{
+                        transform: transYDropMenu
+                    }}
+                >
+                    <div 
+                        className={style.divOption}
+                        onClick={handleClickProfile}
+                    >
+                        <i className="fa-solid fa-user"></i>
+                        <span>Thông tin tài khoản</span>
+                    </div>
+                    <div 
+                        className={style.divOption}
+                        onClick={handleClickLogout}
+                    >
+                        <i className="fa-solid fa-right-from-bracket"></i>
+                        <span>Đăng xuất</span>
                     </div>
                 </div>
             </div>
@@ -157,7 +238,7 @@ const AdminIndex = () => {
                     <Route path="service/mobile/*" element={<ContentPackage></ContentPackage>}></Route>
                     <Route path="blogs" element={<AdminBlogs></AdminBlogs>}></Route>
                     <Route path="blogs/content/*" element={<BlogContent></BlogContent>}></Route>
-                    <Route path="accounts" element={<AccountManage></AccountManage>}></Route>
+                    <Route path="accounts/*" element={<AccountManage></AccountManage>}></Route>
                 </Routes>
             </div>
         </div>

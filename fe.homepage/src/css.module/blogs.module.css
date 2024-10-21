@@ -213,7 +213,7 @@
 .containerBlogOutstanding{
     display: flex;
     flex-direction: row-reverse;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     border-radius: 20px;
     background-color: white;
@@ -221,7 +221,7 @@
 }
 
 .containerBlogOutstanding img {
-    width: 45%;
+    width: 50%;
     border-radius: 20px;
     margin-left: 5%;
 }

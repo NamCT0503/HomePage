@@ -3,6 +3,7 @@ export interface AccountEntity {
     fullname: string;
     username: string;
     password: string;
+    avatar: File | any;
     email?: string;
     role: string;
     createdAt: Date;

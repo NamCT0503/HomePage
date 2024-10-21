@@ -151,6 +151,8 @@ export const upateAccount = async (data: Partial<AccountEntity>, payload: any) =
             fullname: data.fullname? data.fullname: userExisted.fullname,
             username: data.username? data.username: userExisted.username,
             password: data.password? await hashPassword(data.password): userExisted.password,
+            avatar: data.avatar? data.avatar?.filename: userExisted.avatar,
+            email: data.email? data.email: userExisted.email
         }
 
         await db.Account.update(formatAccount,{

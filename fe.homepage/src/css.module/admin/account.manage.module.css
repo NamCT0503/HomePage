@@ -11,6 +11,12 @@
 .wrapTable{
     margin-bottom: 20px;
 }
+.wrapTable table{
+    table-layout: fixed;
+}
+.wrapTable table tr td {
+    overflow: scroll;
+}
 
 .headTable{
     position: sticky;
@@ -20,7 +26,8 @@
 }
 
 .tdAvatar{
-    max-width: 40px;
+    width: 120px;
+    height: 120px;
 } 
 .tdAvatar img{
     width: 100%;
@@ -49,10 +56,43 @@
     height: fit-content;
 }
 
-.containerInfoAccont img{
-    border-radius: 50%;
+.areaAvatar {
+    height: 300px;
     width: 30%;
+    position: relative;
+}
+
+.areaAvatar img{
+    border-radius: 50%;
+    width: 100%;
     max-width: 300px;
+    height: 100%;
+}
+
+.divUploadAvatar{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    cursor: pointer;
+    color: white;
+    border-radius: 50%;
+    transition: all 0.3s ease-in-out;
+}
+.divUploadAvatar i {
+    display: none;
+}
+.divUploadAvatar:hover{
+    background-color: #35495e;
+}
+.divUploadAvatar:hover i{
+    display: block;
 }
 
 .areaInfoAccount{

@@ -140,6 +140,7 @@ const BlogListView = (props: BlogList) => {
                     <th>Ảnh bìa</th>
                     <th>Đoạn giới thiệu</th>
                     <th>Đăng ngày</th>
+                    <th>Tác giả</th>
                     <th>Tag</th>
                     <th>Tùy chọn</th>
                 </tr>
@@ -190,7 +191,7 @@ const BlogListView = (props: BlogList) => {
                                                 }
                                             }}
                                         />:
-                                        (items.img? <img src={items.img}/>: "Không có")
+                                        (items.img? <img src={`http://localhost:5000/${items.img}`}/>: "Không có")
                                     }
                                 </td>
                                 <td className={serPackage.tdDesc}>
@@ -214,6 +215,7 @@ const BlogListView = (props: BlogList) => {
                                         ((items.postedAt as string).split('T')[0])
                                     }
                                 </td>
+                                <td>{items.postedBy}</td>
                                 <td>
                                     {
                                         edit===items.id? 

@@ -9,6 +9,7 @@ import { sendReq } from "../auth.signin";
 let idRecord: number = 0;
 const url_getContentBlog = 'http://localhost:5000/api/homepage/service/blog/content/get/';
 const url_delContentBlog = 'http://localhost:5000/api/homepage/service/blog/content/delete/'
+const url_updateIsOutstanding = 'http://localhost:5000/api/homepage/service/blog/update';
 
 const BlogContent = () => {
     const accessToken = Cookies.get('accessToken');
@@ -33,7 +34,7 @@ const BlogContent = () => {
     const [contentBlog, setContentBlog] = useState<any>([]);
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async () => { 
             try {
                 const response = await fetch(url_getContentBlog + `${idState}`);
                 const data = await response.json();
@@ -72,6 +73,15 @@ const BlogContent = () => {
         })
     };
 
+    const handleClickOutstanding = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        setDataBlogCover({
+            ...dataBlogCover,
+            isOutstanding: e.target.checked
+        });
+    };
+
     const handleChooseTag = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setDataBlogCover({
             ...dataBlogCover,
@@ -80,7 +90,6 @@ const BlogContent = () => {
     };
 
     const handleClickSave = async () => {
-        console.log('click cre')
         const formData = new FormData();
         
         if(dataBlogCover.title === '' || dataBlogCover.description === '')
@@ -94,6 +103,7 @@ const BlogContent = () => {
             formData.append('isOutstanding', String(dataBlogCover.isOutstanding));
 
             const url = 'http://localhost:5000/api/homepage/service/blog/create';
+            // const url = 'http://localhost:5000/api/homepage/service/blog/create';
             const res = await fetch(url, {
                 method: "POST",
                 body: formData,
@@ -115,7 +125,7 @@ const BlogContent = () => {
         const node: any = document.querySelector(`.${style.areaContentBlog}`);
         let childElement :any = document.createElement('div');; 
         childElement.id = dataUpdate? `${type}update${dataUpdate.id}_${idRecord+=1}`: `${type}_${idRecord+=1}`;
-        childElement.contentEditable = 'true';
+        childElement.contentEditable = 'true'; 
 
         if(type === 'image'){
             childElement.className = style.childDivImg;
@@ -125,7 +135,8 @@ const BlogContent = () => {
             
             const img = document.createElement('img');
             img.className = style.childImg;
-            img.src = dataUpdate?.content;
+            // img.src = dataUpdate?.content;
+            img.src = `http://localhost:5000/${dataUpdate?.content}`
 
             inputFile.onchange = (event: any) => {
                 const file = event.target.files[0];
@@ -188,26 +199,36 @@ const BlogContent = () => {
         }
     };
 
-    const handleClickCreateContentBlog = () => {
+    const handleClickCreateContentBlog = async () => {
         try {
             if(!idRecordRes && !idState) return alert('Bài đăng chưa tồn tại để tạo nội dung!');
-            const listId: any[] = getChildElementIds();
-            listId.map(items => {
-                const dataById :any = getContentById(items);
-                console.log('dataById: ', dataById)
-                dataById.idDiv? 
-                postContent(dataById.idDiv,
-                    dataById.text? dataById: selectedFiles.filter(item => item.imgid===items), 
-                    false
-                ): 
-                postContent(idRecordRes!? idRecordRes: contentBlog[0]?.blogid, 
-                    dataById.text? dataById: selectedFiles.filter(item => item.imgid===items),
-                    true
-                )
+            const res = await sendReq(url_updateIsOutstanding, {
+                method: "PUT",
+                body: JSON.stringify({ 
+                    idBlog: idState,
+                    isOutstanding: dataBlogCover.isOutstanding
+                })
             })
+            const dataRes = await res.json();
+            if(dataRes.status===200){
+                const listId: any[] = getChildElementIds();
+                listId.map(items => {
+                    const dataById :any = getContentById(items);
+                    dataById.idDiv? 
+                    postContent(dataById.idDiv,
+                        dataById.text? dataById: selectedFiles.filter(item => item.imgid===items), 
+                        false
+                    ): 
+                    postContent(idRecordRes!? idRecordRes: idState, 
+                        dataById.text? dataById: selectedFiles.filter(item => item.imgid===items),
+                        true
+                    )
+                })
 
-            if(alertCrBC) return alert('Created Successfully!');
-            return alert('Creted Fail!');
+                if(alertCrBC) return alert('Createda Successfully!');
+                return alert('Creted Fail!');
+            }
+            return alert(dataRes.message);
         } catch (error) {
             console.log('Create Error: ', error);
         }
@@ -245,12 +266,17 @@ const BlogContent = () => {
         };
     };
 
+    let stepStt = 0;
     const postContent = async (blogid: string | number, data: any, create: boolean) => {
         const url_create = 'http://localhost:5000/api/homepage/service/blog/content/create';
         const url_update = 'http://localhost:5000/api/homepage/service/blog/content/update';
 
         const formData = new FormData();
-        console.log('data: ', data);
+        stepStt+=1;
+        const newStt = contentBlog[0]?.stt? 
+            contentBlog?.at(-1)?.stt+stepStt: 
+            data?.id? data?.id.split('_')[1]: 
+            data[0]?.imgid.split('_')[1]
 
         try {
             let res: any;
@@ -261,10 +287,7 @@ const BlogContent = () => {
                         (data[0]?.img && data[0]?.img !== '')
                     ){
                         formData.append('blogid', blogid.toString());
-                        formData.append('stt', 
-                            data?.id? data?.id.split('_')[1]: 
-                            data[0]?.imgid.split('_')[1]
-                        );
+                        formData.append('stt', newStt);
                         formData.append('type_content', 
                             data?.id? data?.id.split('_')[0]: 
                             data[0]?.imgid.split('_')[0]
@@ -272,6 +295,7 @@ const BlogContent = () => {
                         formData.append('content', 
                             data?.text? data.text: data[0]?.img
                         );
+                        
 
                         res = await fetch(url_create, {
                             method: 'POST',
@@ -289,6 +313,7 @@ const BlogContent = () => {
                         (data?.text && data?.text !== '') ||
                         (data[0]?.img && data[0]?.img !== '')
                     ){
+                        console.log(blogid)
                         formData.append('id', blogid.toString());
                         formData.append('type_content', 
                             data?.id? data?.id.split('update')[0]: 
@@ -339,7 +364,7 @@ const BlogContent = () => {
                         src={
                             (dataBlogCover.img && dataBlogCover.img!=='')?
                             URL.createObjectURL(dataBlogCover.img): 
-                            contentBlog[0]?.blogImg? contentBlog[0].blogImg: ''
+                            contentBlog[0]?.blogImg? `http://localhost:5000/${contentBlog[0].blogImg}`: ''
                         } 
                         alt="Ảnh bìa" 
                     />
@@ -410,6 +435,21 @@ const BlogContent = () => {
                                     {contentBlog[0]?.blogTag==='website'? 'mobile': 'website'}
                                 </option>
                             </select>
+                            <div className={style.areaIsOutstanding}>
+                                <label htmlFor="isOutstanding">Bài viết nổi bật: </label>
+                                <input 
+                                    type="checkbox" 
+                                    id="isOutstanding" 
+                                    name="isOutstanding" 
+                                    checked={ dataBlogCover.isOutstanding
+                                        // dataBlogCover.isOutstanding===false? 
+                                        // contentBlog[0]?.blogOutstanding
+                                        // dataBlogCover.isOutstanding
+                                        // true
+                                    }
+                                    onChange={handleClickOutstanding}
+                                />
+                            </div>
                             <button 
                                 onClick={handleClickSave}
                                 style={{ display: pathname.includes('recordId=') ? 'none' : 'block' }}
@@ -462,7 +502,7 @@ const BlogContent = () => {
                         </div>
                         <div className={style.btnCreate}>
                             <button onClick={handleClickCreateContentBlog}>
-                                <i className="fa-solid fa-floppy-disk"></i>
+                               <i className="fa-solid fa-floppy-disk"></i>
                             </button>
                         </div>
                     </div>

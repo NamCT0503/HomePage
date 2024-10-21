@@ -33,7 +33,11 @@ export const controller_updateAccount = async (
     req: userRequest,
     res: Response
 ) => {
-    res.json(await upateAccount(req.body, req.user));
+    const data = {
+        ...req.body,
+        avatar: req.file
+    };
+    res.json(await upateAccount(data, req.user));
 }
 
 export const controller_changePassword = async (

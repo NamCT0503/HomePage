@@ -21,7 +21,7 @@ export const getBlogContent = async (blogId: string | number) => {
             include: {
                 model: Blog,
                 as: 'blogs',
-                attributes: ['img', 'title', 'description' ,'postedBy', 'tag'],
+                attributes: ['img', 'title', 'description' ,'postedBy', 'tag', 'isOutstanding'],
                 include: {
                     model: Account,
                     as: 'accounts',
@@ -48,6 +48,7 @@ export const getBlogContent = async (blogId: string | number) => {
                 blogTitle: items.blogs.title,
                 blogDesc: items.blogs.description,
                 blogTag: items.blogs.tag,
+                blogOutstanding: items.blogs.isOutstanding,
                 createdAt: items.createdAt,
                 updatedAt: items.updatedAt,
                 deletedAt: items.deletedAt

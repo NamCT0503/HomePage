@@ -6,21 +6,31 @@ import Blog from "../models/Blog";
 const actionOneSelfMiddelware = () => {
     return async (req: userRequest, res: Response, nextFunction: NextFunction) => {
         try {
-            const accId = await db.BlogContent.findOne({
-                attributes: ['id', 'blogid'],
-                include: [
-                    {
-                        model: Blog,
-                        as: 'blogs',
-                        attributes: ['postedBy']
-                    }
-                ],
-                where: { id: req.body.id? req.body.id: req.params.id}
-            })
+            let accId: any;
+            if(req.body.id || req.params.id){
+                accId = await db.BlogContent.findOne({
+                    attributes: ['id', 'blogid'],
+                    include: [
+                        {
+                            model: Blog,
+                            as: 'blogs',
+                            attributes: ['postedBy']
+                        }
+                    ],
+                    where: { id: req.body.id? req.body.id: req.params.id}
+                })
+            }
 
-            const postedBy = req.body.postedBy? req.body.postedBy: accId?.blogs.postedBy;
+            let accIdBlog: any;
+            if(req.body.idBlog){
+                accIdBlog = await db.Blog.findByPk(req.body?.idBlog)
+            }
+            const accIdPostedBy = accId?.dataValues?.blogs?.dataValues?.postedBy;
+
+            const postedByBlog = req.body?.postedBy? req.body?.postedBy: accIdBlog?.postedBy;
+            const postedBy = req.body?.postedBy? req.body?.postedBy: accIdPostedBy;
             const sub = req.user.sub;
-            if(postedBy != sub) return res.status(400).json({ message: "Account NotEnough Rights!"});
+            if((postedByBlog != sub) && (postedBy !== sub)) return res.status(400).json({ message: "Account NotEnough Rights!"});
 
             nextFunction();
         } catch (error) {

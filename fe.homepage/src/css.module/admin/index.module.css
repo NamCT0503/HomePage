@@ -23,6 +23,7 @@
 .wrapNavbarHeader{
     grid-area: navbarH;
     box-shadow: 0 2px 4px 0 rgba(43,43,43,0.1);
+    position: relative;
 }
 
 .wrapContainerContent{
@@ -107,7 +108,8 @@
     display: flex;
     justify-content: space-between;
     max-height: 80px;
-    overflow: hidden;
+    z-index: 3;
+    /* overflow: hidden; */
 }
 
 .containerSearchArea, .containerProfileArea{
@@ -158,6 +160,7 @@
     justify-content: space-evenly;
     align-items: center;
     width: 40%;
+    background-color: white;
 }
 
 .notifyPersional i, .chatPersional i{
@@ -193,9 +196,8 @@
 
 .areaProfile img {
     border: 2px solid white;
-    max-height: 60px;
-    max-width: 60px;
-    width: 40%;
+    height: 60px;
+    width: 60px;
     margin-right: 5%;
     border-radius: 50%;
     background: #333;
@@ -212,4 +214,31 @@
     margin-left: 5px;
 }
 /* ===== Kết thúc phần containerProfileArea ===== */
+
+/* ===== Bắt đầu phần areaDropMenuProfile ===== */
+.areaDropMenuProfile{
+    position: absolute;
+    /* border: 1px solid red; */
+    bottom: -100%;
+    background-color: white;
+    right: 5%;
+    width: 15%;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: flex-start;
+    box-shadow: 0 2px 4px 0 rgba(43,43,43,0.5);
+    /* transform: translateY(-110%); */
+    transition: all 0.3s ease-in-out;
+    z-index: -1;
+}
+.areaDropMenuProfile>*{
+    padding: 10px 5px;
+    cursor: pointer;
+}
+
+.divOption>*{
+    padding: 0 5px;
+}
+/* ===== Kết thúc phần areaDropMenuProfile ===== */
 /* ==================== Kết thúc phần wrapNavbarHeader ======================= */

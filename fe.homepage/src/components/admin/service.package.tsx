@@ -2,7 +2,7 @@ import style from "../../css.module/admin/service.package.module.css";
 import parent from "../../css.module/admin/service.web.module.css"
 import SerAppListView from "./serapp.listview";
 import SerWebListView from "./serweb.list.view";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface SerPackageEntity {
     data: any[]
@@ -10,6 +10,7 @@ interface SerPackageEntity {
 
 const ServicePackage = (props: SerPackageEntity) => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const {data} = props;
     if(!Array.isArray(data))
@@ -28,18 +29,18 @@ const ServicePackage = (props: SerPackageEntity) => {
                 <div className={parent.leftContentTitlePage}>
                     <div className={parent.iconTitlePage}>
                         {
-                            data[0]?.price? 
+                            location.pathname.includes('/service/website')? 
                             <i className="fa-solid fa-window-maximize"></i>:
                             <i className="fa-solid fa-mobile"></i>
                         }
                     </div>
                     <div className={parent.contentTitlePage}>
                         <span className={parent.titlePage}>
-                            {data[0]?.price? 'Website': 'Mobile'}
+                            {location.pathname.includes('/service/website')? 'Website': 'Mobile'}
                         </span>
                         <span>
                             Trang quản lý dịch vụ {
-                                data[0]?.price? 'website': 'mobile'
+                                location.pathname.includes('/service/website')? 'website': 'mobile'
                             }
                         </span>
                     </div>
@@ -57,12 +58,12 @@ const ServicePackage = (props: SerPackageEntity) => {
                         Dịch vụ
                     </span>
                     <span>
-                        {data[0]?.price? 'Website': 'Mobile'}
+                        {location.pathname.includes('/service/website')? 'Website': 'Mobile'}
                     </span>
                 </div>
             </div>
             <div className={style.wrapContainerLayoutContent}>
-                {data[0]?.price? <SerWebListView data={data}></SerWebListView>: <SerAppListView data={data}></SerAppListView>}
+                {location.pathname.includes('/service/website')? <SerWebListView data={data}></SerWebListView>: <SerAppListView data={data}></SerAppListView>}
             </div>
         </div>
         </>

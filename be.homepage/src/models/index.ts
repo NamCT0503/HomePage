@@ -22,7 +22,7 @@ export interface SequelizeConfig {
 }
 
 const basename = _basename(__filename);
-const env = _env.NODE_ENV || 'development';
+const env = _env.NODE_ENV || 'production';
 const config: SequelizeConfig = require(__dirname + '/../config/config.json')[env];
 
 let sequelize: Sequelize;

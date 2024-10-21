@@ -15,6 +15,7 @@ import { Client } from "minio";
 import * as dotenv from "dotenv";
 import actionOneSelfMiddelware from "../middleware/action.oneself.middleware";
 import { controller_createBlogContent, controller_deleteBlogContent, controller_getBlogContent, controller_updateBlogContent } from "../controller/blog.content.controller";
+import checkOnlyFieldMiddleWare from "../middleware/check.only.field.middleware";
 
 dotenv.config();
 
@@ -35,8 +36,8 @@ const upload = multer({ storage: storage });
 //Account
 router.get('/get-account/:id/:param', validateUserMiddleware() as any, checkRoleAccount() as any ,controll_getAccount);
 router.post('/login', controller_signin);
-router.post('/signup', validateUserMiddleware() as any, checkRoleAccount() as any, controller_signup);
-router.put('/account/update-account', validateUserMiddleware() as any, controller_updateAccount)
+router.post('/signup', validateUserMiddleware() as any, checkRoleAccount() as any, checkOnlyFieldMiddleWare() as any,controller_signup);
+router.put('/account/update-account', validateUserMiddleware() as any, upload.single('avatar'), checkOnlyFieldMiddleWare() as any,controller_updateAccount)
 router.put('/account/change-password', validateUserMiddleware() as any, controller_changePassword);
 router.delete('/account/delete-account', validateUserMiddleware() as any, checkRoleAccount() as any, controller_deleteAccount);
 

@@ -5,6 +5,8 @@ import style from "../../../css.module/admin/service.package.module.css";
 import accMana from "../../../css.module/admin/account.manage.module.css";
 import React, { useEffect, useRef, useState } from "react";
 import { sendReq } from "../../auth.signin";
+import Cookies from "js-cookie";
+import { useLocation } from "react-router-dom";
 
 interface AccList {
     data: AccountEntity[]
@@ -13,14 +15,17 @@ interface AccList {
 const url = 'http://localhost:5000/api/homepage/account/delete-account';
 const url_update = 'http://localhost:5000/api/homepage/account/update-account';
 const url_changpwd = 'http://localhost:5000/api/homepage/account/change-password';
+const accessToken = Cookies.get('accessToken');
 
 const AccountListView = (props: AccList) => {
     const {data} = props;
-    console.log(data)
+    const location = useLocation();
+    const dataState = location.state;
 
     const [dataChange, setDataChange] = useState({
         fullname: '',
         username: '',
+        avatar: null as any,
         email: '',
         role: ''
     });
@@ -29,6 +34,7 @@ const AccountListView = (props: AccList) => {
         newpass: ''
     });
     const [showChangePwd, setShowChangePwd] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleDelete = async (id: number) => {
         try {
@@ -60,10 +66,28 @@ const AccountListView = (props: AccList) => {
     }
 
     const handleClickSave = async () => {
+        const formData = new FormData();
+
+        dataChange.fullname?
+        formData.append('fullname', dataChange.fullname):
+        null;
+        dataChange.username?
+        formData.append('username', dataChange.username):
+        null;
+        dataChange.avatar?
+        formData.append('avatar', dataChange.avatar):
+        null;
+        dataChange.email?
+        formData.append('email', dataChange.email):
+        null;
+
         try {
-            const res = await sendReq(url_update, {
+            const res = await fetch(url_update, {
                 method: "PUT",
-                body: JSON.stringify(dataChange)
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
             })
             const dataRes = await res.json();
             alert(dataRes.message);
@@ -76,6 +100,7 @@ const AccountListView = (props: AccList) => {
         setDataChange({
             fullname: (data as any).fullname,
             username: (data as any).username,
+            avatar: null,
             email: (data as any).email? (data as any)?.email: "Không có",
             role: (data as any).role
         })
@@ -98,10 +123,14 @@ const AccountListView = (props: AccList) => {
         }
     }
 
+    const handleClickDivImg = () => {
+        fileInputRef.current?.click();
+    };
+
     return(
         <div className={`${style.wrapTable} ${accMana.wrapTable}`}>
             {
-                data.map?
+                ((data as any)?.map && !location.pathname.includes('profile'))?
                 <table>
                     <tr className={accMana.headTable}>
                         <th>ID</th>
@@ -119,13 +148,13 @@ const AccountListView = (props: AccList) => {
                                     <td className={accMana.tdID}>{items.id}</td>
                                     <td>{items.fullname}</td>
                                     <td>{items.username}</td>
-                                    <td className={accMana.tdAvatar}>{items.avatar? <img src={`http://localhost:5000${items.avatar}`}/>: "Không có"}</td>
+                                    <td className={accMana.tdAvatar}>{items.avatar? <img src={`http://localhost:5000/${items.avatar}`}/>: "Không có"}</td>
                                     <td>{items.email? items.email: "Không có"}</td>
                                     <td>{items.role}</td>
                                     <td 
                                         className={style.areaButton}
                                         style={{
-                                            transform: items.avatar? 'translatey(100%)': 'translatey(0)'
+                                            transform: 'translateY(105%)'
                                         }}
                                     >
                                         <button 
@@ -143,12 +172,58 @@ const AccountListView = (props: AccList) => {
                 <div className={accMana.wrapContainerInfoAccount}>
                     <h3>Thông tin tài khoản</h3>
                     <div className={accMana.containerInfoAccont}>
-                        <img src={(data as any).avatar? `http://localhost:5000${(data as any).avatar}`? `http://localhost:5000${(data as any).avatar}`: (data as any).avatar: ''} alt="" />
+                        <div className={accMana.areaAvatar}>
+                            <img src={
+                                    // dataChange.avatar?
+                                    // URL.createObjectURL(dataChange.avatar):
+                                    // (data as any).avatar? 
+                                    // `http://localhost:5000/${(data as any).avatar}`: 
+                                    // `http://localhost:5000/default_image.jpg`
+                                    dataState?.avatar?
+                                    `http://localhost:5000/${dataState?.avatar}`:
+                                    dataChange.avatar?
+                                    URL.createObjectURL(dataChange.avatar):
+                                    (data as any).avatar? 
+                                    `http://localhost:5000/${(data as any).avatar}`: 
+                                    `http://localhost:5000/default_image.jpg`
+                                } 
+                                alt=""
+                            />
+                            <div 
+                                className={accMana.divUploadAvatar}
+                                onClick={handleClickDivImg}
+                            >
+                                <i className="fa-solid fa-camera-retro"></i>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setDataChange({
+                                                ...dataChange,
+                                                avatar: file
+                                            });
+                                        }
+                                    }}
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
+                        </div>
                         <div className={accMana.areaInfoAccount}>
                             <input 
                                 type="text"
                                 name="fullname"
-                                value={dataChange.fullname===''? (data as any)?.fullname: dataChange.fullname}
+                                value={
+                                    // dataChange.fullname===''? 
+                                    // (data as any)?.fullname: 
+                                    // dataChange.fullname
+                                    dataChange.fullname===''?
+                                    dataState?.fullname?
+                                    dataState?.fullname:
+                                    (data as any)?.fullname:
+                                    dataChange.fullname
+                                }
                                 onChange={handleChange}
                                 style={{
                                     display: showChangePwd? 'none': 'block'
@@ -157,7 +232,13 @@ const AccountListView = (props: AccList) => {
                             <input 
                                 type="text"
                                 name="username"
-                                value={dataChange.username===''? (data as any)?.username: dataChange.username}
+                                value={
+                                    dataChange.username===''? 
+                                    dataState?.username?
+                                    dataState?.username:
+                                    (data as any)?.username: 
+                                    dataChange.username
+                                }
                                 onChange={handleChange}
                                 style={{
                                     display: showChangePwd? 'none': 'block'
@@ -166,7 +247,15 @@ const AccountListView = (props: AccList) => {
                             <input 
                                 type="email"
                                 name="email"
-                                value={dataChange.email===''? (data as any)?.email? (data as any)?.email: 'Không có': dataChange.email}
+                                value={
+                                    dataChange.email===''? 
+                                    dataState?.email?
+                                    dataState?.email:
+                                    (data as any)?.email? 
+                                    (data as any)?.email: 
+                                    'Không có': 
+                                    dataChange.email
+                                }
                                 onChange={handleChange}
                                 style={{
                                     display: showChangePwd? 'none': 'block'
@@ -175,7 +264,11 @@ const AccountListView = (props: AccList) => {
                             <input 
                                 type="text"
                                 name="role"
-                                value={(data as any)?.role}
+                                value={
+                                    dataState?.role?
+                                    dataState?.role:
+                                    (data as any)?.role
+                                }
                                 onChange={handleChange}
                                 readOnly
                                 style={{
@@ -188,6 +281,9 @@ const AccountListView = (props: AccList) => {
                                 value={password.oldpass}
                                 onChange={handleChange}
                                 placeholder="Mật khẩu cũ"
+                                style={{
+                                    display: showChangePwd? 'block': 'none'
+                                }}
                             />
                             <input 
                                 type="text" 
@@ -195,6 +291,9 @@ const AccountListView = (props: AccList) => {
                                 value={password.newpass}
                                 onChange={handleChange}
                                 placeholder="Mật khẩu mới"
+                                style={{
+                                    display: showChangePwd? 'block': 'none'
+                                }}
                             />
                             <span 
                                 onClick={handleClickSpanChangePwd}

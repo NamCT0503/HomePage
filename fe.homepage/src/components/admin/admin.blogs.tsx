@@ -48,25 +48,25 @@ const AdminBlogs = () => {
     const handleClickBtnCreate = () => navigate('content');
 
     const hanldeClickNextPage = () => {
-        if(blogs.currentPage === blogs.totalPages) return alert('Đã đến trang cuối cùng!');
+        if(blogs.currentPage >= blogs.totalPages) return alert('Đã đến trang cuối cùng!');
         const url = url_getAllBlog+`:filter/${blogs.currentPage+=1}`;
         fetchData(url, false);
     }
 
     const hanldeClickPrevPage = () => {
-        if(blogs.currentPage === 1) return alert('Đã đến trang đầu tiên!');
+        if(blogs.currentPage <= 1) return alert('Đã đến trang đầu tiên!');
         const url = url_getAllBlog+`:filter/${blogs.currentPage-=1}`;
         fetchData(url, false);
     }
 
     const hanldeClickEndPage = () => {
-        if(blogs.currentPage === blogs.totalPages) return alert('Đã đến trang cuối cùng!');
+        if(blogs.currentPage >= blogs.totalPages) return alert('Đã đến trang cuối cùng!');
         const url = url_getAllBlog+`:filter/${blogs.totalPages}`;
         fetchData(url, false);
     }
 
     const hanldeClickHomePage = () => {
-        if(blogs.currentPage === 1) return alert('Đã đến trang đầu tiên!');
+        if(blogs.currentPage <= 1) return alert('Đã đến trang đầu tiên!');
         const url = url_getAllBlog+`:filter/1`;
         fetchData(url, false);
     }

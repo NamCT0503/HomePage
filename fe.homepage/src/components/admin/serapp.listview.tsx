@@ -117,7 +117,7 @@ const SerAppListView = (props: SerApp) => {
                 body: JSON.stringify({
                     type: dataCreate.c_type,
                     title: dataCreate.c_title,
-                    price: dataCreate.c_subtitle
+                    subtitle: dataCreate.c_subtitle
                 })
             });
 
@@ -255,7 +255,7 @@ const SerAppListView = (props: SerApp) => {
                         width: widthInputCreate
                     }}
                     placeholder="Loại"
-                    value={dataCreate.c_title}
+                    value={dataCreate.c_type}
                     onChange={handleDataChange}
                 />
                 <input 
@@ -274,7 +274,7 @@ const SerAppListView = (props: SerApp) => {
                     style={{
                         width: widthInputCreate
                     }}
-                    placeholder="Giá thành"
+                    placeholder="Tiêu đề phụ"
                     value={dataCreate.c_subtitle}
                     onChange={handleDataChange}
                 />
