@@ -33,7 +33,7 @@ const BlogsWebsite = () => {
         fetcher(url_getBlogOutstanding, true);
     }, []);
 
-    if((!blogOutstanding || blogOutstanding.count===0) && !data?.blogs){
+    if((!blogOutstanding || blogOutstanding.count===0) && !data[0]?.blogs){
         return(
             <DotLottieReact
                 src="https://lottie.host/8ee303ea-acde-4e78-bd39-fa92a440f34a/SIcGfi0vNv.lottie"
@@ -46,7 +46,7 @@ const BlogsWebsite = () => {
     const recordPage = data[0]?.recordPage;
     const numberDiv = Math.ceil(recordPage / 3);
 
-    const postedAtBlogOut = blogOutstanding?.rows[0].postedAt;
+    const postedAtBlogOut = blogOutstanding?.rows[0]?.postedAt;
 
     const getDayPassed = (date: string) => {
         const posted_day = date?.split('T')[0];

@@ -72,3 +72,31 @@ export interface NotiDetailEntity {
     seen?: boolean;
     dataChange: string;
 }
+
+export interface GroupChatEntiy {
+    id: string;
+    name: string;
+    avatar?: string | File;
+    leader: number;
+    member: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+    deletedAt?: Date | string;
+}
+
+export interface ChatEntity {
+    id?: number;
+    grchatid?: string;
+    sender: number;
+    revicer: number;
+    status: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+}
+
+export interface ViewerEntity {
+    id?: number;
+    idchat: number;
+    viewby: string;
+    createdAt?: Date | string;
+}

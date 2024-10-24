@@ -20,6 +20,8 @@ const checkOnlyFieldMiddleWare = () => {
 
                 if(checkEmail) return res.status(400).json({ message: 'Email has been used!'});
             }
+
+            nextFunction();
         } catch (error) {
             console.log('[CheckOnlyFieldMiddleWare] Lỗi: ', error);
             res.status(500).json({ message: 'ServerError: ', error});

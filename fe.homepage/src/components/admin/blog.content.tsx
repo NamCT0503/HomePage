@@ -313,7 +313,6 @@ const BlogContent = () => {
                         (data?.text && data?.text !== '') ||
                         (data[0]?.img && data[0]?.img !== '')
                     ){
-                        console.log(blogid)
                         formData.append('id', blogid.toString());
                         formData.append('type_content', 
                             data?.id? data?.id.split('update')[0]: 

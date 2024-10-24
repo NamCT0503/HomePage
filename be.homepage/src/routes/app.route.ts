@@ -76,7 +76,7 @@ router.delete('/service/blog/delete', validateUserMiddleware() as any, actionOne
 //BlogContent
 router.get('/service/blog/content/get/:blogid', controller_getBlogContent);
 router.post('/service/blog/content/create', validateUserMiddleware() as any, upload.single('content'), controller_createBlogContent);
-router.put('/service/blog/content/update', validateUserMiddleware() as any, upload.single('content'), actionOneSelfMiddelware() as any, controller_updateBlogContent);
+router.put('/service/blog/content/update', validateUserMiddleware() as any, upload.single('content'),  controller_updateBlogContent);
 router.delete('/service/blog/content/delete/:id/:scope', validateUserMiddleware() as any, actionOneSelfMiddelware() as any, controller_deleteBlogContent);
 
 export default router;

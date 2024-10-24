@@ -7,6 +7,7 @@ import router from "./routes/app.route";
 import adminRouter from "./routes/admin.route";
 import multer from "multer";
 import fs from "fs";
+import WSServer from "./websocket/ws.server";
 
 dotenv.config();
 
@@ -30,4 +31,6 @@ app.use('/api/homepage/admin', adminRouter)
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`)
-})
+});
+
+WSServer(app);

@@ -11,6 +11,9 @@ import ServiceApp from './ServiceApp';
 import ServiceWeb from './ServiceWeb';
 import Notification from './Notification';
 import NotiDetail from './NotiDetail';
+import GroupChat from './GroupChat';
+import Chat from './Chat';
+import Viewer from './Viewer';
 
 export interface SequelizeConfig {
   database: string;
@@ -43,7 +46,10 @@ const db: { [key: string]: any; sequelize?: Sequelize; Sequelize?: typeof Sequel
   ServiceApp,
   ServiceWeb,
   Notification,
-  NotiDetail
+  NotiDetail,
+  GroupChat,
+  Chat,
+  Viewer
 }
 
 readdirSync(__dirname)
