@@ -89,6 +89,7 @@ export interface ChatEntity {
     grchatid?: string;
     sender: number;
     revicer: number;
+    message: string;
     status: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
@@ -97,6 +98,6 @@ export interface ChatEntity {
 export interface ViewerEntity {
     id?: number;
     idchat: number;
-    viewby: string;
+    viewby: number;
     createdAt?: Date | string;
 }

@@ -16,11 +16,23 @@ module.exports = {
             },
             sender: {
                 type: Sequelize.INTEGER,
-                allowNull: false
+                allowNull: false,
+                references: {
+                    model: 'Accounts',
+                    key: 'id'
+                }
             },
             revicer: {
                 type: Sequelize.INTEGER,
-                allowNull: true
+                allowNull: true,
+                references: {
+                    model: 'Accounts',
+                    key: 'id'
+                }
+            },
+            message: {
+                type: Sequelize.TEXT,
+                allowNull: false
             },
             status: {
                 type: Sequelize.ENUM('sending', 'sent', 'reviced', 'seen'),

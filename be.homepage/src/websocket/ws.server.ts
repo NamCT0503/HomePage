@@ -12,7 +12,7 @@ const WSServer = (app: any) => {
         console.log('Connected!');
 
         wss.on('message', mess => {
-            console.log('Reviced message: ', mess);
+            console.log('Reviced message: ', mess.toString());
 
             ws.clients.forEach(clients => {
                 if(clients.readyState === WebSocket.OPEN){
@@ -27,7 +27,7 @@ const WSServer = (app: any) => {
     });
 
     server.listen(process.env.WS_PORT, () => {
-        console.log(`WebSocket server is running on port ${process.env.WS_PORT}`);
+        console.log(`WebSocket server is running on ws://localhost:${process.env.WS_PORT}`);
     });
 }
 

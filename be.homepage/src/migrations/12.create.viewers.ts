@@ -15,8 +15,12 @@ module.exports = {
                 }
             },
             viewby: {
-                type: Sequelize.STRING,
-                allowNull: true
+                type: Sequelize.INTEGER,
+                allowNull: true,
+                references: {
+                    model: 'Accounts',
+                    key: 'id'
+                }
             },
             createdAt: {
                 type: Sequelize.DATE,

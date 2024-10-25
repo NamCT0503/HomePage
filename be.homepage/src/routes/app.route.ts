@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const upload = multer({ storage: storage });
+export const upload = multer({ storage: storage });
 
 //Account
 router.get('/get-account/:id/:param', validateUserMiddleware() as any, checkRoleAccount() as any ,controll_getAccount);
