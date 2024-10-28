@@ -17,7 +17,7 @@ const port = process.env.PORT;
 // app.use(cors());
 
 app.use(cors({
-    origin: 'https://homepage.ftcom.org/', 
+    origin: ['https://homepage.ftcom.org/', 'http://localhost:5173'], 
     methods: 'GET,POST,PUT,DELETE',            
     credentials: true   
 }));

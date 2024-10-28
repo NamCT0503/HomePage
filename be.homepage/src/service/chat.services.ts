@@ -5,6 +5,7 @@ import { deleteViewerById } from "./viewer.services";
 import { ChatEntity } from "../entities/app.entity";
 import Chat from "../models/Chat";
 import Account from "../models/Account";
+import { parseIntMember } from "./groupchat.service";
 
 export const getAllChatInGC = async (sinceday?: number, sender?: number, revicer?: number, grchatid?: string) => {
     try {
@@ -76,6 +77,58 @@ export const getAllChatInGC = async (sinceday?: number, sender?: number, revicer
     }
 }
 
+export const getChatOneToOne = async(sub: number, to: number) => {
+    try {
+        if((!to || Number.isNaN(to))) return{ status: 400, message: 'ParamInput Invalid!'};
+
+        const result = await db.Chat.findAll({
+            where: {
+                grchatid: null,
+                [Op.or]: [{
+                    [Op.and]: [
+                        { sender: sub},
+                        { revicer: to}
+                    ]
+                }, {[Op.and]: [
+                    { sender: to},
+                    { revicer: sub}
+                ]}]
+            }
+        });
+
+        return result;
+    } catch (error) {
+        console.error('=== In getAllChatInGC: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+export const getAllChatBySub = async (sub: number) => {
+    try {
+        const result = await db.Chat.findAll({
+            order: [['createdAt', 'ASC']],
+            where: {
+                grchatid: null,
+                [Op.or]: [
+                    { sender: sub},
+                    { revicer: sub}
+                ]
+            }
+        });
+
+        return result;
+    } catch (error) {
+        console.error('=== In getAllChatBySub: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
 export const getChatById = async(idchat: number, sub: number) => {
     try {
         if((!idchat || Number.isNaN(idchat)) || !sub)
@@ -112,6 +165,73 @@ export const getChatById = async(idchat: number, sub: number) => {
         }
     } catch (error) {
         console.error('=== In getChatById: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+export const checkRoleChat = async (idchat: number, sub: number) => {
+    try {
+        const chatExisted = await db.Chat.findByPk(idchat);
+        if(!chatExisted) return{ status: 400, message: 'NotFound Message!'};
+
+        if(chatExisted.grchatid){
+            const result = await db.GroupChat.findOne({
+                attributes: ['member'],
+                where: { id: chatExisted.grchatid}
+            })
+            if(!result) return false;
+
+            const arrMember = parseIntMember(result.member);
+            if(!arrMember.includes(sub)) return false;
+
+            return true;   
+        } else {
+            const result = await db.Chat.findOne({ where: {
+                id: idchat,
+                [Op.or]: [
+                    { sender: sub},
+                    { revicer: sub}
+                ]
+            }});
+            if(!result) return false;
+            
+            return true;
+        }
+    } catch (error) {
+        console.error('=== In checkRoleChat: '+error);
+        return{
+            status: 500,
+            messgae: error
+        }
+    }
+}
+
+export const statusChatToSeen = async (
+    idchat: number, 
+    status: 'sending' | 'sent' | 'reviced' | 'seen', 
+    isWS: boolean,
+    sub?: number,
+) => {
+    try {
+        const chatExisted = await db.Chat.findByPk(idchat);
+        if(!chatExisted) return{ status: 400, message: 'NotFound Chat!'};
+        if(!status) return{ status: 400, message: 'Status Message Invalid!'};
+
+        if(!isWS){
+            const checkRole = await checkRoleChat(idchat, sub!);
+            if(checkRole!==true) return{ status: 400, message: 'Account Enough Rights!'};
+        }
+
+        await db.Chat.update(
+            { status: status}, { where: { id: idchat}}
+        );
+
+        return true;
+    } catch (error) {
+        console.error('=== In statusChatToSeen: '+error);
         return{
             status: 500,
             messgae: error

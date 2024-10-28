@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { userRequest } from "../middleware/validate.user.middleware";
 import { createGroupChat, deleteGroupChat, getGroupChatById, updateGroupChat } from "../service/groupchat.service";
-import { deleteChat, getAllChatInGC, getChatById } from "../service/chat.services";
+import { deleteChat, getAllChatBySub, getAllChatInGC, getChatById, getChatOneToOne, statusChatToSeen } from "../service/chat.services";
 import { createViewer } from "../service/viewer.services";
 
 //GroupChat Model
@@ -56,6 +56,22 @@ export const controller_getAllChatInGC = async(
     res.json(await getAllChatInGC(sinceday, sender, revicer, grchatid));
 }
 
+export const controller_getChatOneToOne = async(
+    req: userRequest,
+    res: Response
+) => {
+    const sub = req.user.sub;
+    const to = req.params.to;
+    res.json(await getChatOneToOne(sub, parseInt(to)));
+}
+
+export const controller_getAllChatBySub = async(
+    req: userRequest,
+    res: Response
+) => {
+    res.json(await getAllChatBySub(req.user.sub));
+}
+
 export const controller_getInfoChatMessage = async(
     req: userRequest,
     res: Response
@@ -63,6 +79,15 @@ export const controller_getInfoChatMessage = async(
     const idchat = req.params.idchat;
     const sub = req.user.sub;
     res.json(await getChatById(parseInt(idchat), sub));
+}
+
+export const controller_updateStatusChat = async (
+    req: userRequest,
+    res: Response
+) => {
+    const sub = req.user.sub;
+    const idchat = req.body.idchat;
+    res.json(await statusChatToSeen(idchat, 'seen', false, sub));
 }
 
 export const controller_deleteChat = async(

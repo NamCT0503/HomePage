@@ -237,7 +237,7 @@ const getInfoMember = async (member: string) => {
     }
 }
 
-const parseIntMember = (member: string) => {
+export const parseIntMember = (member: string) => {
     const result = (member.split('[')[1].split(']')[0].split(',') as any[]).map(items => parseInt(items));
     return result;
 }

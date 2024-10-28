@@ -88,9 +88,9 @@ export interface ChatEntity {
     id?: number;
     grchatid?: string;
     sender: number;
-    revicer: number;
+    revicer?: number;
     message: string;
-    status: string;
+    status: 'sending' | 'sent' | 'reviced' | 'seen';
     createdAt?: Date | string;
     updatedAt?: Date | string;
 }
