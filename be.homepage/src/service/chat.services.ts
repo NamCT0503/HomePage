@@ -6,6 +6,7 @@ import { ChatEntity } from "../entities/app.entity";
 import Chat from "../models/Chat";
 import Account from "../models/Account";
 import { parseIntMember } from "./groupchat.service";
+import { broadcastUserStatus, userOnline } from "../websocket/ws.server";
 
 export const getAllChatInGC = async (sinceday?: number, sender?: number, revicer?: number, grchatid?: string) => {
     try {
@@ -174,6 +175,8 @@ export const getChatById = async(idchat: number, sub: number) => {
 
 export const checkRoleChat = async (idchat: number, sub: number) => {
     try {
+        console.log('sub: ', sub);
+        console.log('idchat: ', idchat);
         const chatExisted = await db.Chat.findByPk(idchat);
         if(!chatExisted) return{ status: 400, message: 'NotFound Message!'};
 
@@ -216,13 +219,55 @@ export const statusChatToSeen = async (
     sub?: number,
 ) => {
     try {
+        console.log('idchat: ', idchat);
         const chatExisted = await db.Chat.findByPk(idchat);
+        console.log('chatExisted: ', chatExisted);
         if(!chatExisted) return{ status: 400, message: 'NotFound Chat!'};
         if(!status) return{ status: 400, message: 'Status Message Invalid!'};
 
         if(!isWS){
             const checkRole = await checkRoleChat(idchat, sub!);
             if(checkRole!==true) return{ status: 400, message: 'Account Enough Rights!'};
+
+            if(chatExisted?.grchatid){
+
+            } else {
+                await db.Chat.update(
+                    { status: 'seen'}, { where: {
+                        grchatid: null,
+                        status: {[Op.ne]: 'seen'},
+                        revicer: sub
+                        // [Op.or]: [
+                        //     {
+                        //         [Op.and]: [
+                        //             { sender: sub},
+                        //             { revicer: chatExisted?.sender===sub? chatExisted?.revicer: chatExisted?.sender}
+                        //         ]
+                        //     },
+                        //     {
+                        //         [Op.and]: [
+                        //             { revicer: sub},
+                        //             { sender: chatExisted?.revicer===sub? chatExisted?.sender: chatExisted?.revicer}
+                        //         ]
+                        //     }
+                        // ]
+                    }}
+                );
+
+                Array.from(userOnline.values()).filter(users => {
+                    if(users.idchat===idchat){
+                        const newUser = userOnline.get(users.id);
+                        if(newUser){
+                            console.log('chat service if')
+                            newUser.statusMessage = 'seen';
+                            userOnline.set(users.id, newUser);
+                            return broadcastUserStatus(users.id, 'lm-status-response')
+                        }
+                    }
+                })
+            }
+
+            return{ status: 200, message: 'Updated Successfully!'};
         }
 
         await db.Chat.update(

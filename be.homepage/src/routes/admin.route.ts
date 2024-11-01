@@ -2,7 +2,7 @@ import express from "express";
 import validateUserMiddleware from "../middleware/validate.user.middleware";
 import { controll_updateFieldSeen } from "../controller/noti.detail.controller";
 import { controll_getAllNotifyFollowAccount } from "../controller/notification.controller";
-import { controller_createGC, controller_deleteChat, controller_deleteGC, controller_getAllChatBySub, controller_getAllChatInGC, controller_getChatOneToOne, controller_getGCById, controller_getInfoChatMessage, controller_updateGC, controller_userSeenMessage } from "../controller/chat.realtime.controller";
+import { controller_createGC, controller_deleteChat, controller_deleteGC, controller_getAllChatBySub, controller_getAllChatInGC, controller_getChatOneToOne, controller_getGCById, controller_getInfoChatMessage, controller_updateGC, controller_updateStatusChat, controller_userSeenMessage } from "../controller/chat.realtime.controller";
 import { upload } from "./app.route";
 
 
@@ -23,6 +23,7 @@ adminRouter.get('/chat/get-by/:idchat', validateUserMiddleware() as any, control
 adminRouter.post('/group-chat/create', validateUserMiddleware() as any, upload.single('avatar'), controller_createGC);
 adminRouter.post('/view/user-seend', validateUserMiddleware() as any, controller_userSeenMessage);
 adminRouter.put('/group-chat/update', validateUserMiddleware() as any, upload.single('avatar'), controller_updateGC);
+adminRouter.put('/chat/change-status-to-seen', validateUserMiddleware() as any, controller_updateStatusChat)
 adminRouter.delete('/group-chat/delete/:id', validateUserMiddleware() as any, controller_deleteGC);
 adminRouter.delete('/chat/delete/:id', validateUserMiddleware() as any, controller_deleteChat);
 

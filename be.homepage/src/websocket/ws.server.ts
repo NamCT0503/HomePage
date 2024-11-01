@@ -13,6 +13,7 @@ dotenv.config();
 
 export interface UserStatusEntity {
     id: number;
+    idchat: number;
     socket: WebSocket;
     fullname: string;
     username: string;
@@ -36,35 +37,66 @@ export interface UserStatusEntity {
 //     statusMessage: string;
 // }
 
-const WSServer = (app: any) => {
-    const server = http.createServer(app);
-    const ws = new WebSocket.Server({server});
-    const userOnline: Map<number, UserStatusEntity> = new Map();
+export const userOnline: Map<number, UserStatusEntity> = new Map();
 
-    const broadcastUserStatus = (userId: number) => {
-        const userList = Array.from(userOnline.values()).map(users => ({
-            id: users.id,
-            status: users.status,
-            fullname: users.fullname,
-            username: users.username,
-            avatar: users.avatar,
-            role: users.role,
-            lastMessage: users.lastMessage,
-            sentAt: users.sentAt,
-            sender: users.sender,
-            revicer: users.revicer,
-            statusMessage: users.statusMessage,
-            lastOnline: users.lastOnline
-        }));
-    
+export const broadcastUserStatus = (userId: number, type: string) => {
+    const userList = Array.from(userOnline.values()).map(users => ({
+        id: users.id,
+        idchat: users.idchat,
+        status: users.status,
+        fullname: users.fullname,
+        username: users.username,
+        avatar: users.avatar,
+        role: users.role,
+        lastMessage: users.lastMessage,
+        sentAt: users.sentAt,
+        sender: users.sender,
+        revicer: users.revicer,
+        statusMessage: users.statusMessage,
+        lastOnline: users.lastOnline
+    }));
+
+    if(type==='last-mess' || type==='lm-status-response'){
         userOnline.forEach((users) => {
+            if(users.id===userId){
+                console.log(`Đã gửi trạng thái đến người dùng: ${users.id}`);
+                // const infoAcc = await getAccount(':param', users.id);
+                return users.socket.send(JSON.stringify({
+                    type: type,
+                    users: userList
+                }))
+            }
+        })
+    }
+    if(type==='user-status') {
+        userOnline.forEach((users) => {
+            console.log(`Đã gửi trạng thái đến người dùng: ${users.id}`);
             // const infoAcc = await getAccount(':param', users.id);
             return users.socket.send(JSON.stringify({
-                type: 'user-status',
-                users: userList
+                type: type,
+                users: userList.filter(items => {
+                    if(items.id!==users.id){
+                        return{
+                            id: items.id,
+                            status: items.status,
+                            fullname: items.fullname,
+                            username: items.username,
+                            avatar: items.avatar,
+                            role: items.role,
+                            lastOnline: items.lastOnline,
+                            sentAt: items.sentAt
+                        }
+                    }
+                })
             }))
         })
     }
+}
+
+const WSServer = (app: any) => {
+    const server = http.createServer(app);
+    const ws = new WebSocket.Server({server});
+    // const userOnline: Map<number, UserStatusEntity> = new Map();
 
     const validateToken = (token: string) => {
         try {
@@ -95,10 +127,13 @@ const WSServer = (app: any) => {
 
         //Tìm kiếm thông tin người dùng
         const userId = (authToken as any).sub;
-        console.log('sub: ', userId, typeof userId);
+        // Array.from(userOnline.values()).map(items => {
+        //     if(items.id==userId) return items.socket.close();
+        // })
         const infoAcc = await getAccount(':param', userId);
         let newUser: UserStatusEntity = {
             id: userId,
+            idchat: 0,
             socket: wss,
             fullname: infoAcc.fullname,
             username: infoAcc.username,
@@ -112,13 +147,19 @@ const WSServer = (app: any) => {
             status: 'online',
             lastOnline: null
         }
-        userOnline.set(userId, newUser);
-        // broadcastUserStatus(userId, 'user-status');
-        broadcastUserStatus(userId);
+        if(userOnline.size<1){
+            userOnline.set(userId, newUser);
+            return broadcastUserStatus(userId, 'user-status');
+        }
+
+        //Cập nhật danh sách tin nhắn mới nhất của người dùng
         // console.log('arrU: ', Array.from(userOnline.values()))
+        let arrChatWith: any[] = [];
         for(let i=0; i<userOnline.size; i++){
-            const uitems = Array.from(userOnline.values())[i]
+            console.log('arr: ',Array.from(userOnline.values()).map(items => items.id))
+            const uitems = Array.from(userOnline.values())[i];
             if(uitems.id!=userId){
+                console.log('uid: ', uitems.id);
                 const findlastestMess = await db.Chat.findAll({
                     order: [['createdAt', 'DESC']],
                     where: { 
@@ -139,9 +180,9 @@ const WSServer = (app: any) => {
                         ]
                     }
                 });
-                // console.log('findlastestMess: ', findlastestMess[0])
                 newUser = { 
                     id: userId, 
+                    idchat: findlastestMess[0]?.id,
                     socket: wss,
                     fullname: infoAcc.fullname,
                     username: infoAcc.username,
@@ -155,43 +196,90 @@ const WSServer = (app: any) => {
                     statusMessage: findlastestMess[0]?.status,
                     lastOnline: null
                 }
-                console.log('for')
+                console.log(newUser)
                 userOnline.set(userId, newUser);
-                // broadcastUserStatus(userId, 'user-status');
-                broadcastUserStatus(userId);
+                // console.log('uid: ', uitems.id);
+                const userConnected = userOnline.get(uitems.id);
+                if(userConnected){
+                    userConnected.idchat = findlastestMess[0]?.id;
+                    userConnected.lastMessage = findlastestMess[0]?.message;
+                    userConnected.sentAt = findlastestMess[0]?.createdAt;
+                    userConnected.sender = findlastestMess[0]?.sender;
+                    userConnected.revicer = findlastestMess[0]?.revicer;
+                    userConnected.statusMessage = findlastestMess[0]?.status;
+                    userOnline.set(uitems.id, userConnected);
+                }
+                broadcastUserStatus(userId, 'last-mess');
             }
         }
+        // broadcastUserStatus(userId);
+        broadcastUserStatus(userId, 'user-status');
         console.log(`User ${userId} Connected!`);
 
         wss.on('message', async(mess) => {
             const message = JSON.parse(mess.toString());
+            // console.log('message: ', message);
             const revicer = userOnline.get(message.revicer);
             const sender = userOnline.get(userId);
             sender?.socket.send(JSON.stringify({
+                type: 'new-message',
                 message: message.message,
-                status: 'sending'
-            }))
+                status: 'sending',
+                revicer: revicer?.id,
+                sender: sender.id
+            }));
+            const saveMessChat: ChatEntity = {
+                sender: userId,
+                revicer: revicer?.id,
+                message: message.message,
+                status: 'sent',
+            }
+            const newMessage = await db.Chat.create(saveMessChat);
+            console.log('new Message: ', newMessage);
+
             if(revicer){
-                const saveMessChat: ChatEntity = {
-                    sender: userId,
-                    revicer: revicer?.id,
+                revicer.socket.send(JSON.stringify({
+                    type: 'new-message',
+                    id: newMessage.id,
                     message: message.message,
-                    status: 'sent'
+                    sender: userId,
+                    revicer: message.revicer
+                }));
+
+                //Làm mới tin nhắn gần nhất của cuộc trò chuyện 1:1
+                const notiNewMessage_sender = userOnline.get(userId);
+                const notiNewMessage_revicer = userOnline.get(message.revicer);
+                if(notiNewMessage_revicer && notiNewMessage_sender){
+                    console.log('message console: ', message);
+                    notiNewMessage_sender.idchat = notiNewMessage_revicer.idchat = newMessage.id;
+                    notiNewMessage_sender.lastMessage = notiNewMessage_revicer.lastMessage = message.message;
+                    notiNewMessage_sender.revicer = notiNewMessage_revicer.revicer = message.revicer;
+                    notiNewMessage_sender.sender = notiNewMessage_revicer.sender = userId;
+                    notiNewMessage_sender.sentAt = notiNewMessage_revicer.sentAt = new Date();
+                    notiNewMessage_sender.statusMessage = notiNewMessage_revicer.statusMessage = newMessage.status;
+
+                    broadcastUserStatus(userId, 'last-mess');
+                    broadcastUserStatus(message.revicer, 'last-mess');
                 }
-                const newMessage = await db.Chat.create(saveMessChat);
-                revicer.socket.send(message.message);
 
                 if(revicer.socket.readyState === WebSocket.OPEN){
                     await statusChatToSeen(newMessage?.id, 'reviced', true);
                     sender?.socket.send(JSON.stringify({
+                        type: 'new-message',
                         message: message.message,
-                        status: 'reviced'
+                        status: 'reviced',
+                        revicer: revicer?.id,
+                        sender: sender.id
+                    }))
+                } else {
+                    sender?.socket.send(JSON.stringify({
+                        type: 'new-message',
+                        message: message.message,
+                        status: 'sent',
+                        revicer: revicer?.id,
+                        sender: sender.id
                     }))
                 }
-                sender?.socket.send(JSON.stringify({
-                    message: message.message,
-                    status: 'sent'
-                }))
             }
             // ws.clients.forEach(clients => {
             //     if(clients.readyState === WebSocket.OPEN){
@@ -207,7 +295,8 @@ const WSServer = (app: any) => {
                 user.lastOnline = new Date();
                 userOnline.set(userId, user);
                 // broadcastUserStatus(userId, 'user-status');
-                broadcastUserStatus(userId);
+                // broadcastUserStatus(userId);
+                broadcastUserStatus(userId, 'user-status');
             }
             console.log(`User ${userId} Disconnected!`);
         })
