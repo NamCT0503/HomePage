@@ -2,11 +2,13 @@ import WebSocket from 'ws';
 import http from 'http';
 import * as dotenv from "dotenv";
 import jwt from 'jsonwebtoken';
+import fs from "fs";
 import db from '../models';
 import { ChatEntity } from '../entities/app.entity';
 import { statusChatToSeen } from '../service/chat.services';
 import { getAccount } from '../service/account.services';
 import { Op } from 'sequelize';
+import path from 'path';
 // import { broadcastUserStatus } from './service/ws.service';
 
 dotenv.config();
@@ -156,10 +158,10 @@ const WSServer = (app: any) => {
         // console.log('arrU: ', Array.from(userOnline.values()))
         let arrChatWith: any[] = [];
         for(let i=0; i<userOnline.size; i++){
-            console.log('arr: ',Array.from(userOnline.values()).map(items => items.id))
+            // console.log('arr: ',Array.from(userOnline.values()).map(items => items.id))
             const uitems = Array.from(userOnline.values())[i];
             if(uitems.id!=userId){
-                console.log('uid: ', uitems.id);
+                // console.log('uid: ', uitems.id);
                 const findlastestMess = await db.Chat.findAll({
                     order: [['createdAt', 'DESC']],
                     where: { 
@@ -196,7 +198,7 @@ const WSServer = (app: any) => {
                     statusMessage: findlastestMess[0]?.status,
                     lastOnline: null
                 }
-                console.log(newUser)
+                // console.log(newUser)
                 userOnline.set(userId, newUser);
                 // console.log('uid: ', uitems.id);
                 const userConnected = userOnline.get(uitems.id);
@@ -217,13 +219,45 @@ const WSServer = (app: any) => {
         console.log(`User ${userId} Connected!`);
 
         wss.on('message', async(mess) => {
+            console.log('messConsole: ', mess)
             const message = JSON.parse(mess.toString());
-            // console.log('message: ', message);
-            const revicer = userOnline.get(message.revicer);
+            let messageFile: string, reviceId: number;
+            console.log('message: ', message);
+
+            if(message.type==='send-file'){
+                console.log('fileConsole: ', message);
+                const fileName = message.file.fileName;
+                const dataFile = message.file.fileData;
+                const matches = dataFile?.match(/^data:(.+);base64,(.+)$/);
+                if(!matches) return console.error('[WS - Send File]: File Invalid!');
+
+                const fileType = matches[1];
+                const dataBase64 = matches[2];
+                const bufferFile = Buffer.from(dataBase64, 'base64');
+
+                const pathUpload = path.join(__dirname, '../../public/uploads');
+                if(!fs.existsSync(pathUpload)) fs.mkdirSync(pathUpload, {recursive: true});
+                const pathFile = path.join(pathUpload, fileName);
+                fs.writeFileSync(pathFile, bufferFile);
+
+                messageFile = JSON.stringify({file: fileName});
+                reviceId = message.file.id;
+                // const formatMess: ChatEntity = {
+                //     grchatid: undefined,
+                //     sender: userId,
+                //     revicer: message.file.id,
+                //     message: messageFile,
+                //     status: 'sending'
+                // }
+                // await db.Chat.create(formatMess);
+                // return;
+            }
+
+            const revicer = userOnline.get(message.revicer? message.revicer: reviceId!);
             const sender = userOnline.get(userId);
             sender?.socket.send(JSON.stringify({
                 type: 'new-message',
-                message: message.message,
+                message: message.message? message.message: messageFile!,
                 status: 'sending',
                 revicer: revicer?.id,
                 sender: sender.id
@@ -231,7 +265,7 @@ const WSServer = (app: any) => {
             const saveMessChat: ChatEntity = {
                 sender: userId,
                 revicer: revicer?.id,
-                message: message.message,
+                message: message.message? message.message: messageFile!,
                 status: 'sent',
             }
             const newMessage = await db.Chat.create(saveMessChat);
@@ -241,16 +275,16 @@ const WSServer = (app: any) => {
                 revicer.socket.send(JSON.stringify({
                     type: 'new-message',
                     id: newMessage.id,
-                    message: message.message,
+                    message: message.message? message.message: messageFile!,
                     sender: userId,
-                    revicer: message.revicer
+                    revicer: message.revicer? message.revicer: reviceId!
                 }));
 
                 //Làm mới tin nhắn gần nhất của cuộc trò chuyện 1:1
                 const notiNewMessage_sender = userOnline.get(userId);
-                const notiNewMessage_revicer = userOnline.get(message.revicer);
+                const notiNewMessage_revicer = userOnline.get(message.revicer? message.revicer: reviceId!);
                 if(notiNewMessage_revicer && notiNewMessage_sender){
-                    console.log('message console: ', message);
+                    // console.log('message console: ', message);
                     notiNewMessage_sender.idchat = notiNewMessage_revicer.idchat = newMessage.id;
                     notiNewMessage_sender.lastMessage = notiNewMessage_revicer.lastMessage = message.message;
                     notiNewMessage_sender.revicer = notiNewMessage_revicer.revicer = message.revicer;
@@ -259,14 +293,14 @@ const WSServer = (app: any) => {
                     notiNewMessage_sender.statusMessage = notiNewMessage_revicer.statusMessage = newMessage.status;
 
                     broadcastUserStatus(userId, 'last-mess');
-                    broadcastUserStatus(message.revicer, 'last-mess');
+                    broadcastUserStatus(message.revicer? message.revicer: reviceId!, 'last-mess');
                 }
 
                 if(revicer.socket.readyState === WebSocket.OPEN){
                     await statusChatToSeen(newMessage?.id, 'reviced', true);
                     sender?.socket.send(JSON.stringify({
                         type: 'new-message',
-                        message: message.message,
+                        message: message.message? message.message: messageFile!,
                         status: 'reviced',
                         revicer: revicer?.id,
                         sender: sender.id
@@ -274,7 +308,7 @@ const WSServer = (app: any) => {
                 } else {
                     sender?.socket.send(JSON.stringify({
                         type: 'new-message',
-                        message: message.message,
+                        message: message.message? message.message: messageFile!,
                         status: 'sent',
                         revicer: revicer?.id,
                         sender: sender.id

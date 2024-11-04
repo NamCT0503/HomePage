@@ -212,6 +212,25 @@ export const checkRoleChat = async (idchat: number, sub: number) => {
     }
 }
 
+// export const sendFile = async (to: number, file: File) => {
+//     try {
+//         if(!to || Number.isNaN(to) || !file) return{ status: 400, message: 'DataInput Invalid!'}
+
+//         const userExisted = await db.findByPk(to);
+//         if(!userExisted) return{ status: 400, message: 'NotFound User!'};
+
+//         if(file.type.includes('image')){
+//             await db.Chat.create
+//         }
+//     } catch (error) {
+//         console.error('=== In sendFile: '+error);
+//         return{
+//             status: 500,
+//             messgae: error
+//         }
+//     }
+// }
+
 export const statusChatToSeen = async (
     idchat: number, 
     status: 'sending' | 'sent' | 'reviced' | 'seen', 
@@ -219,9 +238,9 @@ export const statusChatToSeen = async (
     sub?: number,
 ) => {
     try {
-        console.log('idchat: ', idchat);
+        // console.log('idchat: ', idchat);
         const chatExisted = await db.Chat.findByPk(idchat);
-        console.log('chatExisted: ', chatExisted);
+        // console.log('chatExisted: ', chatExisted);
         if(!chatExisted) return{ status: 400, message: 'NotFound Chat!'};
         if(!status) return{ status: 400, message: 'Status Message Invalid!'};
 
